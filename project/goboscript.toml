@@ -1,0 +1,25 @@
+# goboscript project configuration
+
+# The target number of frames per second (FPS)
+frame_rate = 30
+
+# Maximum number of clones that can exist simultaneously
+max_clones = 300.0
+
+# If true, removes various limits unrelated to clones or rendering
+no_miscellaneous_limits = false
+
+# If true, disables sprite fencing (sprites can move beyond stage borders)
+no_sprite_fencing = false
+
+# If true, enables frame interpolation for smoother animations
+frame_interpolation = false
+
+# If true, improves pen rendering quality (may affect performance)
+high_quality_pen = false
+
+# Width of the stage in pixels
+stage_width = 480
+
+# Height of the stage in pixels
+stage_height = 360
