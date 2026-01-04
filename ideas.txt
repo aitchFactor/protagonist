@@ -1,0 +1,54 @@
+halli has super mario world physics, pafu has hollow knight physics
+fastfalling?
+dashing?
+attacking?
+grapple hook / slingshotting? 
+
+no dialogue >:(
+
+overall theme: revisit (what a bad theme, right?)
+
+
+
+
+halli and pafu get different music?
+
+5 bosses
+s
+## Levels
+recolour tilesets with different music for "variety" :)
+two sizes: 12x4 or 16x3
+what connects each area? 
+
+act 1: 
+    (steps are shown in-game as paw prints, ie "step 1" = 🐾-1
+    step 1: forest floor
+    
+story development: grappling hook
+
+act 2: 
+    step 2: palace/ruins
+        music: palace 
+    
+    step 3: canopy (forest/sky) (see: fluffy bluff galaxy)
+    
+    step 4: sky fortress
+    
+story development:
+    - pafu/halli is evil?
+
+act 3: pick order
+
+    sand hell (desert/industrial)
+        gimmick: platforms move
+    copenhagen (grass/city)
+        gimmick: non-linear, wraparound level, collectathon with quota (is that fun?)
+        music: passion pit reeling
+    organic beat (night mall/subway interior architecture)
+        gimmick: grapple hook flips platforms (like in super mario galaxy 2)
+        note: music sync gimmicks aren't practical for scratch
+
+
+act 4: 
+    step 8: lava + sky theme (night)
+        music: nightmare castle
