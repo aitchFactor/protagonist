@@ -6,6 +6,9 @@ costumes "blank.png";
 
 # when green flag clicked
 onflag {
+  broadcast "tick_debug0";
+  broadcast "tick_zsort";
+  broadcast "tick_readinput";
   broadcast "tick_001";
   broadcast "tick_002";
   broadcast "tick_display_scale";
