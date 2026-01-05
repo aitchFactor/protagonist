@@ -6,6 +6,15 @@ costumes "blank.png";
 
 # when green flag clicked
 onflag {
+
+}
+
+proc init {
+
+
+}
+
+proc loop {
   broadcast "tick_debug0";
   broadcast "tick_zsort";
   broadcast "tick_readinput";
