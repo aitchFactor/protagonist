@@ -4,28 +4,34 @@
 # - animation
 # - global position offset
 # - postprocess upscaling
+# clones?
 
-proc sort_depth_z_flicker z_position, flicker {
-    g_temp = 1;
+# What's the best way to specify the sprite name?
+var SPRITE_NAME = "None";
+var clone_id;
+var z_position = "-Infinity";
+
+var x_position;
+var y_position;
+
+var x_offset;
+var y_offset;
+
+proc sort_depth z_position, flicker {
+    local i = 1;
     if not $flicker {
-        until not ($z_position < z_positions[g_temp + 1]) {
-            g_temp += 2;
+        until not ($z_position < z_positions[i + 1]) {
+            i += 2;
         }
     }
     else {
-        until $z_position > z_positions[g_temp + 1] {
-            g_temp += 2;
+        until $z_position > z_positions[i + 1] {
+            i += 2;
         }
     }
-    insert $z_position at z_positions[g_temp];
-    insert "FRONT" at z_positions[g_temp];
-    go_forward g_temp - 1;
+    insert $z_position at z_positions[i];
+    insert SPRITE_NAME & " " & clone_id at z_positions[i];
+    go_forward i - 1;
 }
-onflag {
-    hide;
-    reset_timer;
-    initialise;
-    forever {
-        loop;
-    }
-}
+
+

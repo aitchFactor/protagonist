@@ -6,4 +6,7 @@ var fps;
 list z_positions;
 list input;
 
+list mus_queue;
+list sfx_queue;
+
 # TODO

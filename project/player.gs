@@ -1,10 +1,20 @@
-# This is a sprite.
+%include includes/sprite.gs
+%include gfx/ply/hal/frame-numbers.gs
+
+
 costumes 
 "gfx/ply/hal/*.png",
 ;
 
 # start frame values
-%define FR_STAND 1
-%define FR_WALK 5
-%define FR_SKID 11
 
+
+var SPRITE_NAME = "Player";
+
+proc nothing{
+}
+
+onflag{
+    sort_depth false, false;
+    nothing;
+}
