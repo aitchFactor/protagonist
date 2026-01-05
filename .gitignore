@@ -23,3 +23,5 @@ references.lnk
 scratchpad/PhysicsModifier.zip
 scratchpad/PhysicsModifier/PhysicsModifier.asm
 goboscript.exe
+project/.vscode/settings.json
+project/.vscode/tasks.json
