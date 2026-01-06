@@ -5,14 +5,28 @@ costumes "blank.png";
 
 # when green flag clicked
 onflag {
-  init;
+  boot;
   forever{
     loop;
   }
 }
 
-proc init {
-  broadcast_and_wait "INIT";
+proc boot {
+  G_game_state = "boot";
+  fps = 0;
+
+  delete z_positions;
+  delete input;
+
+  delete mus_queue;
+  delete sfx_queue;
+
+  delete hitboxes;
+  delete hurtboxes;
+
+  delete Solids;
+
+  broadcast_and_wait "boot";
 
 }
 
@@ -30,6 +44,7 @@ proc loop {
 
   ### actor tick (collisions with solids)
   broadcast "tick_101";
+  broadcast "tick_108";
   
   ### post actor ticks: resolve actor-to-actor collisions
   broadcast "tick_201";

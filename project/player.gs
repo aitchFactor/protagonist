@@ -1,8 +1,11 @@
-%include includes/sprite.gs
-%include gfx/ply/hal/frame-numbers.gs
+%include includes/actor.gs
+%include gfx/ply/hal/costume-names.gs
+
 
 
 costumes 
+"gfx/ply/hitbox/stand.png" as "hbox_stand",
+"gfx/ply/hitbox/crouch.png" as "hbox_crouch",
 "gfx/ply/hal/*.png",
 ;
 
@@ -11,12 +14,17 @@ costumes
 
 var SPRITE_NAME = "Player";
 
-proc nothing{
+proc boot{
+    switch_costume FR_STAND;
+    last_hurtbox = "hbox_stand";
 }
-
 onflag{
     sort_depth false, false;
-    nothing;
 }
+
+on "boot"{
+    boot;
+}
+
 
 #idea: pack tile info into "touching colour" block

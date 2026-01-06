@@ -4,8 +4,8 @@ var temp1;
 var temp2;
 list input_raw;
 
-on "INIT" {
-    init;
+on "boot" {
+    boot;
 }
 on "tick_readinput" {
     get_input_data;
@@ -74,7 +74,7 @@ proc get_input_data {
     ctrl_sr = input[10];
     ctrl_start = input[11];
 }
-proc init {
+proc boot {
     set_size 200;
     goto -188, -128;
     clear_graphic_effects;

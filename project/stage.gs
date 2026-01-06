@@ -12,4 +12,13 @@ list sfx_queue;
 list hitboxes;
 list hurtboxes;
 
+struct Solid{
+    name    = "",
+    prop1   = -1,
+    prop2   = -1,
+    prop3   = -1,
+}
+
+
+list Solid Solids;
 # TODO

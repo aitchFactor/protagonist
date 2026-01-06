@@ -52,3 +52,25 @@ act 3: pick order
 act 4: 
     step 8: lava + sky theme (night)
         music: nightmare castle
+
+
+## log
+
+- abstract object backend has some hazy stuff, like local x/y scroll values
+
+- need to program solids
+
+- can functions take a behaviour as a parameter?
+
+- are there enums of some kind? (could use lists, but...)
+
+- consider structs for arbitrary actor-actor interactions
+
+- object inheritance retains all scripts even if they are redefined (they coexist)
+
+- use a list to track solids, but I need something else for actors because clones are more likely to be different from one another
+
+- figure out later: soft platforms
+
+- collision information ie wall detection slope detection? might have to come later 
+

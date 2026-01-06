@@ -7,6 +7,11 @@
 # clones?
 
 # What's the best way to specify the sprite name?
+enum Axes {
+    x,
+    y
+}
+
 var SPRITE_NAME = "None";
 var clone_id;
 var z_position = "-Infinity";
@@ -16,6 +21,10 @@ var y_position;
 
 var x_scroll;
 var y_scroll;
+
+
+
+
 
 proc sort_depth z_position, flicker {
     local i = 1;

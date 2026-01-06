@@ -1,4 +1,5 @@
 %include includes/sprite-engine.gs
+
 ### Scripts - sprites importing this file will contain this script.
 var SPRITE_NAME = "Unnamed Sprite";
 var clone_id = "root";
@@ -7,10 +8,40 @@ var z_position = "-Infinity";
 var x_position;
 var y_position;
 
+
+# note: scroll values are local; use a manager sprite to sync sprite scrolls on different layers
 var x_scroll;
 var y_scroll;
 
 var last_hurtbox; # hurtbox also means collision boxes.
+
+var state;
+
+
+proc sprite_boot {
+    if true{
+        delete_this_clone;
+    }
+    clear_graphic_effects;
+    clone_id = "root";
+    x_position = 0;
+    y_position = 0;
+    z_position = 0;
+
+    x_scroll = 0;
+    y_scroll = 0;
+
+    last_hurtbox = 0;
+    set_size 100;
+
+    state = "boot";
+    
+}
+
+on "boot"{
+
+    sprite_boot;
+}
 
 on "tick_zsort" {
     sort_depth z_position, false;
