@@ -60,10 +60,12 @@ func is_colliding(){
 }
 
 func accelerate (vx, ax, max = "Infinity"){
-    local vx_2 = $vx + $ax;
+    local ax_2 = $ax * delta_time;
+    local max_2 = $max * delta_time;
+    local vx_2 = $vx + ax_2;
 
-    if abs(vx_2) > abs($max) {
-        return abs($max) * sign_of(vx_2);
+    if abs(vx_2) > abs(max_2) {
+        return abs(max_2) * sign_of(vx_2);
     }
     return vx_2;
 }
@@ -77,12 +79,13 @@ func decelerate (vx, ax, min = 0){
     # decelerate (-1, -2, -0.3) -> 0.3
 
     local vx_2 = abs($vx);
-    local ax_2 = abs($ax);
+    local ax_2 = abs($ax) * delta_time;
+    local min_2 = $min * delta_time;
 
-    vx_2 = $vx - $ax;
+    vx_2 = vx_2 - ax_2;
 
-    if vx_2 < $min {
-        return $min * sign_of($vx);
+    if vx_2 < min_2 {
+        return min_2 * sign_of($vx);
     }
     return vx_2 * sign_of($vx);
 }
