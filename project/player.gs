@@ -17,6 +17,7 @@ var SPRITE_NAME = "Player";
 proc boot{
     switch_costume FR_STAND;
     last_hurtbox = "hbox_stand";
+
 }
 onflag{
     sort_depth false, false;

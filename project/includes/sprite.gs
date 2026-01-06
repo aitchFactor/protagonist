@@ -39,7 +39,6 @@ proc sprite_boot {
 }
 
 on "boot"{
-
     sprite_boot;
 }
 
