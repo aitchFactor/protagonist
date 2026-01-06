@@ -13,11 +13,22 @@ struct Collision {
     wall,
     collider,
 }
-
 var CollideAction_param = -1;
+
+# struct ContinuousVelocity {
+#     a = 0,
+#     v0 = 0,
+#     v1 = 0,
+#     fac = 0
+# }
+
+# var ContinuousVelocity xvel;
+
+# var ContinuousVelocity yvel;
 
 var x_vel;
 var y_vel;
+
 var x_remainder;
 var y_remainder;
 var speedcap_x;
@@ -30,6 +41,14 @@ on "boot" {
 proc actor_boot {
     # sprite boot exists as a different script as well.
     CollideAction_param = -1;
+    # xvel.a = 0;
+    # xvel.v0 = 0;
+    # xvel.v1 = 0;
+    # xvel.fac = 0;
+    # yvel.a = 0;
+    # yvel.v0 = 0;
+    # yvel.v1 = 0;
+    # yvel.fac = 0;
     x_vel = 0;
     y_vel = 0;
     x_remainder = 0;
@@ -59,36 +78,97 @@ func is_colliding(){
     return false;
 }
 
-func accelerate (vx, ax, max = "Infinity"){
-    local ax_2 = $ax * delta_time;
-    local max_2 = $max * delta_time;
-    local vx_2 = $vx + ax_2;
+# func accelerate (vx, ax, max = "Infinity"){
+#     local vx_2 = $vx + $ax;
 
-    if abs(vx_2) > abs(max_2) {
-        return abs(max_2) * sign_of(vx_2);
+#     if abs(vx_2) > abs($max) {
+#         return abs($max) * sign_of(vx_2);
+#     }
+#     return vx_2;
+# }
+
+func accelerate_advanced (v, a, max = "Infinity") {
+    local saturation_delta_time = delta_time; # initial value means we don't know when velocity will max out.
+    local v1 = $v + $a;
+
+    if abs (v1) > abs($max) {
+        v1 = abs($max) * sign_of($a);
     }
-    return vx_2;
+
+    if abs(v1) == abs($max){
+        saturation_delta_time = (v1 - $v) / $a; 
+
+        # sat<0 -- saturation was reached in the past (slowly decelerate - TODO)
+        # sat=0 -- saturation is happening now
+        # 0<sat<delta_time -- saturation will occur during this frame
+        # sat >= delta_time -- saturation will occur after this frame 
+    }
+
+    local t2 = saturation_delta_time;
+
+    if t2 <= 0 {
+        return v1;
+    }
+    if t2 > 0 and t2 < delta_time {
+        return (($v * t2 + (0.5 * $a * t2 * t2) + v1 * (delta_time - t2))) / delta_time;
+    }
+    else {
+        return ($v + v1) * 0.5;
+    }
 }
 
-func decelerate (vx, ax, min = 0){
+func decelerate_advanced (v, a, min = 0){
     # Return a velocity slowed down by some acceleration amount. 
     # The deceleration is always the same sign as the inputted vx.
     # Examples:
     # decelerate (1, -0.5) -> 0.5
     # decelerate (1, 0.5) -> 0.5
     # decelerate (-1, -2, -0.3) -> 0.3
+    local v_ = abs($v);
+    local a_ = abs($a);
+    local stop_delta_time = delta_time;
 
-    local vx_2 = abs($vx);
-    local ax_2 = abs($ax) * delta_time;
-    local min_2 = $min * delta_time;
 
-    vx_2 = vx_2 - ax_2;
+    local v1 = v_ - a_;
 
-    if vx_2 < min_2 {
-        return min_2 * sign_of($vx);
+    if v1 < $min {
+        v1 = $min;
+        stop_delta_time = (v1 - $v) / a_;
     }
-    return vx_2 * sign_of($vx);
+
+    local t2 = stop_delta_time;
+
+    if t2 <= 0{
+        return v1 * sign_of($v);
+    }
+
+    if t2 > 0 and t2 < delta_time{
+        return ((v_ * t2 + (0.5 * a_ * t2 * t2) + v1 * (delta_time - t2)) * sign_of($v)) / delta_time;
+    }
+    else {
+        return (v_ + v1) * 0.5 * sign_of($v);
+    }
 }
+
+# func decelerate (vx, ax, min = 0){
+#     # Return a velocity slowed down by some acceleration amount. 
+#     # The deceleration is always the same sign as the inputted vx.
+#     # Examples:
+#     # decelerate (1, -0.5) -> 0.5
+#     # decelerate (1, 0.5) -> 0.5
+#     # decelerate (-1, -2, -0.3) -> 0.3
+
+#     local vx_2 = abs($vx);
+#     local ax_2 = abs($ax);
+
+#     vx_2 = vx_2 - ax_2;
+
+#     if vx_2 < $min {
+#         return $min * sign_of($vx);
+#     }
+#     return vx_2 * sign_of($vx);
+# }
+
 
 
 proc on_collide axis, collide_action{
@@ -181,14 +261,19 @@ proc speedcaps{
 # }
 
 # proc squish{}
-
+proc actor_physics{
+    speedcaps;
+    
+    move_x x_vel * delta_time;
+    move_y y_vel * delta_time;
+}
 
 proc actor_tick{
-    speedcaps;
-    move_x x_vel;
-    move_y y_vel;
+    actor_physics;
 }
 
-on "tick_108"{
-    actor_tick;
-}
+# Note: remember to call the actor tick in an instantiated actor.
+
+# on "tick_101"{
+#     actor_tick;
+# }

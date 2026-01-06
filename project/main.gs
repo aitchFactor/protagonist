@@ -47,27 +47,27 @@ proc loop {
   broadcast "tick_debug_first";
   broadcast "tick_readinput";
 
-  repeat delta_time{
-    ### restore game state to backend mode (scale, subpixels, hitbox modes)
-    broadcast "tick_000";
 
-    ### solids ticks (collisions with actors)
-    broadcast "tick_001";
-    broadcast "tick_002";
-    broadcast "tick_003"; 
+  ### restore game state to backend mode (scale, subpixels, hitbox modes)
+  broadcast "tick_000";
 
-    ### actor tick (collisions with solids)
-    broadcast "tick_101";
-    broadcast "tick_108";
-    
-    ### post actor ticks: resolve actor-to-actor collisions
-    broadcast "tick_201";
-    broadcast "tick_202";
-    broadcast "tick_203";
+  ### solids ticks (collisions with actors)
+  broadcast "tick_001";
+  broadcast "tick_002";
+  broadcast "tick_003"; 
 
-    broadcast "tick_cosmetics";     # animation, decorative effects
-    broadcast "tick_display";       # set positional offsets, scrolling. and scale
-  }
+  ### actor tick (collisions with solids)
+  broadcast "tick_101";
+  broadcast "tick_108";
+  
+  ### post actor ticks: resolve actor-to-actor collisions
+  broadcast "tick_201";
+  broadcast "tick_202";
+  broadcast "tick_203";
+
+  broadcast "tick_cosmetics";     # animation, decorative effects
+  broadcast "tick_display";       # set positional offsets, scrolling. and scale
+  
 
   broadcast "tick_zsort";         # execution order of sprites/clones for other broadcasts is undefined, so be careful.
 

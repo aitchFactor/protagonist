@@ -74,4 +74,6 @@ act 4:
 
 - collision information ie wall detection slope detection? might have to come later 
 
-- consider delta time
+- consider delta time - duplicate broadcasts in one frame are ignored :(
+
+- v_max values might be a pain in the butt when dashing becomes a thing (decel_still is used for run > walk as well as unpredictably during almost all times)

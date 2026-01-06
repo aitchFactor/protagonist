@@ -29,40 +29,34 @@ proc boot{
     last_hurtbox = "hbox_stand";
 
 }
-onflag{
-    sort_depth false, false;
-}
-
-on "boot"{
-    boot;
-}
-
-on "tick_101"{
+proc player_tick{
     x_control;
     y_control;
+    actor_physics;
+
 }
 
 proc x_control{
     if ctrl_left > 0 {
         if x_vel <= 0 {
-            x_vel = accelerate(x_vel, -accel_walk, -max_walk);
+            x_vel = accelerate_advanced(x_vel, -accel_walk, -max_walk);
         }
         else {
-            x_vel = accelerate(x_vel, -decel_walk, -max_walk);
+            x_vel = accelerate_advanced(x_vel, -decel_walk, -max_walk);
         }
     }
     else{
         if ctrl_right > 0 {
             if x_vel >= 0 {
-                x_vel = accelerate(x_vel, accel_walk, max_walk);
+                x_vel = accelerate_advanced(x_vel, accel_walk, max_walk);
 
             }
             else {
-                x_vel = accelerate(x_vel, decel_walk, max_walk);
+                x_vel = accelerate_advanced(x_vel, decel_walk, max_walk);
             }
         }
         else{
-            x_vel = decelerate(x_vel, decel_still);
+            x_vel = decelerate_advanced(x_vel, decel_still);
         }
     }
     
@@ -72,4 +66,15 @@ proc y_control{
 
 }
 
+onflag{
+    sort_depth false, false;
+}
+
+on "boot"{
+    boot;
+}
+
+on "tick_101"{
+    player_tick;
+}
 #idea: pack tile info into "touching colour" block

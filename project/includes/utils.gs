@@ -12,5 +12,6 @@ func sign_of(x){
 }
 
 func round_16(x){
-    return round ($x * 16) / 16;
+    local round_to = 256;
+    return round ($x * round_to) / round_to;
 }
