@@ -5,11 +5,14 @@ costumes "blank.png";
 
 # when green flag clicked
 onflag {
-
+  init;
+  forever{
+    loop;
+  }
 }
 
 proc init {
-
+  broadcast_and_wait "INIT";
 
 }
 
@@ -17,28 +20,28 @@ proc loop {
   broadcast "tick_debug_first";
   broadcast "tick_readinput";
 
-  ### restore game state to internal mode (scale, subpixels, hitbox modes)
+  ### restore game state to backend mode (scale, subpixels, hitbox modes)
   broadcast "tick_000";
 
-  ### pre-player ticks: moving platforms, moving hazards (projectiles?)
+  ### solids ticks (collisions with actors)
   broadcast "tick_001";
   broadcast "tick_002";
-  broadcast "tick_003";
+  broadcast "tick_003"; 
 
-  ### player tick
+  ### actor tick (collisions with solids)
   broadcast "tick_101";
   
-  ### post player ticks: enemies getting stomped etc
+  ### post actor ticks: resolve actor-to-actor collisions
   broadcast "tick_201";
   broadcast "tick_202";
   broadcast "tick_203";
 
-  broadcast "tick_cosmetics";
-  broadcast "tick_display";       # set positional offsets, scrolling. animation frames and scale
+  broadcast "tick_cosmetics";     # animation, decorative effects
+  broadcast "tick_display";       # set positional offsets, scrolling. and scale
   broadcast "tick_zsort";         # execution order of sprites/clones for other broadcasts is undefined, so be careful.
 
   broadcast "tick_sound_logic";   # parse audio queues
-  broadcast "tick_sound_play";    # platy audio queues
+  broadcast "tick_sound_play";    # play audio queues
 
   broadcast "tick_check_pause";
 

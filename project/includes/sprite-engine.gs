@@ -14,8 +14,8 @@ var z_position = "-Infinity";
 var x_position;
 var y_position;
 
-var x_offset;
-var y_offset;
+var x_scroll;
+var y_scroll;
 
 proc sort_depth z_position, flicker {
     local i = 1;
@@ -33,5 +33,3 @@ proc sort_depth z_position, flicker {
     insert SPRITE_NAME & " " & clone_id at z_positions[i];
     go_forward i - 1;
 }
-
-

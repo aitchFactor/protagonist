@@ -18,3 +18,5 @@ onflag{
     sort_depth false, false;
     nothing;
 }
+
+#idea: pack tile info into "touching colour" block

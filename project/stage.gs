@@ -9,4 +9,7 @@ list input;
 list mus_queue;
 list sfx_queue;
 
+list hitboxes;
+list hurtboxes;
+
 # TODO
