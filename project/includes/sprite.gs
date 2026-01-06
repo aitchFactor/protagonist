@@ -1,4 +1,5 @@
 %include includes/sprite-engine.gs
+%include includes/utils.gs
 
 ### Scripts - sprites importing this file will contain this script.
 var SPRITE_NAME = "Unnamed Sprite";
@@ -58,7 +59,16 @@ on "tick_000"{
 }
 
 on "tick_display"{
+    # round the "true" positional values to smooth out floating point error
+    x_position = round_16(x_position() - x_scroll);
+    y_position = round_16(y_position() - y_scroll);
+    x_scroll = round_16(x_position);
+    y_scroll = round_16(y_position);
+
+
     set_size 800;
     goto round(x_position + x_scroll) * 2, round(y_position + y_scroll) * 2;
     set_size 200;
+
+
 }

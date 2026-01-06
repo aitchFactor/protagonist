@@ -74,3 +74,4 @@ act 4:
 
 - collision information ie wall detection slope detection? might have to come later 
 
+- consider delta time

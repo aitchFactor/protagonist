@@ -3,6 +3,20 @@ costumes "gfx/bg/black.png";
 var G_game_state;
 var fps;
 
+var delta_time;
+
+var ctrl_up;
+var ctrl_down;
+var ctrl_left;
+var ctrl_right;
+var ctrl_a;
+var ctrl_b;
+var ctrl_x;
+var ctrl_y;
+var ctrl_sl; 
+var ctrl_sr;
+var ctrl_start;
+
 list z_positions;
 list input;
 
@@ -21,4 +35,3 @@ struct Solid{
 
 
 list Solid Solids;
-# TODO

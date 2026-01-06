@@ -34,9 +34,8 @@ nowarp proc poll_input_for_using button, input1, input2, input3, input4 {
         }
         temp += -1;
     }
-    if "e" in "end" {
-        input_raw[g_dict_key + 2] = temp;
-    }
+
+    input_raw[g_dict_key + 2] = temp;
 }
 proc get_input_data {
     g_temp = 0;
@@ -332,9 +331,9 @@ nowarp proc sub_poll_slot input5, slot {
     if temp == 1 {
         temp2 = "true";
     }
-    if "e" in "end" {
-        input_raw[g_dict_key + ($slot + 4)] = temp;
-    }
+
+    input_raw[g_dict_key + ($slot + 4)] = temp;
+
 }
 nowarp proc filter_input_compare i, j {
     g_dict_key = $i * 9 - 8;
