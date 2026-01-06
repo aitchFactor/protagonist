@@ -38,25 +38,25 @@ proc player_tick{
 
 proc x_control{
     if ctrl_left > 0 {
-        if x_vel <= 0 {
-            x_vel = accelerate_advanced(x_vel, -accel_walk, -max_walk);
+        if xvel.v1 <= 0 {
+            xvel = accelerate_advanced(xvel.v1, -accel_walk, -max_walk);
         }
         else {
-            x_vel = accelerate_advanced(x_vel, -decel_walk, -max_walk);
+            xvel = accelerate_advanced(xvel.v1, -decel_walk, -max_walk);
         }
     }
     else{
         if ctrl_right > 0 {
-            if x_vel >= 0 {
-                x_vel = accelerate_advanced(x_vel, accel_walk, max_walk);
+            if xvel.v1 >= 0 {
+                xvel = accelerate_advanced(xvel.v1, accel_walk, max_walk);
 
             }
             else {
-                x_vel = accelerate_advanced(x_vel, decel_walk, max_walk);
+                xvel = accelerate_advanced(xvel.v1, decel_walk, max_walk);
             }
         }
         else{
-            x_vel = decelerate_advanced(x_vel, decel_still);
+            xvel = decelerate_advanced(xvel.v1, decel_still);
         }
     }
     

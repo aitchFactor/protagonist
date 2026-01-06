@@ -15,19 +15,18 @@ struct Collision {
 }
 var CollideAction_param = -1;
 
-# struct ContinuousVelocity {
-#     a = 0,
-#     v0 = 0,
-#     v1 = 0,
-#     fac = 0
-# }
+struct ContinuousVelocity {
+    v0 = 0, # velocity at frame start (unused, and editing this should do nothing)
+    v1 = 0, # velocity at frame end
+    dx = 0  # integrated
+}
 
-# var ContinuousVelocity xvel;
+var ContinuousVelocity xvel;
 
-# var ContinuousVelocity yvel;
+var ContinuousVelocity yvel;
 
-var x_vel;
-var y_vel;
+# var x_vel;
+# var y_vel;
 
 var x_remainder;
 var y_remainder;
@@ -41,16 +40,16 @@ on "boot" {
 proc actor_boot {
     # sprite boot exists as a different script as well.
     CollideAction_param = -1;
-    # xvel.a = 0;
-    # xvel.v0 = 0;
-    # xvel.v1 = 0;
-    # xvel.fac = 0;
-    # yvel.a = 0;
-    # yvel.v0 = 0;
-    # yvel.v1 = 0;
-    # yvel.fac = 0;
-    x_vel = 0;
-    y_vel = 0;
+    xvel.v0 = 0;
+    xvel.v1 = 0;
+    xvel.dx = 0;
+
+    yvel.v0 = 0;
+    yvel.v1 = 0;
+    yvel.dx = 0;
+
+    # x_vel = 0;
+    # y_vel = 0;
     x_remainder = 0;
     y_remainder = 0;
     speedcap_x = "Infinity";
@@ -87,9 +86,9 @@ func is_colliding(){
 #     return vx_2;
 # }
 
-func accelerate_advanced (v, a, max = "Infinity") {
+func accelerate_advanced (v, a, max = "Infinity") ContinuousVelocity {
     local saturation_delta_time = delta_time; # initial value means we don't know when velocity will max out.
-    local v1 = $v + $a;
+    local v1 = $v + $a * delta_time;
 
     if abs (v1) > abs($max) {
         v1 = abs($max) * sign_of($a);
@@ -105,19 +104,22 @@ func accelerate_advanced (v, a, max = "Infinity") {
     }
 
     local t2 = saturation_delta_time;
+    local dx = 0;
 
     if t2 <= 0 {
-        return v1;
+        dx = v1 * delta_time;
     }
     if t2 > 0 and t2 < delta_time {
-        return (($v * t2 + (0.5 * $a * t2 * t2) + v1 * (delta_time - t2))) / delta_time;
+        dx = (($v * t2 + (0.5 * $a * t2 * t2) + v1 * (delta_time - t2)));
     }
     else {
-        return ($v + v1) * 0.5;
+        dx = ($v + v1) * 0.5 * delta_time;
     }
+
+    return ContinuousVelocity{v0: $v, v1: v1, dx: dx};
 }
 
-func decelerate_advanced (v, a, min = 0){
+func decelerate_advanced (v, a, min = 0) ContinuousVelocity{
     # Return a velocity slowed down by some acceleration amount. 
     # The deceleration is always the same sign as the inputted vx.
     # Examples:
@@ -129,7 +131,7 @@ func decelerate_advanced (v, a, min = 0){
     local stop_delta_time = delta_time;
 
 
-    local v1 = v_ - a_;
+    local v1 = v_ - a_ * delta_time;
 
     if v1 < $min {
         v1 = $min;
@@ -137,17 +139,20 @@ func decelerate_advanced (v, a, min = 0){
     }
 
     local t2 = stop_delta_time;
+    local dx = 0;
 
     if t2 <= 0{
-        return v1 * sign_of($v);
+        dx = v1 * sign_of($v) * delta_time;
     }
 
     if t2 > 0 and t2 < delta_time{
-        return ((v_ * t2 + (0.5 * a_ * t2 * t2) + v1 * (delta_time - t2)) * sign_of($v)) / delta_time;
+        dx = ((v_ * t2 + (0.5 * a_ * t2 * t2) + v1 * (delta_time - t2)) * sign_of($v));
     }
     else {
-        return (v_ + v1) * 0.5 * sign_of($v);
+        dx = (v_ + v1) * 0.5 * sign_of($v) * delta_time;
     }
+
+    return ContinuousVelocity{v0: $v, v1: v1 * sign_of($v), dx: dx};
 }
 
 # func decelerate (vx, ax, min = 0){
@@ -177,11 +182,13 @@ proc on_collide axis, collide_action{
     }
     if $collide_action == CollideAction.Stop{
         if $axis == Axes.x {
-            x_vel = 0;
+            xvel.v1 = 0;
+            xvel.dx = xvel.v1 - xvel.v0;
             x_remainder = 0;
         }
         if $axis == Axes.y {
-            y_vel = 0;
+            yvel.v1 = 0;
+            yvel.dx = yvel.v1 - yvel.v0;
             y_remainder = 0;
         }
     }
@@ -244,14 +251,23 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
 
 proc speedcaps{
     # cap and round velocity.
-    x_vel = round_16(x_vel);
-    y_vel = round_16(y_vel);
 
-    if abs(x_vel) > speedcap_x{
-        x_vel = speedcap_x * sign_of(x_vel);
+    xvel.v1 = round_16(xvel.v1);
+    yvel.v1 = round_16(yvel.v1);
+    xvel.dx = round_16(xvel.dx);
+    yvel.dx = round_16(yvel.dx);
+
+    if abs(xvel.v1) > speedcap_x{
+        xvel.v1 = speedcap_x * sign_of(xvel.v1);
     }
-    if abs(y_vel) > speedcap_y{
-        y_vel = speedcap_y * sign_of(y_vel);
+    if abs(yvel.v1) > speedcap_y{
+        yvel.v1 = speedcap_y * sign_of(yvel.v1);
+    }
+    if abs(xvel.dx) > speedcap_x{
+        xvel.dx = speedcap_x * sign_of(xvel.dx);
+    }
+    if abs(yvel.dx) > speedcap_y{
+        yvel.dx = speedcap_y * sign_of(yvel.dx);
     }
 }
 
@@ -264,8 +280,8 @@ proc speedcaps{
 proc actor_physics{
     speedcaps;
     
-    move_x x_vel * delta_time;
-    move_y y_vel * delta_time;
+    move_x xvel.dx;
+    move_y yvel.dx;
 }
 
 proc actor_tick{
