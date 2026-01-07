@@ -16,8 +16,8 @@
 ;;  These hijacks use freespace if enabled. Set to 1 to enable.
 ;;  NOTE: Once enabled, you shouldn't disable it without restoring your ROM to an old version.
 
-!applyJumpFixes     =   0
-!applyRunFixes      =   0
+!applyJumpFixes     =   1
+!applyRunFixes      =   1
     ; These two will fix bugs from having too high an X speed (#$40+).
     ;  The first fixes Mario being unable to jump, and is recommended if you
     ;   increase any X speeds close to that limit.
@@ -49,26 +49,26 @@
 !max_fall           =   $40     ; Max fall speed.
 
 !accel_fall_noAB    =   $06     ; Gravity without A/B held.
-!accel_fall_AB      =   $06     ; Gravity with A/B held.
+!accel_fall_AB      =   $03     ; Gravity with A/B held.
 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Running
 
-!max_walk           =   $14     ; Max walk speed.   (no X/Y)
+!max_walk           =   $24     ; Max walk speed.   (no X/Y)
 !max_run            =   $24     ; Max run speed.    (X/Y held)
 !max_sprint         =   $30     ; Max sprint speed. (X/Y held, full P-speed)
 
 !accel_walk         =   $0180   ; Acceleration when walking with >
 !accel_run          =   $0180   ; Acceleration when running with > + X/Y
-!accel_walk_s       =   $0080   ; Acceleration when walking in a slippery level with >
+!accel_walk_s       =   $0180   ; Acceleration when walking in a slippery level with >
 !accel_run_s        =   $0180   ; Acceleration when running in a slippery level with > + X/Y
 
 !decel_still        =   $FF00   ; Deceleration on the ground with no directional input.
-!decel_walk         =   $FD80   ; Deceleration when reversing direction with <
+!decel_walk         =   $FB00   ; Deceleration when reversing direction with <
 !decel_run          =   $FB00   ; Deceleration when reversing direction with < + X/Y
-!decel_walk_s       =   $FFC0   ; Deceleration when reversing direction in a slippery level with <
+!decel_walk_s       =   $FD80   ; Deceleration when reversing direction in a slippery level with <
 !decel_run_s        =   $FD80   ; Deceleration when reversing direction in a slippery level with < + X/Y
 
 !timer_sprint       =   $70     ; Time Mario has to be running on the ground in order to gain full P-speed.

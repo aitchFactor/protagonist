@@ -43,12 +43,12 @@ proc get_input_data {
     poll_input_for_using "D", "s", "down arrow", "", false;
     poll_input_for_using "L", "a", "left arrow", "", mouse_down() and mouse_x() < 0;
     poll_input_for_using "R", "d", "right arrow", "", mouse_down() and mouse_x() > 0;
-    poll_input_for_using "A", "m", "z", "", false;
-    poll_input_for_using "B", "n", "x", "", false;
+    poll_input_for_using "A", "m", "z", "space", false;
+    poll_input_for_using "B", "n", "x", "shift", false;
     poll_input_for_using "X", "j", "v", "", false;
     poll_input_for_using "Y", "h", "v", "", false;
-    poll_input_for_using "SL", "q", "shift", "", false;
-    poll_input_for_using "SR", "e", "space", "", false;
+    poll_input_for_using "SL", "q", "", "", false;
+    poll_input_for_using "SR", "e", "", "", false;
     poll_input_for_using "START", "p", "", "", false;
     filter_input_compare 1, 2; # up/down filtering
     filter_input_compare 2, 1; 

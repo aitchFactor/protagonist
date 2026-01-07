@@ -41,6 +41,7 @@ costumes
 var SPRITE_NAME = "Player";
 
 var airborne = 0;
+var skid = 0;
 
 proc boot{
     switch_costume FR_STAND;
@@ -48,6 +49,11 @@ proc boot{
     x_position = -32;
     y_position = 180;
     airborne = 0;
+    skid = 0;
+    walk_counter = 0;
+    grounded = 0;
+    set_rotation_style_left_right;
+    state_machine("play")
 
 }
 proc player_tick{
@@ -57,13 +63,55 @@ proc player_tick{
 
 }
 
+proc state_machine new_state = "boot"{
+    if state == $new_state {
+        stop_this_script;
+    }
+    if state == "boot" {
+        state = $new_state;
+        animation_counter = 0;
+        stop_this_script;
+    }
+    
+    # ground -> skid and vice versa
+    if "ground" in state or "skid" in state {
+        ## no restrictions yet
+    }
+
+    # air ignores skid
+    if "air" in state {
+        if "skid" in $new_state {
+            stop_this_script;
+        }
+    }
+
+
+    animation_counter = 0;
+    state = $new_state;
+}
+
+
 proc x_control{
+
+    hal_x_control;
+
+
+    
+}
+proc hal_x_control {
+    if "ground" in state{
+        state_machine ("play.ground");
+    }
+
+
     if ctrl_left > 0 {
         if xvel.v1 <= 0 {
             xvel = accelerate_advanced(xvel.v1, -accel_run, -max_run);
         }
         else {
             xvel = accelerate_advanced(xvel.v1, -decel_run, -max_run);
+
+            state_machine ("play.ground.skid.L");
         }
     }
     else{
@@ -74,27 +122,39 @@ proc x_control{
             }
             else {
                 xvel = accelerate_advanced(xvel.v1, decel_run, max_run);
+                state_machine ("play.ground.skid.R");
             }
         }
         else{
             xvel = decelerate_advanced(xvel.v1, decel_still);
+            
         }
     }
-    
 }
-
+var grounded; 
 proc y_control{
     # dirty grounded check... don't tell anyone about this...
     last_y = y_position;
     change_y -1;
-    local grounded = is_colliding();
+    grounded = is_colliding();
     set_y last_y;
+    
+    if grounded and "air" in state {
+        state_machine ("play.ground");
+    }
+    if not grounded and "ground" in state {
+        state_machine ("play.air");
+    }
 
+    hal_y_control;
 
+}
+
+proc hal_y_control {
     # make sure velocity changes come before gravity/accelerating forces.
     if grounded {
         if ctrl_a > 0 and ctrl_a <= ceil(2 / delta_time) {
-            yvel.v1 = jump_vel + (jump_incr) * abs(xvel.dx) ;
+            yvel.v1 = jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
         }
     }
 
@@ -103,6 +163,58 @@ proc y_control{
         gravity = jump_gravity;
     }
     yvel = accelerate_advanced(yvel.v1, -gravity, -max_fall);
+}
+
+
+
+var walk_counter;
+
+proc ground_animation{
+    if xvel.v1 == 0 or "skid" in state {
+        if animation_counter == 0{
+            # add animation here.
+        }
+    }
+    else {
+        if animation_counter == 0{
+            # add animation here.
+        }
+        animation_counter += abs(xvel.dx); # dx is scaled by delta_time already.
+        point_in_direction (90 * sign_of(xvel.dx));
+        stop_this_script; # avoid animation counting.
+    }
+
+    animation_counter += delta_time;
+}
+
+proc air_animation{
+    local number = 0;
+    if yvel.v1 > 0 {
+        number = 25; 
+    }
+    else {
+        number = 26;
+    }
+    if ctrl_right > 0 {
+
+        point_in_direction (90);
+    }
+    if ctrl_left > 0 {
+        point_in_direction (-90);
+    }
+    switch_costume number;
+}
+
+proc animation{
+    
+
+
+    if "ground" in state or "skid" in state{
+        ground_animation;
+    }
+    if "air" in state{
+        air_animation;
+    }
 
 }
 
@@ -118,4 +230,7 @@ on "tick_101"{
     player_tick;
 }
 
+on "tick_cosmetics"{
+    animation;
+}
 #idea: pack tile info into "touching colour" block

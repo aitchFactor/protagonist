@@ -18,6 +18,24 @@ var last_hurtbox; # hurtbox also means collision boxes.
 
 var state;
 
+var animation_counter;
+
+struct AnimationFrame {
+    costume_name = "header",
+    duration = 1,
+    flip = false
+}
+
+struct AnimationHeader {
+    loop_start = -1, # relative to the frame block, not the costume number. (might change though)
+    loop_mode = -1, # forwards or bidi 
+    loops   =   0,
+    priority = 1, # lower = plays first;
+    erase   = 0 # clear this number of queued animations after playing; -1 = clear all 
+}
+
+list animation_queue;
+
 
 proc sprite_boot {
     if true{
@@ -32,6 +50,8 @@ proc sprite_boot {
     x_scroll = 0;
     y_scroll = 0;
 
+    animation_counter = 0;
+    
     last_hurtbox = 0;
     set_size 100;
 
@@ -68,4 +88,8 @@ on "tick_display"{
     set_size 200;
 
 
+}
+
+on "tick_cosmetics"{
+    last_hurtbox = costume_number();
 }
