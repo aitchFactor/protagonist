@@ -8,6 +8,14 @@
 #-640/65536
 %define decel_walk  0.15625
 
+%define fall_gravity 6/16
+
+%define jump_gravity 3/16
+
+%define max_fall 4
+
+%define jump_vel 5
+
 %include includes/actor.gs
 %include gfx/ply/hal/costume-names.gs
 %include includes/input-mapping.gs
@@ -24,10 +32,14 @@ costumes
 
 var SPRITE_NAME = "Player";
 
+var airborne = 0;
+
 proc boot{
     switch_costume FR_STAND;
     last_hurtbox = "hbox_stand";
     x_position = -32;
+    y_position = 180;
+    airborne = 0;
 
 }
 proc player_tick{
@@ -64,6 +76,18 @@ proc x_control{
 }
 
 proc y_control{
+    # dirty grounded check... don't tell anyone about this...
+
+
+
+    # make sure velocity changes come before gravity/accelerating forces.
+    if ctrl_a == 1 {
+        yvel.v0 = jump_vel;
+        yvel.v1 = jump_vel;
+    }
+
+
+    yvel = accelerate_advanced(yvel.v1, -fall_gravity, -max_fall);
 
 }
 

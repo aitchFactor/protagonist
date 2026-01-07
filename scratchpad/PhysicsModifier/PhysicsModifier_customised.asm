@@ -65,7 +65,7 @@
 !accel_walk_s       =   $0080   ; Acceleration when walking in a slippery level with >
 !accel_run_s        =   $0180   ; Acceleration when running in a slippery level with > + X/Y
 
-!decel_still        =   $FFff   ; Deceleration on the ground with no directional input.
+!decel_still        =   $FF00   ; Deceleration on the ground with no directional input.
 !decel_walk         =   $FD80   ; Deceleration when reversing direction with <
 !decel_run          =   $FB00   ; Deceleration when reversing direction with < + X/Y
 !decel_walk_s       =   $FFC0   ; Deceleration when reversing direction in a slippery level with <

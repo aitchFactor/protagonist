@@ -79,31 +79,28 @@ func is_colliding(){
     return false;
 }
 
-# func accelerate (vx, ax, max = "Infinity"){
-#     local vx_2 = $vx + $ax;
+func accelerate (vx, ax, max = "Infinity") ContinuousVelocity{
+    local vx_2 = $vx + $ax;
 
-#     if abs(vx_2) > abs($max) {
-#         return abs($max) * sign_of(vx_2);
-#     }
-#     return vx_2;
-# }
+    if vx_2 * sign_of($max) > abs($max) {
+        vx_2 = $max;
+    }
+    return ContinuousVelocity{v0: $vx, v1: vx_2, dx: vx_2};
+}
 
 func accelerate_advanced (v, a, max = "Infinity") ContinuousVelocity {
     local saturation_delta_time = delta_time; # initial value means we don't know when velocity will max out.
     local v1 = $v + $a * delta_time;
 
-    if abs (v1) > abs($max) {
-        v1 = abs($max) * sign_of($a);
-    }
-
-    if abs(v1) == abs($max){
+    if v1 * sign_of($max) > abs($max) {
+        v1 = $max;
         saturation_delta_time = (v1 - $v) / $a; 
-
         # sat<0 -- saturation was reached in the past (slowly decelerate - TODO)
         # sat=0 -- saturation is happening now
         # 0<sat<delta_time -- saturation will occur during this frame
         # sat >= delta_time -- saturation will occur after this frame 
     }
+
 
     local t2 = saturation_delta_time;
     local dx = 0;
