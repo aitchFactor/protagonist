@@ -10,7 +10,13 @@ enum CollideAction {
     Squish,
     
 }
-
+# enum Direction {
+#     None,
+#     Up,
+#     Right,
+#     Down,
+#     Left
+# }
 struct Collision {
     wall,
     collider,
@@ -26,6 +32,9 @@ struct ContinuousVelocity {
 var ContinuousVelocity xvel;
 
 var ContinuousVelocity yvel;
+
+var last_collision_x;
+var last_collision_y;
 
 # var x_vel;
 # var y_vel;
@@ -49,6 +58,9 @@ proc actor_boot {
     yvel.v0 = 0;
     yvel.v1 = 0;
     yvel.dx = 0;
+
+    last_collision_x = 0;
+    last_collision_y = 0;
 
     # x_vel = 0;
     # y_vel = 0;
@@ -175,7 +187,7 @@ func decelerate_advanced (v, a, min = 0) ContinuousVelocity{
 
 
 
-proc on_collide axis, collide_action{
+proc on_collide sign, axis, collide_action{
     if $collide_action == CollideAction.Nothing{
         stop_this_script;
     }
@@ -184,15 +196,18 @@ proc on_collide axis, collide_action{
             xvel.v1 = 0;
             xvel.dx = xvel.v1 - xvel.v0;
             x_remainder = 0;
+            last_collision_x = $sign;
+            }
         }
         if $axis == Axes.y {
             yvel.v1 = 0;
             yvel.dx = yvel.v1 - yvel.v0;
             y_remainder = 0;
+            last_collision_y = $sign;
         }
     }
 
-}
+
 
 
 proc move_x dx = 0, on_collide_action = CollideAction.Stop{
@@ -211,7 +226,7 @@ proc move_x dx = 0, on_collide_action = CollideAction.Stop{
 
         if is_colliding(){
             set_x last_x;
-            on_collide  Axes.x,  $on_collide_action;
+            on_collide  sign, Axes.x,  $on_collide_action;
             if $on_collide_action != CollideAction.Nothing{
                 stop_this_script;
             }
@@ -237,7 +252,7 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
 
         if is_colliding(){
             set_y last_y;
-            on_collide  Axes.y,  $on_collide_action;
+            on_collide sign, Axes.y,  $on_collide_action;
             if $on_collide_action != CollideAction.Nothing{
                 stop_this_script;
             }
@@ -250,6 +265,9 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
 
 proc speedcaps{
     # cap and round velocity.
+
+    last_collision_x = 0;
+    last_collision_y = 0;
 
     xvel.v1 = round_16(xvel.v1);
     yvel.v1 = round_16(yvel.v1);

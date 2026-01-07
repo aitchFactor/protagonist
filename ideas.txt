@@ -81,3 +81,11 @@ act 4:
 - figure out how to scale jump force on x momentum
 
 - huge castle rising out of the ground gimmick
+
+"type mismatch: expected value, but got struct"
+    - means that a variable was assigned from the struct list without that variable also being declared as the same type.
+    
+    
+    known bugs:
+         animations are one frame delayed when transitioning.
+         landing while turning around breaks animations.

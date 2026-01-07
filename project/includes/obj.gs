@@ -19,6 +19,8 @@ var last_hurtbox; # hurtbox also means collision boxes.
 var state;
 
 var animation_counter;
+
+
 # var animation_start;
 proc sprite_boot {
     if true{
@@ -37,8 +39,8 @@ proc sprite_boot {
     animation_start = false;
     animation_play_state = AnimationPlayState{};
 
-    delete animations_queue;
-    delete animation_unpack_waiting_area;
+    delete animations_queue_header;
+    delete animations_queue_frames;
     delete current_animation_buffer;
 
     last_hurtbox = 0;
@@ -49,22 +51,21 @@ proc sprite_boot {
 }
 
 struct AnimationHeader {
+    num_pages, # total frames in the animation
     loop_start = -1, # relative to the frame block, not the costume number. (might change though)
     # TODO: loop end? outro?
     loop_mode = -1, # forwards or bidi 
     loops   =   0, # -1 = infinite
-    num_pages = 0, # total frames in the animation
-    priority = 1, # lower = plays first?
-    erase   = 0 # (do I need this?) clear this number of queued animations after playing; -1 = clear all 
 }
-list AnimationHeader animations_queue;
+
+list AnimationHeader animations_queue_header;
 
 struct AnimationFrame {
     costume_name,
     duration = 1,
-    flip = false
+    flip = false # note: this is very dodgy right now.
 }
-list AnimationFrame animation_unpack_waiting_area; # drop the AnimationFrames here to be unpacked.
+list AnimationFrame animations_queue_frames; # drop the AnimationFrames here to be unpacked.
 
 
 
@@ -74,65 +75,85 @@ struct AnimationPlayState {
 
     loop_start_frame = 0,
 
-    end_frame = "Infinity"
+    total_frames = "Infinity"
 }
 
 
 var AnimationPlayState animation_play_state;
 list current_animation_buffer;
-proc animation_player {
-    if animation_play_state.playing_time == 0{
-        # Unpack animation frames into a lookup table (binary search is probably worse due to JSON limits)
-        local i = 0;
-        local animation_header = animations_queue[1];
-        delete current_animation_buffer;
 
-        repeat length(animation_unpack_waiting_area){
+proc load_next_animation {
+    animation_counter = 0;
 
-            if i == animation_header.loop_start{
-                animation_play_state.loop_start_frame = length current_animation_buffer;
-            }
-
-            local animation_frame = animation_unpack_waiting_area[1];
-
-            repeat animation_frame.duration {
-                add animation_frame.costume_name to current_animation_buffer;
-                add animation_frame.flip to current_animation_buffer;
-            }
-            delete animation_unpack_waiting_area[1];
-
-            i++;
+    local AnimationHeader animation_header = animations_queue_header[1];
+    delete current_animation_buffer;
+    local i = 0;
+    repeat animation_header.num_pages{
+        
+        if i == animation_header.loop_start{
+            animation_play_state.loop_start_frame = length current_animation_buffer * 0.5;
         }
 
+        local AnimationFrame animation_frame = animations_queue_frames[i + 1];
 
-        if animation_header.loops < 0 {
-            animation_play_state.total_frames = "Infinity";
+        repeat animation_frame.duration {
+            add animation_frame.costume_name to current_animation_buffer;
+            add animation_frame.flip to current_animation_buffer;
         }
-        else {
-            local loop_length = (length current_animation_buffer) - animation_play_state.loop_start_frame;
-            animation_play_state.total_frames = animation_play_state.loop_start_frame + loop_length * (1 + animation_header.loops);
-        }
-
-
-
+        i++;
     }
-    local frame = ""
+
+
+    if animation_header.loops < 0 {
+        animation_play_state.total_frames = "Infinity";
+    }
+    else {
+        local loop_length = (length current_animation_buffer)*0.5 - animation_play_state.loop_start_frame;
+        animation_play_state.total_frames = animation_play_state.loop_start_frame + loop_length * (1 + animation_header.loops);
+    }
+}
+
+proc force_animation_refresh {
+    # Force an animation to play from the beginning.
+    animation_play_state = AnimationPlayState{};
+}
+
+proc animation_player {
+
+
+    if animation_play_state.playing_time == 0{
+        if length animations_queue_header == 0{
+            # There's nothing queued; don't play anything. 
+            stop_this_script;
+        }
+        load_next_animation;
+    }
+
+    local frame = "";
     local start = animation_play_state.loop_start_frame;
     if animation_counter < start{
         frame = animation_counter;
     }
     else{
-        local loop_length = (length current_animation_buffer) - start;
-        frame = start + ((animation_counter - start) % loop_length);
+        local loop_length = (length current_animation_buffer)*0.5 - start;
+        frame = start + (round(animation_counter - start) % loop_length);
 
     }
-    frame = round(frame)
-    switch_costume current_animation_buffer[frame + 1];
+    frame = round(frame);
+    switch_costume current_animation_buffer[(2 *frame) + 1];
+    # "Flip" parameter
+    if current_animation_buffer[(2 * frame) + 2] {
+        point_in_direction -direction();
+    }
+
 
     animation_play_state.playing_time += delta_time;
 
-    if animation_play_state.playing_time > animation_play {
-        delete animations_queue [1];
+    if animation_play_state.playing_time > animation_play_state.total_frames {
+        repeat animations_queue_header[1].num_pages{
+            delete animations_queue_frames[1];
+        }
+        delete animations_queue_header [1];
         animation_play_state = AnimationPlayState{};
         delete current_animation_buffer;
     }
@@ -140,12 +161,6 @@ proc animation_player {
 
 }
 
-
-proc animation_seek_frame {
-    # updates state to the frame that needs to be displayed now.
-    # This should be the next one but it could skip a few if the animation is fast.
-
-}
 
 on "boot"{
     sprite_boot;
@@ -183,5 +198,5 @@ on "tick_cosmetics"{
 }
 
 on "tick_animation"{
-
+    animation_player;
 }

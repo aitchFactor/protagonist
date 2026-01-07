@@ -24,7 +24,7 @@
 %define jump_incr  (2.5/16)
 
 %include includes/actor.gs
-%include gfx/ply/hal/costume-names.gs
+%include gfx/ply/hal/animation-data.gs
 %include includes/input-mapping.gs
 
 
@@ -91,33 +91,14 @@ proc state_machine new_state = "boot"{
     }
 
 
-    animation_counter = 0;
+    # animation_counter = 0;
     state = $new_state;
 
 
-    state_animation state;
+    local anim_name = state_animation (state);
 }
 
-proc state_animation state {
-    # library of every animation to play for each state.
-    # TODO: convert to real parsing 
 
-    if "play" in $state {
-        if "ground" in $state {
-            if "skid" in $state{
-                stop_this_script;
-            }
-
-            stop_this_script;
-        }
-        if "air" in $state {
-            
-            stop_this_script;
-        }
-
-        stop_this_script;
-    }
-}
 
 
 proc x_control{
@@ -128,14 +109,15 @@ proc x_control{
     
 }
 proc hal_x_control {
-    if "ground" in state{
-        state_machine ("play.ground");
-    }
+    # if "ground" in state{
+    #     state_machine ("play.ground");
+    # }
 
 
     if ctrl_left > 0 {
         if xvel.v1 <= 0 {
             xvel = accelerate_advanced(xvel.v1, -accel_run, -max_run);
+            state_machine ("play.ground.walk.L");
         }
         else {
             xvel = accelerate_advanced(xvel.v1, -decel_run, -max_run);
@@ -147,6 +129,7 @@ proc hal_x_control {
         if ctrl_right > 0 {
             if xvel.v1 >= 0 {
                 xvel = accelerate_advanced(xvel.v1, accel_run, max_run);
+                state_machine ("play.ground.walk.R");
 
             }
             else {
@@ -156,7 +139,7 @@ proc hal_x_control {
         }
         else{
             xvel = decelerate_advanced(xvel.v1, decel_still);
-            
+            state_machine ("play.ground.idle");
         }
     }
 }
@@ -168,10 +151,10 @@ proc y_control{
     grounded = is_colliding();
     set_y last_y;
     
-    if grounded and "air" in state {
+    if grounded and not ("ground" in state) {
         state_machine ("play.ground");
     }
-    if not grounded and "ground" in state {
+    if not grounded and not ("air" in state) {
         state_machine ("play.air");
     }
 
@@ -185,7 +168,11 @@ proc hal_y_control {
     if grounded {
         if ctrl_a > 0 and ctrl_a <= ceil(2 / delta_time) {
             yvel.v1 = jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
+            state_machine ("play.air.up");
+            grounded = false;
         }
+        
+
     }
 
     local gravity = fall_gravity;
@@ -198,26 +185,31 @@ proc hal_y_control {
 
 
 var walk_counter;
+var blink_time;
 
 proc ground_animation{
-    if xvel.v1 == 0 or "skid" in state {
-        if animation_counter == 0{
-            # add animation here.
+    if state == "play.ground.idle"{
+        if animation_counter > 47 and animation_counter % 48 < delta_time{
+            if random(0, 1) == 0{
+                force_animation_refresh;
+            }
         }
     }
-    else {
-        if animation_counter == 0{
-            # add animation here.
-        }
+
+
+
+    if "walk" in state {
         animation_counter += abs(xvel.dx); # dx is scaled by delta_time already.
         point_in_direction (90 * sign_of(xvel.dx));
         stop_this_script; # avoid animation counting.
     }
 
+
     animation_counter += delta_time;
 }
 
 proc air_animation{
+    # something like a ceiling bonk animation might need some more thinking.
     if yvel.v1 > 0 {
         state_machine ("play.air.up");
 
@@ -241,6 +233,8 @@ proc air_animation{
 proc animation_timing{
     # If any animations have their animation tied to something, it's controlled here. 
     # But because I haven't completely figured this system out yet, this proc also has some state changes. 
+
+
 
     if "ground" in state or "skid" in state{
         ground_animation;
