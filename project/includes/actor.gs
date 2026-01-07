@@ -1,6 +1,8 @@
 %include includes/utils.gs
 %include includes/sprite.gs
 
+var SPRITE_NAME = "Unnamed Actor";
+
 # anything that has physics in the game world and collides with solids.
 enum CollideAction {
     Nothing,
@@ -62,7 +64,7 @@ func get_colliding() Solid{
     local i = 0;
     repeat length Solids {
         i++;
-        if touching(Solids[i].name){
+        if touching(Solids[i].raw_name){
             return Solids[i];
         }
     }
@@ -71,7 +73,7 @@ func get_colliding() Solid{
 func is_colliding(){
     Solid result = get_colliding();
 
-    if result.name != ""{
+    if result.raw_name != ""{
         return true;
     }
     return false;
@@ -207,7 +209,7 @@ proc move_x dx = 0, on_collide_action = CollideAction.Stop{
     sign = sign_of(dx_rounded);
 
     repeat (abs(dx_rounded)){
-        local last_x = x_position;
+        local last_x = x_position();
         change_x sign;
 
         if is_colliding(){
@@ -233,7 +235,7 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
     sign = sign_of(dy_rounded);
 
     repeat (abs(dy_rounded)){
-        local last_y = y_position;
+        local last_y = y_position();
         change_y sign;
 
         if is_colliding(){
@@ -290,6 +292,6 @@ proc actor_tick{
 
 # Note: remember to call the actor tick in an instantiated actor.
 
-# on "tick_101"{
-#     actor_tick;
-# }
+on "tick_108"{
+    actor_tick;
+}

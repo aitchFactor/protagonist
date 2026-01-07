@@ -53,8 +53,7 @@ proc loop {
 
   ### solids ticks (collisions with actors)
   broadcast "tick_001";
-  broadcast "tick_002";
-  broadcast "tick_003"; 
+  broadcast "tick_008";
 
   ### actor tick (collisions with solids)
   broadcast "tick_101";
@@ -79,3 +78,6 @@ proc loop {
   broadcast "tick_debug_last";
 }
 
+on "tick_000"{
+  delete Solids;
+}

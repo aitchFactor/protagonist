@@ -46,9 +46,6 @@ on "boot"{
 on "tick_zsort" {
     sort_depth z_position, false;
 }
-on "tick_display"{
-    
-}
 
 on "tick_000"{
     switch_costume last_hurtbox;
@@ -62,8 +59,8 @@ on "tick_display"{
     # round the "true" positional values to smooth out floating point error
     x_position = round_16(x_position() - x_scroll);
     y_position = round_16(y_position() - y_scroll);
-    x_scroll = round_16(x_position);
-    y_scroll = round_16(y_position);
+    x_scroll = round_16(x_scroll);
+    y_scroll = round_16(y_scroll);
 
 
     set_size 800;

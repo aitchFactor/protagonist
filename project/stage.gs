@@ -27,7 +27,8 @@ list hitboxes;
 list hurtboxes;
 
 struct Solid{
-    name    = "",
+    raw_name    = "",
+    clone_name = "",
     prop1   = -1,
     prop2   = -1,
     prop3   = -1,

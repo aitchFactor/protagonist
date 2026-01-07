@@ -27,12 +27,13 @@ var SPRITE_NAME = "Player";
 proc boot{
     switch_costume FR_STAND;
     last_hurtbox = "hbox_stand";
+    x_position = -32;
 
 }
 proc player_tick{
     x_control;
     y_control;
-    actor_physics;
+    # actor_physics;
 
 }
 
@@ -77,4 +78,5 @@ on "boot"{
 on "tick_101"{
     player_tick;
 }
+
 #idea: pack tile info into "touching colour" block
