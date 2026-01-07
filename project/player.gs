@@ -53,7 +53,7 @@ proc boot{
     walk_counter = 0;
     grounded = 0;
     set_rotation_style_left_right;
-    state_machine("play")
+    state_machine("play");
 
 }
 proc player_tick{
@@ -64,6 +64,11 @@ proc player_tick{
 }
 
 proc state_machine new_state = "boot"{
+    # Change the player state, necessary for any time when gameplay is different (ie, can't jump in air).
+    # States can be changed during the control or cosmetic phases, or by cutscenes.
+    # In this function, you can change which states are allowed to transition to which.
+    # If the state changes, the animation for that state will be played.
+
     if state == $new_state {
         stop_this_script;
     }
@@ -88,6 +93,30 @@ proc state_machine new_state = "boot"{
 
     animation_counter = 0;
     state = $new_state;
+
+
+    state_animation state;
+}
+
+proc state_animation state {
+    # library of every animation to play for each state.
+    # TODO: convert to real parsing 
+
+    if "play" in $state {
+        if "ground" in $state {
+            if "skid" in $state{
+                stop_this_script;
+            }
+
+            stop_this_script;
+        }
+        if "air" in $state {
+            
+            stop_this_script;
+        }
+
+        stop_this_script;
+    }
 }
 
 
@@ -151,6 +180,7 @@ proc y_control{
 }
 
 proc hal_y_control {
+    # Halli's physics, which he gained by eating some kind of hollow pebble that had paper sticking to it.
     # make sure velocity changes come before gravity/accelerating forces.
     if grounded {
         if ctrl_a > 0 and ctrl_a <= ceil(2 / delta_time) {
@@ -188,13 +218,15 @@ proc ground_animation{
 }
 
 proc air_animation{
-    local number = 0;
     if yvel.v1 > 0 {
-        number = 25; 
+        state_machine ("play.air.up");
+
     }
     else {
-        number = 26;
+        state_machine ("play.air.down");
     }
+
+
     if ctrl_right > 0 {
 
         point_in_direction (90);
@@ -202,18 +234,21 @@ proc air_animation{
     if ctrl_left > 0 {
         point_in_direction (-90);
     }
-    switch_costume number;
+
+    animation_counter += delta_time;
 }
 
-proc animation{
-    
-
+proc animation_timing{
+    # If any animations have their animation tied to something, it's controlled here. 
+    # But because I haven't completely figured this system out yet, this proc also has some state changes. 
 
     if "ground" in state or "skid" in state{
         ground_animation;
+        stop_this_script;
     }
     if "air" in state{
         air_animation;
+        stop_this_script;
     }
 
 }
@@ -231,6 +266,6 @@ on "tick_101"{
 }
 
 on "tick_cosmetics"{
-    animation;
+    animation_timing;
 }
 #idea: pack tile info into "touching colour" block

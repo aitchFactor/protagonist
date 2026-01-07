@@ -64,7 +64,8 @@ proc loop {
   broadcast "tick_202";
   broadcast "tick_203";
 
-  broadcast "tick_cosmetics";     # animation, decorative effects
+  broadcast "tick_cosmetics";     # animation timing, decorative effects
+  broadcast "tick_animation";     # execute animation player
   broadcast "tick_display";       # set positional offsets, scrolling. and scale
   
 

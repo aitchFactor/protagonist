@@ -1,5 +1,5 @@
 # anything that is collidable.
-%include includes/sprite.gs
+%include includes/obj.gs
 var SPRITE_NAME = "Unnamed Solid";
 
 proc solid_tick{

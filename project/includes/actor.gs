@@ -1,5 +1,5 @@
 %include includes/utils.gs
-%include includes/sprite.gs
+%include includes/obj.gs
 
 var SPRITE_NAME = "Unnamed Actor";
 
