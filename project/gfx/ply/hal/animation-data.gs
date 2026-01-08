@@ -42,17 +42,42 @@ proc anim_air_down {
     one_frame "halli-jump-v01a_3";
 }
 
-
-proc anim_walk {
+proc anim_walk_step {
     # Header
     add AnimationHeader {
-        num_pages: 6,
-        loop_start: 2,
-        loops: -1
+        num_pages: 2,
+        loop_start: 0,
+        loops: 0
     }   to animations_queue_header;
     # Frames
     add AnimationFrame {costume_name: "halli-walk-v01a_2",      duration: 4,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "halli-walk-v01a_3",      duration: 7,   flip: false } to animations_queue_frames;
+
+}
+proc anim_walk_fromskid {
+    # Header
+    add AnimationHeader {
+        num_pages: 5,
+        loop_start: 0,
+        loops: 0
+    }   to animations_queue_header;
+    # Frames
+    add AnimationFrame {costume_name: "halli-walk-v01a_3",      duration: 5,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_4",      duration: 6,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_5",      duration: 7,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_6",      duration: 8,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_7",      duration: 9,    flip: false } to animations_queue_frames;
+
+}
+
+proc anim_walk {
+    # Header
+    add AnimationHeader {
+        num_pages: 4,
+        loop_start: 0,
+        loops: -1
+    }   to animations_queue_header;
+    # Frames
     add AnimationFrame {costume_name: "halli-walk-v01a_4",      duration: 10,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "halli-walk-v01a_5",      duration: 10,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "halli-walk-v01a_6",      duration: 10,    flip: false } to animations_queue_frames;
@@ -70,7 +95,7 @@ proc anim_skid {
     add AnimationFrame {costume_name: "halli-walk-v01a_9",      duration: 3,    flip: true } to animations_queue_frames;
 }
 
-func state_animation(state) {
+func state_animation(state, last_state) {
     # library of every animation to play for each state.
     # TODO: convert to real parsing 
 
@@ -92,7 +117,16 @@ func state_animation(state) {
                 anim_jumpsquat;
                 return "anim_jumpsquat";
             }
-            if "walk"       in $state {
+            if "walk"  in $state {
+                if "air" in $last_state{
+                    anim_walk_fromskid;
+                }
+                if "skid" in $last_state{
+                    anim_walk_fromskid;
+                }
+                if "idle" in $last_state{
+                    anim_walk_step;
+                }
                 anim_walk;
                 return "anim_walk";
             }

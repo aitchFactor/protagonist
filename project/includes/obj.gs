@@ -152,13 +152,16 @@ proc animation_player {
 
     animation_play_state.playing_time += delta_time;
 
-    if animation_play_state.playing_time > animation_play_state.total_frames {
+    if animation_counter > animation_play_state.total_frames {
         repeat animations_queue_header[1].num_pages{
             delete animations_queue_frames[1];
         }
         delete animations_queue_header [1];
         animation_play_state = AnimationPlayState{};
         delete current_animation_buffer;
+
+        # recursive call 
+        animation_player;
     }
     
 
