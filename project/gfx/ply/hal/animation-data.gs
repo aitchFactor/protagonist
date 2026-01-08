@@ -22,12 +22,12 @@ proc anim_idle {
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "halli-stand-v01a_4",     duration: 4,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01a_1",     duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01a_2",     duration: 12,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01a_3",     duration: 11,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01a_2",     duration: 12,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01a_1",     duration: 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_4",     duration: 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_1",     duration: 8,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_2",     duration: 12,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_3",     duration: 12,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_2",     duration: 12,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_1",     duration: 4,    flip: false } to animations_queue_frames;
 }
 
 proc anim_jumpsquat {
@@ -118,6 +118,11 @@ func state_animation(state, last_state) {
         force_animation_refresh;
         delete animations_queue_header;
         delete animations_queue_frames;
+        
+        if "jumpsquat"  in $state {
+            anim_jumpsquat;
+            return "anim_jumpsquat";
+        }
 
         if "ground" in $state {
             if "skid"       in $state{
@@ -128,10 +133,7 @@ func state_animation(state, last_state) {
                 anim_idle;
                 return "anim_idle";
             }
-            if "jumpsquat"  in $state {
-                anim_jumpsquat;
-                return "anim_jumpsquat";
-            }
+            
             if "walk"  in $state {
                 if "air" in $last_state{
                     anim_walk_fromskid;

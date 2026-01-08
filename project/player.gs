@@ -46,6 +46,7 @@ var SPRITE_NAME = "Player";
 # var skid = 0;
 
 var jump_hold;
+var jump_buffered;
 
 proc boot{
     switch_costume FR_STAND;
@@ -56,6 +57,7 @@ proc boot{
     walk_counter = 0;
     grounded = 0;
     jump_hold = 0;
+    jump_buffered = 0;
     set_rotation_style_left_right;
     state_machine("play");
 
@@ -202,6 +204,10 @@ proc y_control move = true{
 
 }
 
+func jump_is_buffered(){
+    return ctrl_a > 0 and ctrl_a <= ceil(2 / delta_time);
+}
+
 proc hal_y_control move = true {
     # Halli's physics, which he gained by eating some kind of hollow pebble that had paper sticking to it.
     # make sure velocity changes come before gravity/accelerating forces.
@@ -216,7 +222,7 @@ proc hal_y_control move = true {
 
     if grounded {
         jump_hold = 0;
-        if ctrl_a > 0 and ctrl_a <= ceil(2 / delta_time) {
+        if ctrl_a > 0 and (jump_is_buffered() or jump_buffered) {
             ### jump
             if $move{
                 yvel.v1 = jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
@@ -225,6 +231,7 @@ proc hal_y_control move = true {
             grounded = false;
             jump_hold = 1;
         }
+        jump_buffered = 0;
         
 
     }
@@ -265,12 +272,15 @@ proc ground_animation{
 
 proc air_animation{
     # something like a ceiling bonk animation might need some more thinking.
-    if yvel.v1 > 0 {
-        state_machine ("play.air.up");
+    if not jump_buffered {
+        if yvel.v1 > 0 {
+            state_machine ("play.air.up");
 
-    }
-    else {
-        state_machine ("play.air.down");
+        }
+        else {
+            state_machine ("play.air.down");
+        }
+
     }
 
 
@@ -318,6 +328,14 @@ on "tick_cosmetics"{
     animation_timing;
 
 
+}
+
+on "tick_108" {
+    # this is a special case where the animation needs to happen instantly - no 1-frame delayed state change.
+    if jump_is_buffered() and collision_y == -1 {
+        jump_buffered = true;
+        state_machine ("play.air.jumpsquat");
+    }
 }
 
 on "tick_display"{

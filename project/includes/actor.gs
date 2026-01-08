@@ -34,8 +34,8 @@ var ContinuousVelocity xvel;
 
 var ContinuousVelocity yvel;
 
-var last_collision_x;
-var last_collision_y;
+var collision_x;
+var collision_y;
 
 
 
@@ -57,8 +57,9 @@ proc actor_boot {
     xvel = ContinuousVelocity{};
     yvel = ContinuousVelocity{};
 
-    last_collision_x = 0;
-    last_collision_y = 0;
+    collision_x
+ = 0;
+    collision_y = 0;
 
     # x_vel = 0;
     # y_vel = 0;
@@ -200,7 +201,8 @@ proc on_collide sign, axis, collide_action{
             xvel.v1 = 0;
             xvel.dx = xvel.v1 - xvel.v0;
             x_remainder = 0;
-            last_collision_x = $sign;
+            collision_x
+         = $sign;
             }
         }
         if $axis == Axes.y {
@@ -208,7 +210,7 @@ proc on_collide sign, axis, collide_action{
             yvel.v1 = 0;
             yvel.dx = yvel.v1 - yvel.v0;
             y_remainder = 0;
-            last_collision_y = $sign;
+            collision_y = $sign;
         }
     }
 
@@ -271,8 +273,9 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
 proc speedcaps{
     # cap and round velocity.
 
-    last_collision_x = 0;
-    last_collision_y = 0;
+    collision_x
+ = 0;
+    collision_y = 0;
 
     xvel.v1 = round_16(xvel.v1);
     yvel.v1 = round_16(yvel.v1);

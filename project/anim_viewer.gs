@@ -15,8 +15,10 @@ on "tick_cosmetics"{
 }
 
 on "set_debug_options"{
-    G_game_state = "animviewer";
+    # G_game_state = "animviewer";
 
+
+    ### add animations here...
     anim_spin;
 
 }
