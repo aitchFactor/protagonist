@@ -316,5 +316,16 @@ on "tick_101"{
 
 on "tick_cosmetics"{
     animation_timing;
+
+
+}
+
+on "tick_display"{
+    if G_game_state == "play"{
+        show;
+    }
+    if G_game_state == "animviewer"{
+        hide;
+    }
 }
 #idea: pack tile info into "touching colour" block

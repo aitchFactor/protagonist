@@ -82,6 +82,8 @@ act 4:
 
 - huge castle rising out of the ground gimmick
 
+- include sounds as part of animation data?
+
 "type mismatch: expected value, but got struct"
     - means that a variable was assigned from the struct list without that variable also being declared as the same type.
     
@@ -96,3 +98,4 @@ act 4:
 
 tips:
     - when changing a function/proc, make sure you check every existing instance of it.
+    

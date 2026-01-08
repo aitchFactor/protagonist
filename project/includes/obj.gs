@@ -51,6 +51,8 @@ proc sprite_boot {
     last_hurtbox = 0;
     set_size 100;
 
+    set_rotation_style_left_right;
+
     state = "boot";
     
 }

@@ -40,34 +40,37 @@ proc boot {
   ctrl_start = 0;
 
   broadcast_and_wait "boot";
+  G_game_state = "play";
+
+  broadcast_and_wait "set_debug_options";
 
 }
 
 proc loop {
+
   broadcast "tick_debug_first";
   broadcast "tick_readinput";
+  if G_game_state == "play"{
+    ### restore game state to backend mode (scale, subpixels, hitbox modes)
+    broadcast "tick_000";
 
+    ### solids ticks (collisions with actors)
+    broadcast "tick_001";
+    broadcast "tick_008";
 
-  ### restore game state to backend mode (scale, subpixels, hitbox modes)
-  broadcast "tick_000";
-
-  ### solids ticks (collisions with actors)
-  broadcast "tick_001";
-  broadcast "tick_008";
-
-  ### actor tick (collisions with solids)
-  broadcast "tick_101";
-  broadcast "tick_108";
-  
-  ### post actor ticks: resolve actor-to-actor collisions
-  broadcast "tick_201";
-  broadcast "tick_202";
-  broadcast "tick_203";
+    ### actor tick (collisions with solids)
+    broadcast "tick_101";
+    broadcast "tick_108";
+    
+    ### post actor ticks: resolve actor-to-actor collisions
+    broadcast "tick_201";
+    broadcast "tick_202";
+    broadcast "tick_203";
+  }
 
   broadcast "tick_cosmetics";     # animation timing, decorative effects
   broadcast "tick_animation";     # execute animation player
   broadcast "tick_display";       # set positional offsets, scrolling. and scale
-  
 
   broadcast "tick_zsort";         # execution order of sprites/clones for other broadcasts is undefined, so be careful.
 

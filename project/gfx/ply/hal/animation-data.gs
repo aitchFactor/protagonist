@@ -95,6 +95,21 @@ proc anim_skid {
     add AnimationFrame {costume_name: "halli-walk-v01a_9",      duration: 3,    flip: true } to animations_queue_frames;
 }
 
+# note: spin is always clockwise regardless of direction.
+proc anim_spin {
+    add AnimationHeader {
+        num_pages: 4,
+        loop_start: 0,
+        loops: -1
+    }   to animations_queue_header;
+    # Frames
+    add AnimationFrame {costume_name: "halli-jump-v01a_5",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-jump-v01a_6",      duration: 2,    flip: true } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-jump-v01a_7",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-jump-v01a_6",      duration: 2,    flip: false } to animations_queue_frames;
+
+}
+
 func state_animation(state, last_state) {
     # library of every animation to play for each state.
     # TODO: convert to real parsing 
