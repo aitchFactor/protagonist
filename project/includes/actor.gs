@@ -26,7 +26,8 @@ var CollideAction_param = -1;
 struct ContinuousVelocity {
     v0 = 0, # velocity at frame start (unused, and editing this should do nothing)
     v1 = 0, # velocity at frame end
-    dx = 0  # integrated
+    dx = 0, # integrated
+    a  = 0, # acceleration (accumulate per frame)
 }
 
 var ContinuousVelocity xvel;
@@ -35,6 +36,8 @@ var ContinuousVelocity yvel;
 
 var last_collision_x;
 var last_collision_y;
+
+
 
 # var x_vel;
 # var y_vel;
@@ -51,13 +54,8 @@ on "boot" {
 proc actor_boot {
     # sprite boot exists as a different script as well.
     CollideAction_param = -1;
-    xvel.v0 = 0;
-    xvel.v1 = 0;
-    xvel.dx = 0;
-
-    yvel.v0 = 0;
-    yvel.v1 = 0;
-    yvel.dx = 0;
+    xvel = ContinuousVelocity{};
+    yvel = ContinuousVelocity{};
 
     last_collision_x = 0;
     last_collision_y = 0;
@@ -91,16 +89,16 @@ func is_colliding(){
     return false;
 }
 
-func accelerate (vx, ax, max = "Infinity") ContinuousVelocity{
+func accelerate (vx, ax, accumulated_ax, max = "Infinity") ContinuousVelocity{
     local vx_2 = $vx + $ax;
 
     if vx_2 * sign_of($max) > abs($max) {
         vx_2 = $max;
     }
-    return ContinuousVelocity{v0: $vx, v1: vx_2, dx: vx_2};
+    return ContinuousVelocity{v0: $vx, v1: vx_2, dx: vx_2, a: $accumulated_ax + (vx_2 - $vx)};
 }
 
-func accelerate_advanced (v, a, max = "Infinity") ContinuousVelocity {
+func accelerate_advanced (v, a, accumulated_a, max = "Infinity") ContinuousVelocity {
     local saturation_delta_time = delta_time; # initial value means we don't know when velocity will max out.
     local v1 = $v + $a * delta_time;
 
@@ -127,16 +125,19 @@ func accelerate_advanced (v, a, max = "Infinity") ContinuousVelocity {
         dx = ($v + v1) * 0.5 * delta_time;
     }
 
-    return ContinuousVelocity{v0: $v, v1: v1, dx: dx};
+    local effective_a = (v1 - $v) / delta_time;
+
+    return ContinuousVelocity{v0: $v, v1: v1, dx: dx, a: $accumulated_a + effective_a};
 }
 
-func decelerate_advanced (v, a, min = 0) ContinuousVelocity{
+func decelerate_advanced (v, a, accumulated_a, min = 0) ContinuousVelocity{
     # Return a velocity slowed down by some acceleration amount. 
     # The deceleration is always the same sign as the inputted vx.
     # Examples:
     # decelerate (1, -0.5) -> 0.5
     # decelerate (1, 0.5) -> 0.5
-    # decelerate (-1, -2, -0.3) -> 0.3
+    # decelerate (-1, -2, min = -0.3) -> 0.3
+    # decelerate (1, -2, min = 0) -> 0 
     local v_ = abs($v);
     local a_ = abs($a);
     local stop_delta_time = delta_time;
@@ -163,7 +164,9 @@ func decelerate_advanced (v, a, min = 0) ContinuousVelocity{
         dx = (v_ + v1) * 0.5 * sign_of($v) * delta_time;
     }
 
-    return ContinuousVelocity{v0: $v, v1: v1 * sign_of($v), dx: dx};
+    local effective_a = (v1 - $v) / delta_time;
+
+    return ContinuousVelocity{v0: $v, v1: v1 * sign_of($v), dx: dx, a: $accumulated_a + effective_a};
 }
 
 # func decelerate (vx, ax, min = 0){
@@ -193,6 +196,7 @@ proc on_collide sign, axis, collide_action{
     }
     if $collide_action == CollideAction.Stop{
         if $axis == Axes.x {
+            xvel.a -= xvel.v1;
             xvel.v1 = 0;
             xvel.dx = xvel.v1 - xvel.v0;
             x_remainder = 0;
@@ -200,6 +204,7 @@ proc on_collide sign, axis, collide_action{
             }
         }
         if $axis == Axes.y {
+            yvel.a -= yvel.v1;
             yvel.v1 = 0;
             yvel.dx = yvel.v1 - yvel.v0;
             y_remainder = 0;
@@ -306,6 +311,11 @@ proc actor_tick{
 }
 
 # Note: remember to call the actor tick in an instantiated actor.
+
+on "tick_000"{
+    xvel.a = 0;
+    yvel.a = 0;
+}
 
 on "tick_108"{
     actor_tick;

@@ -85,7 +85,14 @@ act 4:
 "type mismatch: expected value, but got struct"
     - means that a variable was assigned from the struct list without that variable also being declared as the same type.
     
-    
+
     known bugs:
          animations are one frame delayed when transitioning.
          landing while turning around breaks animations.
+        
+        walking into a wall causes direction flicker.
+
+
+
+tips:
+    - when changing a function/proc, make sure you check every existing instance of it.

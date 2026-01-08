@@ -53,10 +53,10 @@ proc anim_walk {
     # Frames
     add AnimationFrame {costume_name: "halli-walk-v01a_2",      duration: 4,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "halli-walk-v01a_3",      duration: 7,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_4",      duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_5",      duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_6",      duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_7",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_4",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_5",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_6",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_7",      duration: 10,    flip: false } to animations_queue_frames;
 
 }
 
@@ -66,8 +66,8 @@ proc anim_skid {
         loop_start: 0,
         loops: -1
     }   to animations_queue_header;
-    add AnimationFrame {costume_name: "halli-walk-v01a_8",      duration: 3,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_9",      duration: 3,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_8",      duration: 3,    flip: true } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01a_9",      duration: 3,    flip: true } to animations_queue_frames;
 }
 
 func state_animation(state) {

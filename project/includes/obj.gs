@@ -20,6 +20,8 @@ var state;
 
 var animation_counter;
 
+var this_direction;
+
 
 # var animation_start;
 proc sprite_boot {
@@ -31,6 +33,9 @@ proc sprite_boot {
     x_position = 0;
     y_position = 0;
     z_position = 0;
+
+    this_direction = 90;
+    
 
     x_scroll = 0;
     y_scroll = 0;
@@ -117,7 +122,7 @@ proc force_animation_refresh {
     # Force an animation to play from the beginning.
     animation_play_state = AnimationPlayState{};
 }
-
+var flipped;
 proc animation_player {
 
 
@@ -142,9 +147,7 @@ proc animation_player {
     frame = round(frame);
     switch_costume current_animation_buffer[(2 *frame) + 1];
     # "Flip" parameter
-    if current_animation_buffer[(2 * frame) + 2] {
-        point_in_direction -direction();
-    }
+    flipped = current_animation_buffer[(2 * frame) + 2];
 
 
     animation_play_state.playing_time += delta_time;
@@ -184,6 +187,8 @@ on "tick_display"{
     y_position = round_16(y_position() - y_scroll);
     x_scroll = round_16(x_scroll);
     y_scroll = round_16(y_scroll);
+
+    point_in_direction this_direction * (-bool_to_sign(flipped));
 
 
     set_size 800;

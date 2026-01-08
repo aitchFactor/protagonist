@@ -40,16 +40,15 @@ costumes
 
 var SPRITE_NAME = "Player";
 
-var airborne = 0;
-var skid = 0;
+# var airborne = 0;
+# var skid = 0;
 
 proc boot{
     switch_costume FR_STAND;
     last_hurtbox = "hbox_stand";
     x_position = -32;
     y_position = 180;
-    airborne = 0;
-    skid = 0;
+    this_direction = 90;
     walk_counter = 0;
     grounded = 0;
     set_rotation_style_left_right;
@@ -69,6 +68,8 @@ proc state_machine new_state = "boot"{
     # In this function, you can change which states are allowed to transition to which.
     # If the state changes, the animation for that state will be played.
 
+    ### gates ###
+
     if state == $new_state {
         stop_this_script;
     }
@@ -81,6 +82,7 @@ proc state_machine new_state = "boot"{
     # ground -> skid and vice versa
     if "ground" in state or "skid" in state {
         ## no restrictions yet
+
     }
 
     # air ignores skid
@@ -96,19 +98,28 @@ proc state_machine new_state = "boot"{
 
 
     local anim_name = state_animation (state);
+
+    ### effects ###
+
+    if ".L" in state {
+        this_direction = -90;
+    }
+    if ".R" in state {
+        this_direction = 90;
+    }
 }
 
 
 
 
-proc x_control{
+proc x_control move = true{
 
-    hal_x_control;
+    hal_x_control $move;
 
 
     
 }
-proc hal_x_control {
+proc hal_x_control move = true {
     # if "ground" in state{
     #     state_machine ("play.ground");
     # }
@@ -116,11 +127,15 @@ proc hal_x_control {
 
     if ctrl_left > 0 {
         if xvel.v1 <= 0 {
-            xvel = accelerate_advanced(xvel.v1, -accel_run, -max_run);
+            if $move {
+                xvel = accelerate_advanced(xvel.v1, -accel_run, xvel.a, -max_run);
+            }
             state_machine ("play.ground.walk.L");
         }
         else {
-            xvel = accelerate_advanced(xvel.v1, -decel_run, -max_run);
+            if $move {
+                xvel = accelerate_advanced(xvel.v1, -decel_run, xvel.a, -max_run);
+            }
 
             state_machine ("play.ground.skid.L");
         }
@@ -128,23 +143,32 @@ proc hal_x_control {
     else{
         if ctrl_right > 0 {
             if xvel.v1 >= 0 {
-                xvel = accelerate_advanced(xvel.v1, accel_run, max_run);
+                if $move{
+                    xvel = accelerate_advanced(xvel.v1, accel_run, xvel.a, max_run);
+                }
                 state_machine ("play.ground.walk.R");
 
             }
             else {
-                xvel = accelerate_advanced(xvel.v1, decel_run, max_run);
+                if $move {
+                    xvel = accelerate_advanced(xvel.v1, decel_run, xvel.a, max_run);
+                }
                 state_machine ("play.ground.skid.R");
             }
         }
         else{
-            xvel = decelerate_advanced(xvel.v1, decel_still);
-            state_machine ("play.ground.idle");
+            if $move {
+                xvel = decelerate_advanced(xvel.v1, decel_still, xvel.a);
+            }
+            if xvel.v1 == 0 {
+                state_machine ("play.ground.idle");
+            }
+            
         }
     }
 }
 var grounded; 
-proc y_control{
+proc y_control move = true{
     # dirty grounded check... don't tell anyone about this...
     last_y = y_position;
     change_y -1;
@@ -158,16 +182,18 @@ proc y_control{
         state_machine ("play.air");
     }
 
-    hal_y_control;
+    hal_y_control $move;
 
 }
 
-proc hal_y_control {
+proc hal_y_control move = true {
     # Halli's physics, which he gained by eating some kind of hollow pebble that had paper sticking to it.
     # make sure velocity changes come before gravity/accelerating forces.
     if grounded {
         if ctrl_a > 0 and ctrl_a <= ceil(2 / delta_time) {
-            yvel.v1 = jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
+            if $move{
+                yvel.v1 = jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
+            }
             state_machine ("play.air.up");
             grounded = false;
         }
@@ -175,11 +201,13 @@ proc hal_y_control {
 
     }
 
-    local gravity = fall_gravity;
-    if ctrl_a > 0{
-        gravity = jump_gravity;
+    if $move {
+        local gravity = fall_gravity;
+        if ctrl_a > 0{
+            gravity = jump_gravity;
+        }
+        yvel = accelerate_advanced(yvel.v1, -gravity, yvel.a, -max_fall);
     }
-    yvel = accelerate_advanced(yvel.v1, -gravity, -max_fall);
 }
 
 
@@ -199,8 +227,7 @@ proc ground_animation{
 
 
     if "walk" in state {
-        animation_counter += abs(xvel.dx); # dx is scaled by delta_time already.
-        point_in_direction (90 * sign_of(xvel.dx));
+        animation_counter += abs(xvel.dx);
         stop_this_script; # avoid animation counting.
     }
 
@@ -221,10 +248,10 @@ proc air_animation{
 
     if ctrl_right > 0 {
 
-        point_in_direction (90);
+        this_direction = (90);
     }
     if ctrl_left > 0 {
-        point_in_direction (-90);
+        this_direction = (-90);
     }
 
     animation_counter += delta_time;
