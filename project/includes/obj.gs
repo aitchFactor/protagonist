@@ -125,8 +125,8 @@ proc force_animation_refresh {
     animation_play_state = AnimationPlayState{};
 }
 var flipped;
-proc animation_player {
 
+proc animation_player {
 
     if animation_play_state.playing_time == 0{
         if length animations_queue_header == 0{
@@ -154,7 +154,7 @@ proc animation_player {
 
     animation_play_state.playing_time += delta_time;
 
-    if animation_counter > animation_play_state.total_frames {
+    if animation_counter >= animation_play_state.total_frames {
         repeat animations_queue_header[1].num_pages{
             delete animations_queue_frames[1];
         }
@@ -166,6 +166,18 @@ proc animation_player {
         animation_player;
     }
     
+
+}
+
+proc one_frame costume_name {
+    # Header
+    add AnimationHeader {
+        num_pages: 1,
+        loop_start: 0,
+        loops: -1
+    }   to animations_queue_header;
+    # Frames
+    add AnimationFrame {costume_name: $costume_name,            duration: 1,    flip: false  } to animations_queue_frames;
 
 }
 

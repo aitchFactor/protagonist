@@ -3,19 +3,7 @@
 %include gfx/ply/hal/costume-names.gs
 sounds "snd/*.wav";
 
-proc one_frame costume_name {
-    # Header
-    add AnimationHeader {
-        num_pages: 1,
-        loop_start: 0,
-        loops: -1
-    }   to animations_queue_header;
-    # Frames
-    add AnimationFrame {costume_name: $costume_name,            duration: 1,    flip: false  } to animations_queue_frames;
-
-}
-
-proc anim_idle {
+proc hal_anim_idle {
     # Header
     add AnimationHeader {
         num_pages: 6,
@@ -23,28 +11,28 @@ proc anim_idle {
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "halli-stand-v01b_4",     duration: 4,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01b_1",     duration: 8,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_4",     duration: 5,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_1",     duration: 7,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "halli-stand-v01b_2",     duration: 12,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "halli-stand-v01b_3",     duration: 12,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "halli-stand-v01b_2",     duration: 12,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01b_1",     duration: 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand-v01b_1",     duration: 5,    flip: false } to animations_queue_frames;
 }
 
-proc anim_jumpsquat {
+proc hal_anim_jumpsquat {
     one_frame "halli-jump-v01a_1";
 
 }
 
-proc anim_air_up {
+proc hal_anim_air_up {
     start_sound "jump";
     one_frame "halli-jump-v01a_2";
 }
-proc anim_air_down {
+proc hal_anim_air_down {
     one_frame "halli-jump-v01a_3";
 }
 
-proc anim_walk_step {
+proc hal_anim_walk_step {
     # Header
     add AnimationHeader {
         num_pages: 2,
@@ -56,7 +44,7 @@ proc anim_walk_step {
     add AnimationFrame {costume_name: "halli-walk-v01b_3",      duration: 7,   flip: false } to animations_queue_frames;
 
 }
-proc anim_walk_fromskid {
+proc hal_anim_walk_fromskid {
     # Header
     add AnimationHeader {
         num_pages: 5,
@@ -72,7 +60,7 @@ proc anim_walk_fromskid {
 
 }
 
-proc anim_walk {
+proc hal_anim_walk {
     # Header
     add AnimationHeader {
         num_pages: 4,
@@ -87,7 +75,7 @@ proc anim_walk {
 
 }
 
-proc anim_skid {
+proc hal_anim_skid {
     add AnimationHeader {
         num_pages: 2,
         loop_start: 0,
@@ -98,7 +86,7 @@ proc anim_skid {
 }
 
 # note: spin is always clockwise regardless of direction.
-proc anim_spin {
+proc hal_anim_spin {
     start_sound "spin";
     add AnimationHeader {
         num_pages: 4,
@@ -113,7 +101,7 @@ proc anim_spin {
 
 }
 
-func state_animation(state, last_state) {
+func hal_state_animation(state, last_state) {
     # library of every animation to play for each state.
     # TODO: convert to real parsing 
 
@@ -123,47 +111,47 @@ func state_animation(state, last_state) {
         delete animations_queue_frames;
         
         if "jumpsquat"  in $state {
-            anim_jumpsquat;
-            return "anim_jumpsquat";
+            hal_anim_jumpsquat;
+            return "hal_anim_jumpsquat";
         }
 
         if "ground" in $state {
             if "skid"       in $state{
-                anim_skid;
-                return "anim_skid";
+                hal_anim_skid;
+                return "hal_anim_skid";
             }
             if "idle"       in $state {
-                anim_idle;
-                return "anim_idle";
+                hal_anim_idle;
+                return "hal_anim_idle";
             }
             
             if "walk"  in $state {
                 if "air" in $last_state{
-                    anim_walk_fromskid;
+                    hal_anim_walk_fromskid;
                 }
                 if "skid" in $last_state{
-                    anim_walk_fromskid;
+                    hal_anim_walk_fromskid;
                 }
                 if "idle" in $last_state{
-                    anim_walk_step;
+                    hal_anim_walk_step;
                 }
-                anim_walk;
-                return "anim_walk";
+                hal_anim_walk;
+                return "hal_anim_walk";
             }
             return "undefined";
         }
         if "air" in $state {
             if "up" in $state {
-                anim_air_up;
-                return "anim_air_up";
+                hal_anim_air_up;
+                return "hal_anim_air_up";
             }
             if "down" in $state {
-                anim_air_down;
-                return "anim_air_down";
+                hal_anim_air_down;
+                return "hal_anim_air_down";
             }
             if "spin" in $state {
-                anim_spin;
-                return "anim_spin";
+                hal_anim_spin;
+                return "hal_anim_spin";
             }
             
             return "undefined";

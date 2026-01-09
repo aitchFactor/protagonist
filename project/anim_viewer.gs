@@ -1,7 +1,9 @@
 %include includes/obj.gs
 %include gfx/ply/hal/animation-data.gs
+%include gfx/ply/paf/animation-data.gs
 costumes 
 "gfx/ply/hal/*.png",
+"gfx/ply/paf/*.png",
 ;
 
 on "tick_cosmetics"{
@@ -18,7 +20,8 @@ on "set_debug_options"{
     # G_game_state = "animviewer";
 
 
-    ### add animations here...
-    # anim_spin;
+    # ### add animations here...
+    # paf_anim_walk_step;
+    # paf_anim_walk;
 
 }

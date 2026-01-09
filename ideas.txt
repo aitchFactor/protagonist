@@ -89,10 +89,7 @@ act 4:
     
 
     known bugs:
-         animations are one frame delayed when transitioning.
-         landing while turning around breaks animations.
-        
-        walking into a wall causes direction flicker.
+        pafu can get stuck against walls and inside corners.
 
 
 

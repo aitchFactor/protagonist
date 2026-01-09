@@ -199,7 +199,7 @@ proc on_collide sign, axis, collide_action{
         if $axis == Axes.x {
             xvel.a -= xvel.v1;
             xvel.v1 = 0;
-            xvel.dx = xvel.v1 - xvel.v0;
+            xvel.dx = 0;
             x_remainder = 0;
             collision_x
          = $sign;
@@ -208,7 +208,7 @@ proc on_collide sign, axis, collide_action{
         if $axis == Axes.y {
             yvel.a -= yvel.v1;
             yvel.v1 = 0;
-            yvel.dx = yvel.v1 - yvel.v0;
+            yvel.dx = 0;
             y_remainder = 0;
             collision_y = $sign;
         }

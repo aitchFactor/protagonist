@@ -27,22 +27,42 @@
 
 %define spin_jump_vel (74/16)
 
+# pafu's parameters
+
+%define paf_gravity (8/49)
+
+# same height as halli's standing jump height.
+%define paf_jump_vel (100/21) 
+
+# estimate
+%define paf_jump_vel_smal (0.5)
+
+# blind guess
+%define paf_walk 2
+
+# blind guess
+%define paf_max_fall 5
+
 %include includes/actor.gs
 %include gfx/ply/hal/animation-data.gs
+%include gfx/ply/paf/animation-data.gs
 %include includes/input-mapping.gs
 
 
 
 costumes 
-"gfx/ply/hitbox/stand.png" as "hbox_stand",
-"gfx/ply/hitbox/crouch.png" as "hbox_crouch",
+"gfx/ply/hitbox/*.png/", 
 "gfx/ply/hal/*.png",
-"gfx/ply/placeholder/*.png/"
+"gfx/ply/placeholder/*.png/",
+"gfx/ply/paf/*.png/"
 ;
 
 
 
 var SPRITE_NAME = "Player";
+# player 1: halli
+# player 2: pafu
+var player = 2;
 
 # var airborne = 0;
 # var skid = 0;
@@ -52,7 +72,6 @@ var jump_buffered;
 
 proc boot{
     switch_costume FR_STAND;
-    last_hurtbox = "hbox_stand";
     x_position = -32;
     y_position = 180;
     this_direction = 90;
@@ -62,6 +81,13 @@ proc boot{
     jump_buffered = 0;
     set_rotation_style_left_right;
     state_machine("play");
+
+    if player == 1 {
+        last_hurtbox = "stand";
+    }
+    if player == 2 {
+        last_hurtbox = "stand-paf";
+    }
 
 }
 proc player_tick{
@@ -115,7 +141,17 @@ proc state_machine new_state = "boot"{
             
         }
         else {
-            new_state = "play.ground.walk";
+            if sign_of (xvel.v1) == sign_of(this_direction){
+                if this_direction == 90{
+                    new_state = "play.ground.walk.R";
+                }
+                else{
+                    new_state = "play.ground.walk.L";
+                }
+            }
+            else{
+                new_state = "play.ground.skid";
+            }
         }
 
     }
@@ -123,7 +159,12 @@ proc state_machine new_state = "boot"{
 
 
     # animation_counter = 0;
-    local anim_name = state_animation (new_state, state);
+    if player == 1 {
+        local anim_name = hal_state_animation (new_state, state);
+    }
+    if player == 2 {
+        local anim_name = paf_state_animation (new_state, state);
+    }
     state = new_state;
 
 
@@ -142,10 +183,13 @@ proc state_machine new_state = "boot"{
 
 
 proc x_control move = true{
+    if player == 1 {
+        hal_x_control $move;
+    }
 
-    hal_x_control $move;
-
-
+    if player == 2 {
+        paf_x_control;
+    }
     
 }
 proc hal_x_control move = true {
@@ -204,6 +248,32 @@ proc hal_x_control move = true {
         state_machine (new_state);
     }
 }
+
+proc paf_x_control {
+    # todo: make walking non-decreasing 
+    local new_state = "";
+    if ctrl_left > 0 {
+        xvel.v1 = -paf_walk;
+        xvel = accelerate_advanced(xvel.v1, 0, xvel.a);
+        new_state = "play.ground.walk.L";
+    }
+    else {
+        if ctrl_right > 0 {
+            xvel.v1 = paf_walk;
+            xvel = accelerate_advanced(xvel.v1, 0, xvel.a);
+            new_state = "play.ground.walk.R";
+        }
+        else{
+            xvel = decelerate_advanced(xvel.v1, 2 * paf_walk, xvel.a);
+            new_state = "play.ground.idle";
+        }
+    }
+
+    if new_state != "" and "ground" in state {
+        state_machine (new_state);
+    }
+}
+
 var grounded; 
 proc y_control move = true{
     # dirty grounded check... don't tell anyone about this...
@@ -219,7 +289,13 @@ proc y_control move = true{
         state_machine ("play.air");
     }
 
-    hal_y_control $move;
+    if player == 1 {
+        hal_y_control $move;
+    }
+    if player == 2 {
+        paf_y_control;
+    }
+
 
 }
 
@@ -275,18 +351,60 @@ proc hal_y_control move = true {
     }
 }
 
+proc paf_y_control {
+    # Pafu's physics, which she gained by munching on a bug that was kinda spiky.
 
+    if ctrl_a == -1 {
+        if jump_hold == 1 and yvel.v1 > paf_jump_vel_smal{
+            yvel.v1 = paf_jump_vel_smal;
+
+        }
+        jump_hold = 0;
+    }
+
+    if grounded {
+        jump_hold = 0;
+
+        # Jump
+        if ctrl_a > 0 and (is_buffered(ctrl_a) or jump_buffered == 1) {
+            
+            yvel.v1 = paf_jump_vel;
+            state_machine ("play.air.up");
+            grounded = false;
+            jump_hold = 1;
+        }
+
+        # # Spin Jump
+        # if ctrl_b > 0 and (is_buffered(ctrl_b) or jump_buffered == 2){
+        #     if $move{
+        #         yvel.v1 = spin_jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
+        #     }
+        #     state_machine ("play.air.spin");
+        #     grounded = false;
+        # }
+        
+        jump_buffered = 0;
+
+    }
+
+        local gravity = paf_gravity;
+        yvel = accelerate_advanced(yvel.v1, -gravity, yvel.a, -paf_max_fall);
+    }
 
 var walk_counter;
 var blink_time;
 
 proc ground_animation{
-    if state == "play.ground.idle"{
+    if player == 1 and state == "play.ground.idle"{
         if animation_counter > 47 and animation_counter % 48 < delta_time{
             if random(0, 1) == 0{
                 force_animation_refresh;
             }
         }
+    }
+
+    if player == 2 and state == "play.ground.idle"{
+
     }
 
 
