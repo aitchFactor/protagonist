@@ -191,8 +191,10 @@ proc hal_x_control move = true {
             }
             
             if $move {
-                xvel = decelerate_advanced(xvel.v1, decel_still, xvel.a);
+                if "ground" in state{
+                    xvel = decelerate_advanced(xvel.v1, decel_still, xvel.a);
 
+                }
             }
         
         }
