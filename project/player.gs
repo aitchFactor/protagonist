@@ -25,6 +25,8 @@
 
 %define jump_incr  (2/16)
 
+%define spin_jump_vel (74/16)
+
 %include includes/actor.gs
 %include gfx/ply/hal/animation-data.gs
 %include includes/input-mapping.gs
@@ -87,10 +89,22 @@ proc state_machine new_state = "boot"{
         animation_counter = 0;
         stop_this_script;
     }
+
+    # Don't remove walk direction
+    if new_state == "play.ground.walk" {
+        if "play.ground.walk" in state {
+            stop_this_script;
+        }
+    } 
     
     # air ignores skid
     if "air" in state {
         if "skid" in new_state {
+            stop_this_script;
+        }
+
+        # Spinjump outprioritises normal animations
+        if "spin" in state and "air" in new_state {
             stop_this_script;
         }
     }
@@ -139,20 +153,20 @@ proc hal_x_control move = true {
     #     state_machine ("play.ground");
     # }
 
-
+    local new_state = "";
     if ctrl_left > 0 {
         if xvel.v1 <= 0 {
             if $move {
                 xvel = accelerate_advanced(xvel.v1, -accel_run, xvel.a, -max_run);
             }
-            state_machine ("play.ground.walk.L");
+            new_state = ("play.ground.walk.L");
         }
         else {
             if $move {
                 xvel = accelerate_advanced(xvel.v1, -decel_run, xvel.a, -max_run);
             }
 
-            state_machine ("play.ground.skid.L");
+            new_state = ("play.ground.skid.L");
         }
     }
     else{
@@ -161,28 +175,31 @@ proc hal_x_control move = true {
                 if $move{
                     xvel = accelerate_advanced(xvel.v1, accel_run, xvel.a, max_run);
                 }
-                state_machine ("play.ground.walk.R");
+                new_state = ("play.ground.walk.R");
 
             }
             else {
                 if $move {
                     xvel = accelerate_advanced(xvel.v1, decel_run, xvel.a, max_run);
                 }
-                state_machine ("play.ground.skid.R");
+                new_state = ("play.ground.skid.R");
             }
         }
         else{
             if xvel.v1 == 0 {
-                state_machine ("play.ground.idle");
-            }
-            if $move {
-                if "ground" in state{
-                    xvel = decelerate_advanced(xvel.v1, decel_still, xvel.a);
-
-                }
+                new_state = ("play.ground.idle");
             }
             
+            if $move {
+                xvel = decelerate_advanced(xvel.v1, decel_still, xvel.a);
+
+            }
+        
         }
+    }
+
+    if new_state != "" and "ground" in state {
+        state_machine (new_state);
     }
 }
 var grounded; 
@@ -204,8 +221,8 @@ proc y_control move = true{
 
 }
 
-func jump_is_buffered(){
-    return ctrl_a > 0 and ctrl_a <= ceil(2 / delta_time);
+func is_buffered(value){
+    return $value > 0 and $value <= ceil(2 / delta_time);
 }
 
 proc hal_y_control move = true {
@@ -222,8 +239,10 @@ proc hal_y_control move = true {
 
     if grounded {
         jump_hold = 0;
-        if ctrl_a > 0 and (jump_is_buffered() or jump_buffered) {
-            ### jump
+
+        # Jump
+        if ctrl_a > 0 and (is_buffered(ctrl_a) or jump_buffered == 1) {
+            
             if $move{
                 yvel.v1 = jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
             }
@@ -231,14 +250,23 @@ proc hal_y_control move = true {
             grounded = false;
             jump_hold = 1;
         }
-        jump_buffered = 0;
+
+        # Spin Jump
+        if ctrl_b > 0 and (is_buffered(ctrl_b) or jump_buffered == 2){
+            if $move{
+                yvel.v1 = spin_jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
+            }
+            state_machine ("play.air.spin");
+            grounded = false;
+        }
         
+        jump_buffered = 0;
 
     }
 
     if $move {
         local gravity = fall_gravity;
-        if ctrl_a > 0{
+        if ctrl_a > 0 or ctrl_b > 0{
             gravity = jump_gravity;
         }
         yvel = accelerate_advanced(yvel.v1, -gravity, yvel.a, -max_fall);
@@ -332,9 +360,16 @@ on "tick_cosmetics"{
 
 on "tick_108" {
     # this is a special case where the animation needs to happen instantly - no 1-frame delayed state change.
-    if jump_is_buffered() and collision_y == -1 {
-        jump_buffered = true;
-        state_machine ("play.air.jumpsquat");
+    if collision_y == -1 {
+        if is_buffered(ctrl_a){
+            jump_buffered = 1;
+            state_machine ("play.air.jumpsquat");
+        }
+        if is_buffered(ctrl_b){
+            jump_buffered = 2;
+            state_machine ("play.air.spin");
+        }
+        
     }
 }
 

@@ -1,6 +1,7 @@
 # animations are stored as explicit entries of a header/frames pair.
 # make sure you always insert a header and frames at the same time.
 %include gfx/ply/hal/costume-names.gs
+sounds "snd/*.wav";
 
 proc one_frame costume_name {
     # Header
@@ -36,6 +37,7 @@ proc anim_jumpsquat {
 }
 
 proc anim_air_up {
+    start_sound "jump";
     one_frame "halli-jump-v01a_2";
 }
 proc anim_air_down {
@@ -50,8 +52,8 @@ proc anim_walk_step {
         loops: 0
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "halli-walk-v01a_2",      duration: 4,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_3",      duration: 7,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_2",      duration: 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_3",      duration: 7,   flip: false } to animations_queue_frames;
 
 }
 proc anim_walk_fromskid {
@@ -62,11 +64,11 @@ proc anim_walk_fromskid {
         loops: 0
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "halli-walk-v01a_3",      duration: 5,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_4",      duration: 6,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_5",      duration: 7,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_6",      duration: 8,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_7",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_3",      duration: 5,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_4",      duration: 6,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_5",      duration: 7,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_6",      duration: 8,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_7",      duration: 9,    flip: false } to animations_queue_frames;
 
 }
 
@@ -78,10 +80,10 @@ proc anim_walk {
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "halli-walk-v01a_4",      duration: 10,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_5",      duration: 10,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_6",      duration: 10,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_7",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_4",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_5",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_6",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_7",      duration: 10,    flip: false } to animations_queue_frames;
 
 }
 
@@ -91,12 +93,13 @@ proc anim_skid {
         loop_start: 0,
         loops: -1
     }   to animations_queue_header;
-    add AnimationFrame {costume_name: "halli-walk-v01a_8",      duration: 3,    flip: true } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01a_9",      duration: 3,    flip: true } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_8",      duration: 3,    flip: true } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_9",      duration: 3,    flip: true } to animations_queue_frames;
 }
 
 # note: spin is always clockwise regardless of direction.
 proc anim_spin {
+    start_sound "spin";
     add AnimationHeader {
         num_pages: 4,
         loop_start: 0,
@@ -157,6 +160,10 @@ func state_animation(state, last_state) {
             if "down" in $state {
                 anim_air_down;
                 return "anim_air_down";
+            }
+            if "spin" in $state {
+                anim_spin;
+                return "anim_spin";
             }
             
             return "undefined";

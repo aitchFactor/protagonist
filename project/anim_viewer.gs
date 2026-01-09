@@ -19,6 +19,6 @@ on "set_debug_options"{
 
 
     ### add animations here...
-    anim_spin;
+    # anim_spin;
 
 }
