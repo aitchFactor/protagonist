@@ -35,10 +35,10 @@
 %define paf_jump_vel (100/21) 
 
 # estimate
-%define paf_jump_vel_smal (0.5)
+%define paf_jump_vel_smal (0.75)
 
 # blind guess
-%define paf_walk 2
+%define paf_walk 1.875
 
 # blind guess
 %define paf_max_fall 5
@@ -250,7 +250,7 @@ proc hal_x_control move = true {
 }
 
 proc paf_x_control {
-    # todo: make walking non-decreasing 
+    # todo: make walking non-decreasing - use decelerate function?
     local new_state = "";
     if ctrl_left > 0 {
         xvel.v1 = -paf_walk;

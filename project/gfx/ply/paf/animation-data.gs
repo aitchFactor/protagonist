@@ -66,12 +66,12 @@ proc paf_anim_walk {
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "pafu-walk_4",      duration: 12,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_5",      duration: 12,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 12,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_7",      duration: 12,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_8",      duration: 12,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_9",      duration: 12,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_4",      duration: 11,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_5",      duration: 11,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 11,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_7",      duration: 11,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_8",      duration: 11,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_9",      duration: 11,    flip: false } to animations_queue_frames;
 
 }
 

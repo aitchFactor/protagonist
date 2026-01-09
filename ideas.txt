@@ -90,6 +90,7 @@ act 4:
 
     known bugs:
         pafu can get stuck against walls and inside corners.
+        pafu doesn't have a proper turnaround animation yet.
 
 
 
