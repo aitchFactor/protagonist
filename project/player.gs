@@ -421,7 +421,11 @@ proc ground_animation{
 proc air_animation{
     # something like a ceiling bonk animation might need some more thinking.
     if not jump_buffered {
-        if yvel.v1 > 0 {
+        local fall_threshold = 0;
+        if player == 2 {
+            fall_threshold = paf_jump_vel_smal;
+        }
+        if yvel.v1 > fall_threshold {
             state_machine ("play.air.up");
 
         }

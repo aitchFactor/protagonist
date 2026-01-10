@@ -2,6 +2,7 @@
 # make sure you always insert a header and frames at the same time.
 
 proc paf_anim_idle {
+    clear_animation;
     # Header
     add AnimationHeader {
         num_pages: 5,
@@ -27,6 +28,7 @@ proc paf_anim_air_up {
     one_frame "pafu-jump_1";
 }
 proc paf_anim_air_down {
+    clear_animation;
     add AnimationHeader {
         num_pages: 2,
         loop_start: 1,
@@ -39,17 +41,18 @@ proc paf_anim_air_down {
 }
 
 proc paf_anim_walk_step {
+    clear_animation;
     # Header
     add AnimationHeader {
-        num_pages: 3,
+        num_pages: 4,
         loop_start: 0,
         loops: 0
     }   to animations_queue_header;
     # Frames
     add AnimationFrame {costume_name: "pafu-walk_6",      duration: 6,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_1",      duration: 12,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_2",      duration: 12,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_3",      duration: 12,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_1",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_2",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_3",      duration: 9,    flip: false } to animations_queue_frames;
 
 }
 proc paf_anim_walk_turn_around {
@@ -58,7 +61,10 @@ proc paf_anim_walk_turn_around {
 
 }
 
-proc paf_anim_walk {
+proc paf_anim_walk refresh = true {
+    if $refresh {
+        clear_animation;
+    }
     # Header
     add AnimationHeader {
         num_pages: 6,
@@ -66,12 +72,12 @@ proc paf_anim_walk {
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "pafu-walk_4",      duration: 11,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_5",      duration: 11,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 11,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_7",      duration: 11,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_8",      duration: 11,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_9",      duration: 11,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_4",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_5",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_7",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_8",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_9",      duration: 9,    flip: false } to animations_queue_frames;
 
 }
 
@@ -82,6 +88,7 @@ proc paf_anim_skid {
 
 
 proc paf_anim_spin {
+    clear_animation;
     start_sound "spin";
     add AnimationHeader {
         num_pages: 12,
@@ -110,9 +117,9 @@ func paf_state_animation(state, last_state) {
     # TODO: convert to real parsing 
 
     if "play" in $state {
-        force_animation_refresh;
-        delete animations_queue_header;
-        delete animations_queue_frames;
+        # force_animation_refresh;
+        # delete animations_queue_header;
+        # delete animations_queue_frames;
         
         if "jumpsquat"  in $state {
             paf_anim_jumpsquat;
@@ -130,16 +137,20 @@ func paf_state_animation(state, last_state) {
             }
             
             if "walk"  in $state {
+                local refreshed = false;
                 if "air" in $last_state{
                     paf_anim_walk_step;
+                    refreshed = true;
                 }
                 if "skid" in $last_state{
                     paf_anim_walk_turn_around;
+                    refreshed = true;
                 }
                 if "idle" in $last_state{
                     paf_anim_walk_step;
+                    refreshed = true;
                 }
-                paf_anim_walk;
+                paf_anim_walk (not refreshed);
                 return "paf_anim_walk";
             }
             return "undefined";

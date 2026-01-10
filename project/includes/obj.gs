@@ -124,6 +124,14 @@ proc force_animation_refresh {
     # Force an animation to play from the beginning.
     animation_play_state = AnimationPlayState{};
 }
+
+proc clear_animation {
+    # Refresh and clear any current animations.
+    force_animation_refresh;
+    delete animations_queue_header;
+    delete animations_queue_frames;
+}
+
 var flipped;
 
 proc animation_player {
@@ -154,7 +162,7 @@ proc animation_player {
 
     animation_play_state.playing_time += delta_time;
 
-    if animation_counter >= animation_play_state.total_frames {
+    if round(animation_counter) >= animation_play_state.total_frames {
         repeat animations_queue_header[1].num_pages{
             delete animations_queue_frames[1];
         }
@@ -170,6 +178,7 @@ proc animation_player {
 }
 
 proc one_frame costume_name {
+    clear_animation;
     # Header
     add AnimationHeader {
         num_pages: 1,

@@ -84,6 +84,10 @@ act 4:
 
 - include sounds as part of animation data?
 
+- todo: add soft platforms
+
+- todo: add smw-style running jump
+
 "type mismatch: expected value, but got struct"
     - means that a variable was assigned from the struct list without that variable also being declared as the same type.
     
@@ -91,6 +95,7 @@ act 4:
     known bugs:
         pafu can get stuck against walls and inside corners.
         pafu doesn't have a proper turnaround animation yet.
+        pressing B as pafu causes grounded animations to reset.
 
 
 

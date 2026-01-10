@@ -4,6 +4,7 @@
 sounds "snd/*.wav";
 
 proc hal_anim_idle {
+    clear_animation;
     # Header
     add AnimationHeader {
         num_pages: 6,
@@ -24,6 +25,10 @@ proc hal_anim_jumpsquat {
 
 }
 
+proc hal_anim_running_jump {
+
+}
+
 proc hal_anim_air_up {
     start_sound "jump";
     one_frame "halli-jump-v01a_2";
@@ -33,6 +38,7 @@ proc hal_anim_air_down {
 }
 
 proc hal_anim_walk_step {
+    clear_animation;
     # Header
     add AnimationHeader {
         num_pages: 2,
@@ -45,6 +51,7 @@ proc hal_anim_walk_step {
 
 }
 proc hal_anim_walk_fromskid {
+    clear_animation;
     # Header
     add AnimationHeader {
         num_pages: 5,
@@ -60,7 +67,11 @@ proc hal_anim_walk_fromskid {
 
 }
 
-proc hal_anim_walk {
+proc hal_anim_walk refresh = true{
+    if $refresh {
+        clear_animation;
+    }
+    clear_animation;
     # Header
     add AnimationHeader {
         num_pages: 4,
@@ -76,6 +87,7 @@ proc hal_anim_walk {
 }
 
 proc hal_anim_skid {
+    clear_animation;
     add AnimationHeader {
         num_pages: 2,
         loop_start: 0,
@@ -87,6 +99,7 @@ proc hal_anim_skid {
 
 # note: spin is always clockwise regardless of direction.
 proc hal_anim_spin {
+    clear_animation;
     start_sound "spin";
     add AnimationHeader {
         num_pages: 4,
@@ -106,9 +119,6 @@ func hal_state_animation(state, last_state) {
     # TODO: convert to real parsing 
 
     if "play" in $state {
-        force_animation_refresh;
-        delete animations_queue_header;
-        delete animations_queue_frames;
         
         if "jumpsquat"  in $state {
             hal_anim_jumpsquat;
@@ -126,16 +136,20 @@ func hal_state_animation(state, last_state) {
             }
             
             if "walk"  in $state {
+                local refreshed = false;
                 if "air" in $last_state{
                     hal_anim_walk_fromskid;
+                    refreshed = true;
                 }
                 if "skid" in $last_state{
                     hal_anim_walk_fromskid;
+                    refreshed = true;
                 }
                 if "idle" in $last_state{
                     hal_anim_walk_step;
+                    refreshed = true;
                 }
-                hal_anim_walk;
+                hal_anim_walk (not refreshed);
                 return "hal_anim_walk";
             }
             return "undefined";
