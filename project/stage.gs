@@ -34,6 +34,20 @@ struct Solid{
     prop3   = -1,
 }
 
+struct Projectile{
+    type        = "",
+    name        = "",
+    lifetime    = 0,
+    direction   = 0,
+    x_position  = 0,
+    y_position  = 0,
+    xvel = 0,
+    yvel = 0,
+    follow = ""
+}
+
+list Projectile projectile_queue;
+
 
 list Solid Solids;
 

@@ -21,7 +21,7 @@ proc hal_anim_idle {
 }
 
 proc hal_anim_jumpsquat {
-    one_frame "halli-jump-v01a_1";
+    one_frame "halli-jump-v01b_1";
     add AnimationHeader {
         num_pages: 1,
         loop_start: 0,
@@ -46,22 +46,22 @@ proc hal_anim_jump {
         add AnimationFrame {costume_name: "halli-walk-v01b_4",      duration: 3,    flip: false } to animations_queue_frames;
     } 
 
-    start_sound "jump";
+    # start_sound "jump";
 
     add AnimationHeader {
         num_pages: 1,
         loop_start: 0,
         loops: -1
     }   to animations_queue_header;
-    add AnimationFrame {costume_name: "halli-jump-v01a_2",     duration: 1,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-jump-v01b_2",     duration: 1,    flip: false } to animations_queue_frames;
 
 }
 
 proc hal_anim_air_up {
-    one_frame "halli-jump-v01a_2";
+    one_frame "halli-jump-v01b_2";
 }
 proc hal_anim_air_down {
-    one_frame "halli-jump-v01a_3";
+    one_frame "halli-jump-v01b_3";
 }
 
 proc hal_anim_walk_step {
@@ -126,7 +126,7 @@ proc hal_anim_skid {
 # note: spin is always clockwise regardless of direction.
 proc hal_anim_spin {
     clear_animation;
-    start_sound "spin";
+    # start_sound "spin";
     add AnimationHeader {
         num_pages: 4,
         loop_start: 0,
@@ -138,6 +138,10 @@ proc hal_anim_spin {
     add AnimationFrame {costume_name: "halli-jump-v01a_7",      duration: 2,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "halli-jump-v01a_6",      duration: 2,    flip: false } to animations_queue_frames;
 
+}
+
+proc hal_anim_puff {
+    one_frame ("halli-puff-side");
 }
 
 func hal_state_animation(state, last_state) {
@@ -152,6 +156,10 @@ func hal_state_animation(state, last_state) {
         }
 
         if "ground" in $state {
+            if "puff"       in $state {
+                hal_anim_puff;
+                return "hal_anim_puff";
+            }
             if "skid"       in $state{
                 hal_anim_skid;
                 return "hal_anim_skid";
@@ -198,6 +206,10 @@ func hal_state_animation(state, last_state) {
             if "spin" in $state {
                 hal_anim_spin;
                 return "hal_anim_spin";
+            }
+            if "puff" in $state {
+                hal_anim_puff;
+                return "hal_anim_puff";
             }
             
             return "undefined";

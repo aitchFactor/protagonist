@@ -25,6 +25,8 @@ proc boot {
   delete hitboxes;
   delete hurtboxes;
 
+  delete projectile_queue;
+
   delete Solids;
 
   ctrl_up = 0;
@@ -85,6 +87,11 @@ proc loop {
 
 on "tick_000"{
   delete Solids;
+}
+
+on "tick_zsort"{
+  delete z_positions;
+  sort_depth "-Infinity", false;
 }
 
 onkey "g" {

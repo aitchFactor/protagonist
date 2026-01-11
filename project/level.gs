@@ -4,6 +4,10 @@ costumes
 ;
 var SPRITE_NAME = "Level";
 
+on "boot" {
+    z_position = 128;
+}
+
 on "tick_000"{
     switch_costume "undergrowth_v00_collision";
 }

@@ -1,3 +1,6 @@
+%include includes/actor.gs
+%include includes/input-mapping.gs
+
 # note: don't include comments in the same line as a macro
 #20/16
 %define max_walk    19.8/16
@@ -50,18 +53,17 @@
 
 %define paf_skid_threshold 2
 
-%include includes/actor.gs
+%define puff_cooldown round (24 / delta_time)
+
 %include gfx/ply/hal/animation-data.gs
 %include gfx/ply/paf/animation-data.gs
-%include includes/input-mapping.gs
-
 
 
 costumes 
 "gfx/ply/hitbox/*.png/", 
 "gfx/ply/hal/*.png",
 "gfx/ply/placeholder/*.png/",
-"gfx/ply/paf/*.png/"
+"gfx/ply/paf/*.png/",
 ;
 
 
@@ -74,16 +76,26 @@ var SPRITE_NAME = "Player";
 
 var jump_hold;
 var jump_buffered;
+var direction_lock;
+var x_control_lock; # currently unused
+var y_control_lock; # currently unused
+var puff_timer;
+
 
 proc boot{
     switch_costume FR_STAND;
     x_position = -32;
     y_position = 180;
+    z_position = 255;
     this_direction = 90;
     walk_counter = 0;
     grounded = 0;
     jump_hold = 0;
     jump_buffered = 0;
+    direction_lock = 0;
+    x_control_lock = 0;
+    y_control_lock = 0;
+    puff_timer = 0;
     set_rotation_style_left_right;
     state_machine("play");
 
@@ -95,12 +107,9 @@ proc boot{
     }
 
 }
-proc player_tick{
-    x_control;
-    y_control;
-    # actor_physics;
 
-}
+
+
 
 proc state_machine new_state = "boot"{
     # Change the player state, necessary for any time when gameplay is different (ie, can't jump in air).
@@ -120,6 +129,30 @@ proc state_machine new_state = "boot"{
         animation_counter = 0;
         stop_this_script;
     }
+
+    if "play" in new_state and "puff" in state and puff_timer > round(puff_cooldown * 0.5) {
+        stop_this_script;
+    }
+
+    if new_state == "play" {
+        if grounded {
+            new_state = "play.ground";
+        }
+        else {
+            new_state = "play.air";
+        }
+
+    }
+    if new_state == "play.puff"{
+
+        if "ground" in state{
+            new_state = ("play.ground.puff");
+        }
+        if "air" in state {
+            new_state = ("play.air.puff");
+        }
+    }
+
 
     # Don't remove walk direction
     if new_state == "play.ground.walk" {
@@ -175,7 +208,12 @@ proc state_machine new_state = "boot"{
 
 
     ### effects ###
+    if direction_lock <= 0 {
+        state_to_direction;
+    }
+}
 
+proc state_to_direction {
     if ".L" in state {
         this_direction = -90;
     }
@@ -184,8 +222,39 @@ proc state_machine new_state = "boot"{
     }
 }
 
+proc puff_control {
+    if ctrl_b > 0 and ctrl_b <= (4/delta_time) and puff_timer <= 0 { # 4 frame buffer.
+        
+        state_machine("play.puff");
+        if "puff" in state {
+            puff_timer = puff_cooldown;
+            direction_lock = round(puff_timer * 0.5);
+            # halli: puff stalls momentum
+            if player == 1 and yvel.v1 < 0 {
+                yvel.v1 = 0;
+            }
+
+            add Projectile{
+                type: "puff",
+                name: "puff_halli_side_light",
+                lifetime: round(puff_cooldown * 0.5),
+                direction: this_direction,
+                x_position: x_position + 16 * sign_of(this_direction),
+                y_position: y_position,
+                xvel: xvel.v1 + max_run * sign_of(this_direction),
+                yvel: 0
+            } to projectile_queue;
 
 
+        }
+
+    }
+
+    if puff_timer == round (puff_cooldown * 0.5) {
+        state_machine("play");
+    }
+
+}
 
 proc x_control move = true{
     if player == 1 {
@@ -396,13 +465,13 @@ proc hal_y_control move = true {
         }
 
         # Spin Jump
-        if ctrl_b > 0 and (is_buffered(ctrl_b) or jump_buffered == 2){
-            if $move{
-                yvel.v1 = spin_jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
-            }
-            state_machine ("play.air.spin");
-            grounded = false;
-        }
+        # if ctrl_b > 0 and (is_buffered(ctrl_b) or jump_buffered == 2){
+        #     if $move{
+        #         yvel.v1 = spin_jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
+        #     }
+        #     state_machine ("play.air.spin");
+        #     grounded = false;
+        # }
         
         jump_buffered = 0;
 
@@ -410,7 +479,7 @@ proc hal_y_control move = true {
 
     if $move {
         local gravity = fall_gravity;
-        if ctrl_a > 0 or ctrl_b > 0{
+        if ctrl_a > 0 or (yvel.v1 <= 0 and puff_timer >= round(puff_cooldown * 0.75)) {
             gravity = jump_gravity;
         }
         yvel = accelerate_advanced(yvel.v1, -gravity, yvel.a, -max_fall);
@@ -501,13 +570,15 @@ proc air_animation{
 
     }
 
+    if direction_lock <= 0 {
+        if ctrl_right > 0 {
 
-    if ctrl_right > 0 {
+            this_direction = (90);
+        }
+        if ctrl_left > 0 {
+            this_direction = (-90);
+        }
 
-        this_direction = (90);
-    }
-    if ctrl_left > 0 {
-        this_direction = (-90);
     }
 
     animation_counter += delta_time;
@@ -516,7 +587,9 @@ proc air_animation{
 proc animation_timing{
     # If any animations have their animation tied to something, it's controlled here. 
     # But because I haven't completely figured this system out yet, this proc also has some state changes. 
-
+    if "puff" in state {
+        stop_this_script;
+    }
 
     # TODO: store animation name explicitly in state (for stuff like air running)
     if "ground" in state or "skid" in state{
@@ -528,6 +601,10 @@ proc animation_timing{
         stop_this_script;
     }
 
+    # if puff_timer == puff_cooldown {
+    #     state_machine ("play.puff");
+    # }
+
 }
 
 onflag{
@@ -536,6 +613,23 @@ onflag{
 
 on "boot"{
     boot;
+}
+
+proc player_tick{
+    puff_control;
+    x_control;
+    y_control;
+    # actor_physics;
+
+}
+
+on "tick_000"{
+    direction_lock -= 1;
+    puff_timer -= 1;
+
+    if direction_lock == 0 {
+        state_to_direction;
+    }
 }
 
 on "tick_101"{
@@ -555,10 +649,10 @@ on "tick_108" {
             jump_buffered = 1;
             state_machine ("play.air.jumpsquat");
         }
-        if is_buffered(ctrl_b){
-            jump_buffered = 2;
-            state_machine ("play.air.spin");
-        }
+        # if is_buffered(ctrl_b){
+        #     jump_buffered = 2;
+        #     state_machine ("play.air.spin");
+        # }
         
     }
 }

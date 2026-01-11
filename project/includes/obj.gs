@@ -57,6 +57,12 @@ proc sprite_boot {
     
 }
 
+proc spawn_clone name {
+    clone_id = $name;
+    clone;
+    clone_id = "root";
+}
+
 struct AnimationHeader {
     num_pages, # total frames in the animation
     loop_start = -1, # relative to the frame block, not the costume number. (might change though)

@@ -5,6 +5,11 @@ costumes
 "gfx/ply/hal/*.png",
 "gfx/ply/paf/*.png",
 ;
+var SPRITE_NAME = "Animation Preview";
+
+on "boot" {
+    z_position = 255;
+}
 
 on "tick_cosmetics"{
     if G_game_state == "animviewer"{

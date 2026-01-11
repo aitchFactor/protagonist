@@ -86,16 +86,35 @@ act 4:
 
 - todo: add soft platforms
 
-- todo: add smw-style running jump
+- todo: add scrolling
 
-"type mismatch: expected value, but got struct"
-    - means that a variable was assigned from the struct list without that variable also being declared as the same type.
+- todo: pafu
+        - ledge hang/getup/jump
+        - dash skid (proper)
+
+- done: add smw-style running jump
+
+- done: halli puff animation (basic)
+
+- todo: cooldown functionality (ie, move endlag)
+
+- todo: control lock
+
+- todo: coyote time
+
+- done: direction lock
+
+    - puff projectile, state 
+
+pafu charge attack recoil = dash???
+
+check direction behaviour re: projectile throw in other games
+
+
     
 
     known bugs:
-        pafu can get stuck against walls and inside corners.
         pafu doesn't have a proper turnaround animation yet.
-        pressing B as pafu causes grounded animations to reset.
 
 
 
@@ -103,3 +122,12 @@ tips:
     - when changing a function/proc, make sure you check every existing instance of it.
     
     - try to minimise empty space around hitbox graphics if you can, since it seems to affect the collision properties.
+    
+    - sprites/objects don't natively play animation, even though you can queue animations. You have to add a proc to drive the animation counter.
+    
+    - clones run on the same frame they are spawned, but they won't respond to any broadcasts that happened that frame.
+    
+    - animations that have a static end frame generally still need to loop on that static frame.
+
+"type mismatch: expected value, but got struct"
+    - means that a variable was assigned from the struct list without that variable also being declared as the same type.
