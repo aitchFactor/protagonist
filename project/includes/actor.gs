@@ -173,6 +173,62 @@ func decelerate_advanced (v, a, accumulated_a, min = 0) ContinuousVelocity{
     return ContinuousVelocity{v0: $v, v1: v1 * sign_of($v), dx: dx, a: $accumulated_a + effective_a};
 }
 
+var ContinuousVelocity accelerate_saturation_vel;
+
+func accelerate_saturation (acc, v, a1, a2, d1, d2, s = "Infinity", z = 0){
+    # Solve for accelerating and decelerating forces in the direction of some saturation point.
+    # v: current velocity.
+    # a1: acceleration between the zero point and saturation.
+    # a2: acceleration before the zero point.
+    # d1: deceleration between saturation and the zero point. (Input as negative to decelerate)
+    # d2: deceleration when velocity exceeds saturation.
+    # s:  velocity of saturation. The direction of this value relative to zero determines the sign of the others.
+    # z:  the zero point. Or you can set it to be not zero, but who knows what might happen. 
+    #          |   d1 <-    |    d2 <==
+    # -  -- ---z------------s--- -- - > velocity
+    # a2 ==>   |   a1 ->    |
+
+    # First, convert all values to signed magnitude in the direction of saturation.
+    local sign = sign_of(s - z);
+    local v = $v * sign;
+    local a1 = $a1 * sign;
+    local a2 = $a2 * sign;
+    local d1 = $d1 * sign;
+    local d2 = $d2 * sign;
+    local s = $s * sign;
+    local z = $z * sign;
+
+    # case 1: velocity is below zero (accelerate with a2)
+
+    if v < z {
+        accelerate_saturation_vel = accelerate_advanced(v, a2, acc, s);
+    }
+    else {
+        # case 2: velocity is beyond saturation (decelerate with d2)
+        if v > s {
+            accelerate_saturation_vel = decelerate_advanced(v, -d2, acc, z);
+        }
+        else {
+            # case 3: velocity is between zero and saturation (apply net acceleration between a1 and d1)
+            if a1 + d1 >= 0 {
+                accelerate_saturation_vel = accelerate_advanced(v, a1 + d1, acc, s);
+            }
+            else {
+                accelerate_saturation_vel = decelerate_advanced(v, -a1 - d1, acc, z);
+            }
+        }
+    }
+
+    # Convert back to the sign of the input.
+    return ContinuousVelocity {
+        v0: $v,
+        v1: accelerate_saturation_vel.v1 * sign,
+        dx: accelerate_saturation_vel.dx * sign,
+        a:  accelerate_saturation_vel.a * sign
+    };
+
+}
+
 # func decelerate (vx, ax, min = 0){
 #     # Return a velocity slowed down by some acceleration amount. 
 #     # The deceleration is always the same sign as the inputted vx.
