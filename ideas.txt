@@ -105,6 +105,8 @@ act 4:
 - done: direction lock
 
     - puff projectile, state 
+    
+clones can't realistically impact the game until one frame after spawning, so if they have to be instant, consider a hitbox on the clone spawner.
 
 pafu charge attack recoil = dash???
 

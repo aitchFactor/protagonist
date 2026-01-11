@@ -266,59 +266,126 @@ proc x_control move = true{
     }
     
 }
+
+# proc soft_speedcap velocity, speedcap, acceleration, deceleration AccDecMaxMin {
+#     # if the current velocity is less than the speedcap, accelerate. Otherwise, decelerate. 
+#     local speed = 4;
+#     local speedcap = 3;
+#     local acc = 0;
+#     local deceleration = decel_still;
+#     local acceleration = accel_walk;
+
+#     if speed * sign_of(speed) > speedcap * sign_of (speed) {
+#         return A
+#         decelerate_advanced (speed, deceleration, acc, speedcap);
+#     }
+#     else {
+#         accelerate_advanced (speed, acceleration, acc, speedcap * sign_of(speed));
+#     }
+
+# }
+
 proc hal_x_control move = true {
     # hurtbox changes
     hurtbox = "stand";
     switch_costume hurtbox;
 
+    # physics step
     local new_state = "";
-    if ctrl_left > 0 {
-        if xvel.v1 <= 0 {
-            if $move {
-                xvel = accelerate_advanced(xvel.v1, -accel_run, xvel.a, -max_run);
-            }
-            new_state = ("play.ground.walk.L");
-        }
-        else {
-            if $move {
-                xvel = accelerate_advanced(xvel.v1, -decel_run, xvel.a, -max_run);
-            }
-
-            new_state = ("play.ground.skid.L");
-        }
+    local a1 = 0;
+    local a2 = 0;
+    local d1 = 0;
+    local d2 = 0;
+    local s = 0;
+    local z = 0;
+    if ctrl_left > 0 or ctrl_right > 0 {
+        a1 = accel_run;
+        a2 = decel_run;
+        # d1 = 0;
+        d2 = -decel_still;
+        s = max_run * bool_to_sign(ctrl_right > 0); # right => positive
+        # z = 0;
     }
-    else{
-        if ctrl_right > 0 {
-            if xvel.v1 >= 0 {
-                if $move{
-                    xvel = accelerate_advanced(xvel.v1, accel_run, xvel.a, max_run);
-                }
-                new_state = ("play.ground.walk.R");
+    else {
+        # a1 = 0;
+        # a2 = 0;
+        d1 = -decel_still;
+        d2 = -decel_still;
+        s = xvel.v1;
+        # z = 0;
+    }
+    # if ctrl_left > 0 {
+    #     if xvel.v1 <= 0 {
+    #         if $move {
+    #             xvel = accelerate_advanced(xvel.v1, -accel_run, xvel.a, -max_run);
+    #         }
+    #         new_state = ("play.ground.walk.L");
+    #     }
+    #     else {
+    #         if $move {
+    #             xvel = accelerate_advanced(xvel.v1, -decel_run, xvel.a, -max_run);
+    #         }
 
-            }
-            else {
-                if $move {
-                    xvel = accelerate_advanced(xvel.v1, decel_run, xvel.a, max_run);
-                }
-                new_state = ("play.ground.skid.R");
-            }
-        }
-        else{
-            if xvel.v1 == 0 {
-                new_state = ("play.ground.idle");
-            }
+    #         new_state = ("play.ground.skid.L");
+    #     }
+    # }
+    # else{
+    #     if ctrl_right > 0 {
+    #         if xvel.v1 >= 0 {
+    #             if $move{
+    #                 xvel = accelerate_advanced(xvel.v1, accel_run, xvel.a, max_run);
+    #             }
+    #             new_state = ("play.ground.walk.R");
+
+    #         }
+    #         else {
+    #             if $move {
+    #                 xvel = accelerate_advanced(xvel.v1, decel_run, xvel.a, max_run);
+    #             }
+    #             new_state = ("play.ground.skid.R");
+    #         }
+    #     }
+    #     else{
+    #         if xvel.v1 == 0 {
+    #             new_state = ("play.ground.idle");
+    #         }
             
-            if $move {
-                if "ground" in state{
-                    xvel = decelerate_advanced(xvel.v1, decel_still, xvel.a);
+    #         if $move {
+    #             if "ground" in state{
+    #                 xvel = decelerate_advanced(xvel.v1, decel_still, xvel.a);
 
-                }
-            }
+    #             }
+    #         }
         
-        }
+    #     }
+    # }
+    xvel = accelerate_saturation (xvel.a, xvel.v1, a1, a2, d1, d2, s, z);
+
+
+    if acceleration_saturation_return_case == AccelerationSaturationCase.UnderBounds{
+        new_state = "play.ground.skid";
     }
+    if acceleration_saturation_return_case == AccelerationSaturationCase.BoundedAcceleration{
+        new_state = "play.ground.walk";
+    }
+    if acceleration_saturation_return_case == AccelerationSaturationCase.BoundedDeceleration{
+        new_state = "play.ground.walk";
+    }
+    if acceleration_saturation_return_case == AccelerationSaturationCase.OverBounds{
+        new_state = "play.ground.walk";
+    }
+    if xvel.v1 == 0 {
+        new_state = "play.ground.idle";
+    }
+
 
     if new_state != "" and "ground" in state {
+        if ctrl_right > 0 {
+            new_state = new_state & ".R";
+        }
+        if ctrl_left > 0 {
+            new_state = new_state & ".L";
+        }
         state_machine (new_state);
     }
 }

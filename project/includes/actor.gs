@@ -174,8 +174,15 @@ func decelerate_advanced (v, a, accumulated_a, min = 0) ContinuousVelocity{
 }
 
 var ContinuousVelocity accelerate_saturation_vel;
+var acceleration_saturation_return_case;
+enum AccelerationSaturationCase {
+    UnderBounds,
+    BoundedAcceleration,
+    BoundedDeceleration,
+    OverBounds,
+}
 
-func accelerate_saturation (acc, v, a1, a2, d1, d2, s = "Infinity", z = 0){
+func accelerate_saturation (acc, v, a1, a2, d1, d2, s = "Infinity", z = 0) ContinuousVelocity {
     # Solve for accelerating and decelerating forces in the direction of some saturation point.
     # v: current velocity.
     # a1: acceleration between the zero point and saturation.
@@ -189,32 +196,36 @@ func accelerate_saturation (acc, v, a1, a2, d1, d2, s = "Infinity", z = 0){
     # a2 ==>   |   a1 ->    |
 
     # First, convert all values to signed magnitude in the direction of saturation.
-    local sign = sign_of(s - z);
+    local sign = sign_of($s - $z);
     local v = $v * sign;
-    local a1 = $a1 * sign;
-    local a2 = $a2 * sign;
-    local d1 = $d1 * sign;
-    local d2 = $d2 * sign;
+    local a1 = $a1;
+    local a2 = $a2;
+    local d1 = $d1;
+    local d2 = $d2;
     local s = $s * sign;
     local z = $z * sign;
 
     # case 1: velocity is below zero (accelerate with a2)
-
+    
     if v < z {
-        accelerate_saturation_vel = accelerate_advanced(v, a2, acc, s);
+        accelerate_saturation_vel = accelerate_advanced(v, a2, $acc, s);
+        acceleration_saturation_return_case = AccelerationSaturationCase.UnderBounds;
     }
     else {
         # case 2: velocity is beyond saturation (decelerate with d2)
         if v > s {
-            accelerate_saturation_vel = decelerate_advanced(v, -d2, acc, z);
+            accelerate_saturation_vel = decelerate_advanced(v, -d2, $acc, z);
+            acceleration_saturation_return_case = AccelerationSaturationCase.OverBounds;
         }
         else {
             # case 3: velocity is between zero and saturation (apply net acceleration between a1 and d1)
             if a1 + d1 >= 0 {
-                accelerate_saturation_vel = accelerate_advanced(v, a1 + d1, acc, s);
+                accelerate_saturation_vel = accelerate_advanced(v, a1 + d1, $acc, s);
+                acceleration_saturation_return_case = AccelerationSaturationCase.BoundedAcceleration;
             }
             else {
-                accelerate_saturation_vel = decelerate_advanced(v, -a1 - d1, acc, z);
+                accelerate_saturation_vel = decelerate_advanced(v, -a1 - d1, $acc, z);
+                acceleration_saturation_return_case = AccelerationSaturationCase.BoundedDeceleration;
             }
         }
     }
