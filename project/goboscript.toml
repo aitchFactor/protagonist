@@ -23,3 +23,5 @@ stage_width = 480
 
 # Height of the stage in pixels
 stage_height = 360
+
+bitmap_resolution = 1
