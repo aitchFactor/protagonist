@@ -22,15 +22,42 @@ proc hal_anim_idle {
 
 proc hal_anim_jumpsquat {
     one_frame "halli-jump-v01a_1";
+    add AnimationHeader {
+        num_pages: 1,
+        loop_start: 0,
+        loops: -1
+    }   to animations_queue_header;
 
 }
 
-proc hal_anim_running_jump {
+proc hal_anim_jump {
+    clear_animation;
+    if abs(xvel.v1) == max_run {
+        # halli momentarily runs in midair as he jumps.
+        add AnimationHeader {
+            num_pages: 4,
+            loop_start: 0,
+            loops: 0
+        }   to animations_queue_header;
+        # Frames
+        add AnimationFrame {costume_name: "halli-walk-v01b_5",      duration: 1,    flip: false } to animations_queue_frames;
+        add AnimationFrame {costume_name: "halli-walk-v01b_6",      duration: 1,    flip: false } to animations_queue_frames;
+        add AnimationFrame {costume_name: "halli-walk-v01b_7",      duration: 2,    flip: false } to animations_queue_frames;
+        add AnimationFrame {costume_name: "halli-walk-v01b_4",      duration: 3,    flip: false } to animations_queue_frames;
+    } 
+
+    start_sound "jump";
+
+    add AnimationHeader {
+        num_pages: 1,
+        loop_start: 0,
+        loops: -1
+    }   to animations_queue_header;
+    add AnimationFrame {costume_name: "halli-jump-v01a_2",     duration: 1,    flip: false } to animations_queue_frames;
 
 }
 
 proc hal_anim_air_up {
-    start_sound "jump";
     one_frame "halli-jump-v01a_2";
 }
 proc hal_anim_air_down {
@@ -71,7 +98,6 @@ proc hal_anim_walk refresh = true{
     if $refresh {
         clear_animation;
     }
-    clear_animation;
     # Header
     add AnimationHeader {
         num_pages: 4,
@@ -156,8 +182,14 @@ func hal_state_animation(state, last_state) {
         }
         if "air" in $state {
             if "up" in $state {
-                hal_anim_air_up;
-                return "hal_anim_air_up";
+                if "ground" in $last_state{
+                    hal_anim_jump;
+                    return "hal_anim_jump";
+                }
+                else {
+                    hal_anim_air_up;
+                    return "hal_anim_air_up";
+                }
             }
             if "down" in $state {
                 hal_anim_air_down;

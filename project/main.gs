@@ -71,6 +71,7 @@ proc loop {
   broadcast "tick_cosmetics";     # animation timing, decorative effects
   broadcast "tick_animation";     # execute animation player
   broadcast "tick_display";       # set positional offsets, scrolling. and scale
+  broadcast "tick_hitbox_view";
 
   broadcast "tick_zsort";         # execution order of sprites/clones for other broadcasts is undefined, so be careful.
 
@@ -84,4 +85,28 @@ proc loop {
 
 on "tick_000"{
   delete Solids;
+}
+
+onkey "g" {
+  player = ((player) % 2) + 1; 
+}
+
+onkey "h" {
+  hitbox_view = not hitbox_view;
+}
+
+onkey "f" {
+  fps_switch = (fps_switch + 1) % 4;
+  if fps_switch == 0 { # 30hz
+    delta_time = 2;
+  }
+  if fps_switch == 1 { # 60hz
+    delta_time = 1;
+  }
+  if fps_switch == 2 { # 165hz
+    delta_time = 60/165; 
+  }
+  if fps_switch == 3 { # 20hz
+    delta_time = 3;
+  }
 }

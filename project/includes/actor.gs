@@ -99,7 +99,10 @@ func accelerate (vx, ax, accumulated_ax, max = "Infinity") ContinuousVelocity{
     return ContinuousVelocity{v0: $vx, v1: vx_2, dx: vx_2, a: $accumulated_ax + (vx_2 - $vx)};
 }
 
+# note about acceleration functions: seems to be a bad idea to use more than one per timestep due to delta time shenanigans
 func accelerate_advanced (v, a, accumulated_a, max = "Infinity") ContinuousVelocity {
+
+    
     local saturation_delta_time = delta_time; # initial value means we don't know when velocity will max out.
     local v1 = $v + $a * delta_time;
 

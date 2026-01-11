@@ -15,3 +15,7 @@ func round_16(x){
     local round_to = 256;
     return round ($x * round_to) / round_to;
 }
+
+func get_target_fps(){
+    return 60 / delta_time;
+}

@@ -1,11 +1,12 @@
 # note: don't include comments in the same line as a macro
 #20/16
-%define max_walk    1.25 
+%define max_walk    19.8/16
 
-%define max_run    36/16
+%define max_run    35.8/16
 #384/65536
 %define accel_walk  1.5/16
 %define accel_run  1.5/16
+%define paf_accel_walk  1.5/128
 #-256/65536
 %define decel_still 0.0625  
 #-640/65536
@@ -37,9 +38,13 @@
 # estimate
 %define paf_jump_vel_smal (0.75)
 
-# blind guess
-%define paf_walk 1.875
+# mario's p-speed, less the silksong sprint multiplier, then smoothened to sqrt(2) and quantised to 1/256
+%define paf_walk 362/256
 
+# mario's p-speed 
+%define paf_run 3
+
+%define paf_decel 3/20
 # blind guess
 %define paf_max_fall 5
 
@@ -60,9 +65,7 @@ costumes
 
 
 var SPRITE_NAME = "Player";
-# player 1: halli
-# player 2: pafu
-var player = 2;
+
 
 # var airborne = 0;
 # var skid = 0;
@@ -83,10 +86,10 @@ proc boot{
     state_machine("play");
 
     if player == 1 {
-        last_hurtbox = "stand";
+        hurtbox = "stand";
     }
     if player == 2 {
-        last_hurtbox = "stand-paf";
+        hurtbox = "stand-paf";
     }
 
 }
@@ -193,9 +196,9 @@ proc x_control move = true{
     
 }
 proc hal_x_control move = true {
-    # if "ground" in state{
-    #     state_machine ("play.ground");
-    # }
+    # hurtbox changes
+    hurtbox = "stand";
+    switch_costume hurtbox;
 
     local new_state = "";
     if ctrl_left > 0 {
@@ -250,27 +253,72 @@ proc hal_x_control move = true {
 }
 
 proc paf_x_control {
-    # todo: make walking non-decreasing - use decelerate function?
+    hurtbox = "stand-paf";
+    switch_costume hurtbox;
+
+
+    local acceleration = 0;
+    local deceleration = 0;
+    local speed_max = "Infinity";
+    local speed_min = 0;
+
     local new_state = "";
     if ctrl_left > 0 {
-        xvel.v1 = -paf_walk;
-        xvel = accelerate_advanced(xvel.v1, 0, xvel.a);
+        if xvel.v1 > -paf_walk{
+            acceleration += -2 * paf_walk;
+            speed_max = -paf_walk;
+            # xvel = accelerate_advanced(xvel.v1, -2 * paf_walk, xvel.a, -paf_walk);
+
+        }
+        else {
+            speed_max = -paf_run;
+            if "ground" in state {
+                acceleration += -paf_accel_walk;
+                # xvel = accelerate_advanced(xvel.v1, -paf_accel_walk, xvel.a, -paf_run);
+            }
+        }
         new_state = "play.ground.walk.L";
     }
     else {
         if ctrl_right > 0 {
-            xvel.v1 = paf_walk;
-            xvel = accelerate_advanced(xvel.v1, 0, xvel.a);
+            if xvel.v1 < paf_walk{
+                acceleration += 2 * paf_walk;
+                speed_max = paf_walk;
+                # xvel = accelerate_advanced(xvel.v1, 2 * paf_walk, xvel.a, paf_walk);
+
+            }
+            else {
+                speed_max = paf_run;
+                if "ground" in state {
+                    deceleration += paf_accel_walk;
+                    # xvel = accelerate_advanced(xvel.v1, paf_accel_walk, xvel.a, paf_run);
+                }
+                else {
+                    # xvel = accelerate_advanced(xvel.v1, 0, xvel.a, paf_run);
+                }
+
+            }
             new_state = "play.ground.walk.R";
         }
         else{
-            xvel = decelerate_advanced(xvel.v1, 2 * paf_walk, xvel.a);
+            if abs(xvel.v1) > paf_walk{
+                deceleration += paf_decel;
+            }
+            else{
+                deceleration += paf_walk;
+            }
             new_state = "play.ground.idle";
         }
     }
 
     if new_state != "" and "ground" in state {
         state_machine (new_state);
+    }
+    if abs(acceleration) - abs(deceleration) >= 0 {
+        xvel = accelerate_advanced(xvel.v1, acceleration, xvel.a, speed_max);
+    }
+    else {
+        xvel = decelerate_advanced(xvel.v1, deceleration, xvel.a, speed_min);
     }
 }
 
@@ -452,7 +500,7 @@ proc animation_timing{
     # But because I haven't completely figured this system out yet, this proc also has some state changes. 
 
 
-
+    # TODO: store animation name explicitly in state (for stuff like air running)
     if "ground" in state or "skid" in state{
         ground_animation;
         stop_this_script;

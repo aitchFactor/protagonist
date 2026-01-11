@@ -102,3 +102,4 @@ act 4:
 tips:
     - when changing a function/proc, make sure you check every existing instance of it.
     
+    - try to minimise empty space around hitbox graphics if you can, since it seems to affect the collision properties.

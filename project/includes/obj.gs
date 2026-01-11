@@ -14,7 +14,7 @@ var y_position;
 var x_scroll;
 var y_scroll;
 
-var last_hurtbox; # hurtbox also means collision boxes.
+var hurtbox; # hurtbox also means collision boxes.
 
 var state;
 
@@ -48,7 +48,7 @@ proc sprite_boot {
     delete animations_queue_frames;
     delete current_animation_buffer;
 
-    last_hurtbox = 0;
+    hurtbox = 0;
     set_size 100;
 
     set_rotation_style_left_right;
@@ -200,10 +200,16 @@ on "tick_zsort" {
 }
 
 on "tick_000"{
-    switch_costume last_hurtbox;
+    switch_costume hurtbox;
     set_size 800;
     goto x_position + x_scroll, y_position + y_scroll;
     set_size 100;
+    # if costume_name() == "stand-paf"{
+    #     set_size 100;
+    # }
+    # else {
+    #     set_size 200;
+    # }
 
 }
 
@@ -224,8 +230,14 @@ on "tick_display"{
 
 }
 
+on "tick_hitbox_view"{
+    if hitbox_view {
+        switch_costume(hurtbox);
+    }
+}
+
 on "tick_cosmetics"{
-    last_hurtbox = costume_number();
+    hurtbox = costume_number();
 }
 
 on "tick_animation"{

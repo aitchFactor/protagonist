@@ -36,3 +36,11 @@ struct Solid{
 
 
 list Solid Solids;
+
+var hitbox_view;
+
+var fps_switch;
+
+# player 1: halli
+# player 2: pafu
+var player = 1;

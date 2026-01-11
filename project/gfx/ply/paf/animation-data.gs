@@ -49,7 +49,21 @@ proc paf_anim_walk_step {
         loops: 0
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 6,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_1",      duration: 11,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_2",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_3",      duration: 10,    flip: false } to animations_queue_frames;
+
+}
+proc paf_anim_walk_land {
+    clear_animation;
+    # Header
+    add AnimationHeader {
+        num_pages: 3,
+        loop_start: 0,
+        loops: 0
+    }   to animations_queue_header;
+    # Frames
     add AnimationFrame {costume_name: "pafu-walk_1",      duration: 9,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-walk_2",      duration: 9,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-walk_3",      duration: 9,    flip: false } to animations_queue_frames;
@@ -139,7 +153,7 @@ func paf_state_animation(state, last_state) {
             if "walk"  in $state {
                 local refreshed = false;
                 if "air" in $last_state{
-                    paf_anim_walk_step;
+                    paf_anim_walk_land;
                     refreshed = true;
                 }
                 if "skid" in $last_state{
