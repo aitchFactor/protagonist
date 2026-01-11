@@ -6,7 +6,7 @@
 #384/65536
 %define accel_walk  1.5/16
 %define accel_run  1.5/16
-%define paf_accel_walk  1.5/128
+%define paf_accel_walk  0;
 #-256/65536
 %define decel_still 0.0625  
 #-640/65536
@@ -39,14 +39,16 @@
 %define paf_jump_vel_smal (0.75)
 
 # mario's p-speed, less the silksong sprint multiplier, then smoothened to sqrt(2) and quantised to 1/256
-%define paf_walk 362/256
+%define paf_walk 1.5
 
 # mario's p-speed 
-%define paf_run 3
+%define paf_run 3.18
 
-%define paf_decel 3/20
+%define paf_decel paf_run/20
 # blind guess
 %define paf_max_fall 5
+
+%define paf_skid_threshold 2
 
 %include includes/actor.gs
 %include gfx/ply/hal/animation-data.gs
@@ -264,33 +266,50 @@ proc paf_x_control {
 
     local new_state = "";
     if ctrl_left > 0 {
+        new_state = "play.ground.walk.L";
+
         if xvel.v1 > -paf_walk{
-            acceleration += -2 * paf_walk;
             speed_max = -paf_walk;
+
+            if xvel.v1 > paf_skid_threshold { # braking from a sprint
+                acceleration += -paf_decel;
+                new_state = "play.ground.skid.L";
+            }
+            else {
+                acceleration += -2 * paf_walk;
+            }
             # xvel = accelerate_advanced(xvel.v1, -2 * paf_walk, xvel.a, -paf_walk);
 
         }
-        else {
+        else { # accelerating into a sprint
             speed_max = -paf_run;
             if "ground" in state {
                 acceleration += -paf_accel_walk;
                 # xvel = accelerate_advanced(xvel.v1, -paf_accel_walk, xvel.a, -paf_run);
             }
         }
-        new_state = "play.ground.walk.L";
     }
     else {
         if ctrl_right > 0 {
+            new_state = "play.ground.walk.R";
+
             if xvel.v1 < paf_walk{
-                acceleration += 2 * paf_walk;
                 speed_max = paf_walk;
+
+                if xvel.v1 < -paf_skid_threshold { # braking from sprint
+                    acceleration += paf_decel;
+                    new_state = "play.ground.skid.R";
+                }
+                else {
+                    acceleration += 2 * paf_walk;
+                }
                 # xvel = accelerate_advanced(xvel.v1, 2 * paf_walk, xvel.a, paf_walk);
 
             }
             else {
                 speed_max = paf_run;
                 if "ground" in state {
-                    deceleration += paf_accel_walk;
+                    acceleration += paf_accel_walk;
                     # xvel = accelerate_advanced(xvel.v1, paf_accel_walk, xvel.a, paf_run);
                 }
                 else {
@@ -298,7 +317,6 @@ proc paf_x_control {
                 }
 
             }
-            new_state = "play.ground.walk.R";
         }
         else{
             if abs(xvel.v1) > paf_walk{
