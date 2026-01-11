@@ -105,6 +105,7 @@ act 4:
 - done: direction lock
 
     - puff projectile, state 
+        - make delta time implementation for puff animation less horrible
     
 clones can't realistically impact the game until one frame after spawning, so if they have to be instant, consider a hitbox on the clone spawner.
 

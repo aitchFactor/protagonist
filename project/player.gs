@@ -305,6 +305,15 @@ proc hal_x_control move = true {
         d2 = -decel_still;
         s = max_run * bool_to_sign(ctrl_right > 0); # right => positive
         # z = 0;
+        if "puff" in state {
+            # limit puff speed to walking (similar to SMW2)
+            # also nerfs puff as a stall option in midair.
+            # todo: consider puff charge behaviour
+            a1 = accel_walk;
+            a2 = decel_walk;
+            d2 = -decel_still;
+            s = max_walk * bool_to_sign(ctrl_right > 0);
+        }
     }
     else {
         # a1 = 0;
