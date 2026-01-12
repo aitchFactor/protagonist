@@ -12,12 +12,12 @@ proc hal_anim_idle {
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "halli-stand-v01b_4",     duration: 5,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01b_1",     duration: 7,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01b_2",     duration: 12,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01b_3",     duration: 12,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01b_2",     duration: 12,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-stand-v01b_1",     duration: 5,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand_4",     duration: 5,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand_1",     duration: 7,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand_2",     duration: 12,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand_3",     duration: 12,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand_2",     duration: 12,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-stand_1",     duration: 5,    flip: false } to animations_queue_frames;
 }
 
 proc hal_anim_jumpsquat {
