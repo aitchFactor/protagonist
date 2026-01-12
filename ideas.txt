@@ -80,7 +80,7 @@ act 4:
 
 - include sounds as part of animation data?
 
-- todo: add soft platforms
+- todo: make pafu's hurtbox smaller when she does a dash step
 
 - todo: add scrolling
 
@@ -94,7 +94,7 @@ act 4:
 
 - todo: control lock
 
-
+- todo: test platform snap with ceilings
 
 - get frame data for shaman crest (pafu's attacks)
 
@@ -114,6 +114,10 @@ keypress variables are measured in frames, but other times are measured in real 
         pafu is sometimes considered grounded for 1 rendered frame if she clips a corner while jumping diagonally up.
         
         y value oscillates at the subpixel level if gravity is not high enough to move 1 pixel per frame - happens to pafu at 30hz and both characters at higher hz
+        
+        halli and pafu's jump heights aren't exactly the same, potentially due to rounding error
+        
+        game start is very laggy with compiler disabled; this is because of several "broadcast and wait" layers - it's practically lagless when they're all set to normal broadcasts, but I don't really want to do that.
         
 
 
@@ -141,3 +145,5 @@ tips:
 
 - done: halli puff animation (basic)
 - done: direction lock
+
+- done: add soft platforms
