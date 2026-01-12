@@ -102,6 +102,8 @@ act 4:
 
 - todo: coyote time
 
+- get frame data for shaman crest (pafu's attacks)
+
 - done: direction lock
 
     - puff projectile, state 
@@ -113,12 +115,14 @@ pafu charge attack recoil = dash???
 
 check direction behaviour re: projectile throw in other games
 
-
+keypress variables are measured in frames, but other times are measured in real time (1 = 1/60 seconds)
     
 
     known bugs:
         pafu doesn't have a proper turnaround animation yet.
-
+        
+        pafu is sometimes considered grounded for 1 rendered frame if she clips a corner while jumping diagonally up.
+        
 
 
 tips:

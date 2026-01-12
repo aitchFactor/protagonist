@@ -221,10 +221,10 @@ on "tick_000"{
 
 on "tick_display"{
     # round the "true" positional values to smooth out floating point error
-    x_position = round_16(x_position() - x_scroll);
-    y_position = round_16(y_position() - y_scroll);
-    x_scroll = round_16(x_scroll);
-    y_scroll = round_16(y_scroll);
+    x_position = round_256(x_position() - x_scroll);
+    y_position = round_256(y_position() - y_scroll);
+    x_scroll = round_256(x_scroll);
+    y_scroll = round_256(y_scroll);
 
     point_in_direction this_direction * (-bool_to_sign(flipped));
 

@@ -3,9 +3,9 @@
 
 # note: don't include comments in the same line as a macro
 #20/16
-%define max_walk    19.8/16
+%define max_walk    317/256
 
-%define max_run    35.8/16
+%define max_run    573/256
 #384/65536
 %define accel_walk  1.5/16
 %define accel_run  1.5/16
@@ -53,7 +53,7 @@
 
 %define paf_skid_threshold 2
 
-%define puff_cooldown round (24 / delta_time)
+%define puff_cooldown 24
 
 %include gfx/ply/hal/animation-data.gs
 %include gfx/ply/paf/animation-data.gs
@@ -76,10 +76,11 @@ var SPRITE_NAME = "Player";
 
 var jump_hold;
 var jump_buffered;
-var direction_lock;
-var x_control_lock; # currently unused
-var y_control_lock; # currently unused
-var puff_timer;
+var Timer direction_lock;
+var Timer x_control_lock; # currently unused
+var Timer y_control_lock; # currently unused
+var Timer puff_timer;
+var Timer coyote_timer;
 
 
 proc boot{
@@ -92,10 +93,11 @@ proc boot{
     grounded = 0;
     jump_hold = 0;
     jump_buffered = 0;
-    direction_lock = 0;
-    x_control_lock = 0;
-    y_control_lock = 0;
-    puff_timer = 0;
+    direction_lock = Timer{};
+    x_control_lock = Timer{};
+    y_control_lock = Timer{};
+    puff_timer = Timer{};
+    coyote_timer = Timer{};
     set_rotation_style_left_right;
     state_machine("play");
 
@@ -130,7 +132,7 @@ proc state_machine new_state = "boot"{
         stop_this_script;
     }
 
-    if "play" in new_state and "puff" in state and puff_timer > round(puff_cooldown * 0.5) {
+    if "play" in new_state and "puff" in state and puff_timer.current > (puff_cooldown * 0.5) {
         stop_this_script;
     }
 
@@ -208,7 +210,7 @@ proc state_machine new_state = "boot"{
 
 
     ### effects ###
-    if direction_lock <= 0 {
+    if direction_lock.current <= 0 {
         state_to_direction;
     }
 }
@@ -223,12 +225,12 @@ proc state_to_direction {
 }
 
 proc puff_control {
-    if ctrl_b > 0 and ctrl_b <= (4/delta_time) and puff_timer <= 0 { # 4 frame buffer.
+    if ctrl_b > 0 and ctrl_b <= (4/delta_time) and puff_timer.current <= 0 { # 4 frame buffer.
         
         state_machine("play.puff");
         if "puff" in state {
-            puff_timer = puff_cooldown;
-            direction_lock = round(puff_timer * 0.5);
+            puff_timer.current = puff_cooldown;
+            direction_lock.current = puff_cooldown * 0.5;
             # halli: puff stalls momentum
             if player == 1 and yvel.v1 < 0 {
                 yvel.v1 = 0;
@@ -250,7 +252,7 @@ proc puff_control {
 
     }
 
-    if puff_timer == round (puff_cooldown * 0.5) {
+    if puff_timer.current <= (puff_cooldown * 0.5) and puff_timer.previous > (puff_cooldown * 0.5) {
         state_machine("play");
     }
 
@@ -311,63 +313,29 @@ proc hal_x_control move = true {
             # todo: consider puff charge behaviour
             a1 = accel_walk;
             a2 = decel_walk;
-            d2 = -decel_still;
-            s = max_walk * bool_to_sign(ctrl_right > 0);
         }
     }
     else {
         # a1 = 0;
         # a2 = 0;
-        d1 = -decel_still;
-        d2 = -decel_still;
+        if grounded {
+            d1 = -decel_still;
+            d2 = -decel_still;
+        }
         s = xvel.v1;
         # z = 0;
-    }
-    # if ctrl_left > 0 {
-    #     if xvel.v1 <= 0 {
-    #         if $move {
-    #             xvel = accelerate_advanced(xvel.v1, -accel_run, xvel.a, -max_run);
-    #         }
-    #         new_state = ("play.ground.walk.L");
-    #     }
-    #     else {
-    #         if $move {
-    #             xvel = accelerate_advanced(xvel.v1, -decel_run, xvel.a, -max_run);
-    #         }
-
-    #         new_state = ("play.ground.skid.L");
-    #     }
-    # }
-    # else{
-    #     if ctrl_right > 0 {
-    #         if xvel.v1 >= 0 {
-    #             if $move{
-    #                 xvel = accelerate_advanced(xvel.v1, accel_run, xvel.a, max_run);
-    #             }
-    #             new_state = ("play.ground.walk.R");
-
-    #         }
-    #         else {
-    #             if $move {
-    #                 xvel = accelerate_advanced(xvel.v1, decel_run, xvel.a, max_run);
-    #             }
-    #             new_state = ("play.ground.skid.R");
-    #         }
-    #     }
-    #     else{
-    #         if xvel.v1 == 0 {
-    #             new_state = ("play.ground.idle");
-    #         }
-            
-    #         if $move {
-    #             if "ground" in state{
-    #                 xvel = decelerate_advanced(xvel.v1, decel_still, xvel.a);
-
-    #             }
-    #         }
         
-    #     }
-    # }
+    }
+
+    if "puff" in state {
+        d2 = -decel_still;
+        if ctrl_left > 0 or ctrl_right > 0 {
+            s = max_walk * bool_to_sign(ctrl_right > 0);
+        }
+        else{
+            s = max_walk * bool_to_sign(xvel.v1 > 0);
+        }
+    }
     xvel = accelerate_saturation (xvel.a, xvel.v1, a1, a2, d1, d2, s, z);
 
 
@@ -496,8 +464,12 @@ proc y_control move = true{
     if grounded and not ("ground" in state) {
         state_machine ("play.ground");
     }
-    if not grounded and not ("air" in state) {
-        state_machine ("play.air");
+    if not grounded {
+        if not ("air" in state){
+            state_machine ("play.air");
+            coyote_timer.current = 2;
+        }
+        
     }
 
     if player == 1 {
@@ -526,7 +498,7 @@ proc hal_y_control move = true {
         jump_hold = 0;
     }
 
-    if grounded {
+    if grounded or coyote_timer.current > 0 {
         jump_hold = 0;
 
         # Jump
@@ -555,7 +527,7 @@ proc hal_y_control move = true {
 
     if $move {
         local gravity = fall_gravity;
-        if ctrl_a > 0 or (yvel.v1 <= 0 and puff_timer >= round(puff_cooldown * 0.75)) {
+        if ctrl_a > 0 or (yvel.v1 <= 0 and puff_timer.current >= puff_cooldown * 0.75) {
             gravity = jump_gravity;
         }
         yvel = accelerate_advanced(yvel.v1, -gravity, yvel.a, -max_fall);
@@ -573,7 +545,7 @@ proc paf_y_control {
         jump_hold = 0;
     }
 
-    if grounded {
+    if grounded or coyote_timer.current > 0 {
         jump_hold = 0;
 
         # Jump
@@ -646,7 +618,7 @@ proc air_animation{
 
     }
 
-    if direction_lock <= 0 {
+    if direction_lock.current <= 0 {
         if ctrl_right > 0 {
 
             this_direction = (90);
@@ -677,7 +649,7 @@ proc animation_timing{
         stop_this_script;
     }
 
-    # if puff_timer == puff_cooldown {
+    # if puff_timer.current == puff_cooldown {
     #     state_machine ("play.puff");
     # }
 
@@ -699,11 +671,14 @@ proc player_tick{
 
 }
 
-on "tick_000"{
-    direction_lock -= 1;
-    puff_timer -= 1;
 
-    if direction_lock == 0 {
+
+on "tick_000"{
+    direction_lock  = decrement_timer(direction_lock);
+    puff_timer      = decrement_timer(puff_timer);
+    coyote_timer    = decrement_timer(coyote_timer);
+
+    if timer_boundary_crossed(direction_lock, 0){
         state_to_direction;
     }
 }

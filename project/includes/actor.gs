@@ -206,7 +206,7 @@ func accelerate_saturation (acc, v, a1, a2, d1, d2, s = "Infinity", z = 0) Conti
     local z = $z * sign;
 
     # case 1: velocity is below zero (accelerate with a2)
-    
+
     if v < z {
         accelerate_saturation_vel = accelerate_advanced(v, a2, $acc, s);
         acceleration_saturation_return_case = AccelerationSaturationCase.UnderBounds;
@@ -347,10 +347,10 @@ proc speedcaps{
  = 0;
     collision_y = 0;
 
-    xvel.v1 = round_16(xvel.v1);
-    yvel.v1 = round_16(yvel.v1);
-    xvel.dx = round_16(xvel.dx);
-    yvel.dx = round_16(yvel.dx);
+    xvel.v1 = round_256(xvel.v1);
+    yvel.v1 = round_256(yvel.v1);
+    xvel.dx = round_256(xvel.dx);
+    yvel.dx = round_256(yvel.dx);
 
     if abs(xvel.v1) > speedcap_x{
         xvel.v1 = speedcap_x * sign_of(xvel.v1);

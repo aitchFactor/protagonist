@@ -21,7 +21,7 @@ proc anim_side_light duration = 25 {
         loop_start: 1,
         loops: -1
     }   to animations_queue_header;
-    add AnimationFrame {costume_name: "smoke-puff_1",      duration: $duration - round(2.4 / delta_time),    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff_1",      duration: $duration - 5,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "smoke-puff_2",      duration: 1,    flip: false } to animations_queue_frames;
     set_rotation_style_left_right;
     # switch_costume "smoke-puff_1";
@@ -68,7 +68,7 @@ onclone {
 
 on "tick_000"{
     if clone_id != "root" {
-        self.lifetime -= 1;
+        self.lifetime -= delta_time;
 
         if self.lifetime <= 0 {
             delete_this_clone;
@@ -103,12 +103,12 @@ on "tick_008" {
 }
 
 proc puff_tick_display {
-    x_position = round_16(x_position() - x_scroll);
-    y_position = round_16(y_position() - y_scroll);
-    self.x_position = round_16(self.x_position);
-    self.y_position = round_16(self.y_position);
-    x_scroll = round_16(x_scroll);
-    y_scroll = round_16(y_scroll);
+    x_position = round_256(x_position() - x_scroll);
+    y_position = round_256(y_position() - y_scroll);
+    self.x_position = round_256(self.x_position);
+    self.y_position = round_256(self.y_position);
+    x_scroll = round_256(x_scroll);
+    y_scroll = round_256(y_scroll);
 
     point_in_direction this_direction * (-bool_to_sign(flipped));
 
@@ -121,9 +121,9 @@ proc puff_tick_display {
 
 on "tick_cosmetics" {
     if clone_id != "root" {
-        animation_counter += 1;
+        animation_counter += delta_time;
     }
-}
+}   
 
 on "tick_display" {
     puff_tick_display;
