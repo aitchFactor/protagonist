@@ -453,13 +453,24 @@ proc paf_x_control {
     }
 }
 
+
 var grounded; 
-proc y_control move = true{
-    # dirty grounded check... don't tell anyone about this...
+proc check_grounded {
+    if yvel.v1 > 0 {
+        # It's impossible, right? right...?
+        stop_this_script;
+    }
+
     last_y = y_position;
     change_y -1;
-    grounded = is_colliding();
+    grounded = is_colliding_solid("y", -1);
     set_y last_y;
+}
+
+proc y_control move = true{
+    # dirty grounded check... don't tell anyone about this...
+    # (pafu's gravity isn't high enough for a collision check from the previous frame to succeed)
+    check_grounded;
     
     if grounded and not ("ground" in state) {
         state_machine ("play.ground");

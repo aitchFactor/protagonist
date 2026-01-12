@@ -46,6 +46,30 @@ struct Projectile{
     follow = ""
 }
 
+enum BgLayerType {
+    None    = "root",
+    Picture = "gfx",
+    Solid   = "solid",
+    Soft    = "soft"
+    # maybe some gimmicky parallax stuff as well
+    # or horizontal one-way walls 
+}
+# What could possibly go wrong?
+# Note: up to 14 bits can be packed in a colour value; the top 5 bits of red and green and the top 4 bits of blue.
+enum BgLayerTypeColour {
+    None    = "0x000000",
+    Picture = "0xf8f8f0",
+    Solid   = "0x00f800",
+    Soft    = "0x00f8f8"
+}
+
+enum BgLayerTypeBit {
+    # None    = "0x000000",
+    # Picture = "0xf8f8f0",
+    Solid   = 1,
+    Soft    = 2
+}
+
 list Projectile projectile_queue;
 
 

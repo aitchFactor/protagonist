@@ -5,8 +5,8 @@ var SPRITE_NAME = "Unnamed Actor";
 
 # anything that has physics in the game world and collides with solids.
 enum CollideAction {
-    Nothing,
-    Stop,
+    Nothing, # Actor will still be blocked from entering the solid, but attributes like xvel yvel will not be changed.
+    Stop,      # Set xvel and yvel to 0.
     Squish,
     
 }
@@ -37,6 +37,8 @@ var ContinuousVelocity yvel;
 var collision_x;
 var collision_y;
 
+var inside_soft;
+
 
 
 # var x_vel;
@@ -57,9 +59,9 @@ proc actor_boot {
     xvel = ContinuousVelocity{};
     yvel = ContinuousVelocity{};
 
-    collision_x
- = 0;
+    collision_x = 0;
     collision_y = 0;
+    inside_soft = false;
 
     # x_vel = 0;
     # y_vel = 0;
@@ -72,6 +74,7 @@ proc actor_boot {
 
 func get_colliding() Solid{
     # return the struct entry of the first colliding solid.
+    # this means that any sprite can mark itself as a Solid, although we cannot detect properties of individual clones of a sprite.
     local i = 0;
     repeat length Solids {
         i++;
@@ -81,10 +84,73 @@ func get_colliding() Solid{
     }
     return Solid{};
 }
-func is_colliding(){
-    Solid result = get_colliding();
 
-    if result.raw_name != ""{
+var Solid get_colliding_type_local;
+func get_colliding_type() {
+    # Check the type by the colour of the detected collision.
+    # Each type's priority is implemented here.
+
+    get_colliding_type_local = get_colliding();
+
+    if get_colliding_type_local.raw_name == "" {
+        return BgLayerType.None;
+    }
+    if touching_color(BgLayerTypeColour.Solid) {
+        return BgLayerType.Solid;
+    }
+    if touching_color(BgLayerTypeColour.Soft) {
+        return BgLayerType.Soft;
+    }
+    # Picture should be the lowest priority.
+    if touching_color(BgLayerTypeColour.Picture) {
+        return BgLayerType.Picture;
+    }
+
+    return BgLayerType.None;
+}
+
+func get_colliding_types() {
+    # Get the collision of all layers in a ?-bit integer.
+    # But just remember, each pixel can currently only be of one layer type.
+    local res = 0;
+    get_colliding_type_local = get_colliding();
+
+    if get_colliding_type_local.raw_name == "" {
+        return 0;
+    }
+    if touching_color(BgLayerTypeColour.Solid) {
+        res += BgLayerTypeBit.Solid;
+    }
+    if touching_color(BgLayerTypeColour.Soft) {
+        res += BgLayerTypeBit.Soft;
+    }
+    # Picture should be the lowest priority.
+    # if touching_color(BgLayerTypeColour.Picture) {
+    #     res += 
+    # }
+
+    return res;
+}
+
+func is_colliding_solid(axis, sign){
+    local last_costume = costume_number();
+    # try to switch to the soft variant of the current hitbox costume, if there is one
+    switch_costume costume_name() & "-soft";
+
+    # If not overlapping a soft platform, reset the variable.
+
+    local collisions = get_colliding_types();
+    switch_costume last_costume;
+    touching_soft = floor(collisions / BgLayerTypeBit.Soft) % 2;
+
+    # if going down, not overlapping last frame, and touching now
+    if ($axis == "y" and $sign == -1) and (not inside_soft) and touching_soft {
+        return true;
+    }
+
+    inside_soft = touching_soft;
+
+    if get_colliding_type() == BgLayerType.Solid{
         return true;
     }
     return false;
@@ -285,6 +351,11 @@ proc on_collide sign, axis, collide_action{
     }
 
 
+proc check_soft {
+    # Ignore a collision if the collision type is with a soft platform.
+    # We do so by switching the hitbox to its soft variant and checking the collision direction. 
+    local type = get_colliding_type();
+}
 
 
 proc move_x dx = 0, on_collide_action = CollideAction.Stop{
@@ -301,7 +372,8 @@ proc move_x dx = 0, on_collide_action = CollideAction.Stop{
         local last_x = x_position();
         change_x sign;
 
-        if is_colliding(){
+        if is_colliding_solid("x", sign){
+            # needs rework.
             set_x last_x;
             on_collide  sign, Axes.x,  $on_collide_action;
             if $on_collide_action != CollideAction.Nothing{
@@ -327,7 +399,7 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
         local last_y = y_position();
         change_y sign;
 
-        if is_colliding(){
+        if is_colliding_solid("y", sign){
             set_y last_y;
             on_collide sign, Axes.y,  $on_collide_action;
             if $on_collide_action != CollideAction.Nothing{

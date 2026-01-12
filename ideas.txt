@@ -62,15 +62,11 @@ act 4:
 
 - can functions take a behaviour as a parameter?
 
-- are there enums of some kind? (could use lists, but...)
-
 - consider structs for arbitrary actor-actor interactions
 
 - object inheritance retains all scripts even if they are redefined (they coexist)
 
 - use a list to track solids, but I need something else for actors because clones are more likely to be different from one another
-
-- figure out later: soft platforms
 
 - collision information ie wall detection slope detection? might have to come later 
 
@@ -92,22 +88,16 @@ act 4:
         - ledge hang/getup/jump
         - dash skid (proper)
 
-- done: add smw-style running jump
 
-- done: halli puff animation (basic)
 
 - todo: cooldown functionality (ie, move endlag)
 
 - todo: control lock
 
-- todo: coyote time
+
 
 - get frame data for shaman crest (pafu's attacks)
 
-- done: direction lock
-
-    - puff projectile, state 
-        - make delta time implementation for puff animation less horrible
     
 clones can't realistically impact the game until one frame after spawning, so if they have to be instant, consider a hitbox on the clone spawner.
 
@@ -122,6 +112,8 @@ keypress variables are measured in frames, but other times are measured in real 
         pafu doesn't have a proper turnaround animation yet.
         
         pafu is sometimes considered grounded for 1 rendered frame if she clips a corner while jumping diagonally up.
+        
+        y value oscillates at the subpixel level if gravity is not high enough to move 1 pixel per frame - happens to pafu at 30hz and both characters at higher hz
         
 
 
@@ -138,3 +130,14 @@ tips:
 
 "type mismatch: expected value, but got struct"
     - means that a variable was assigned from the struct list without that variable also being declared as the same type.
+
+
+
+- done: coyote time
+
+- done: make delta time implementation for puff animation less horrible
+
+- done: add smw-style running jump
+
+- done: halli puff animation (basic)
+- done: direction lock
