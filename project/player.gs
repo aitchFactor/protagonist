@@ -463,7 +463,7 @@ proc check_grounded {
         stop_this_script;
     }
 
-    last_y = y_position;
+    last_y = y_position();
     change_y -1;
     grounded = is_colliding_solid("y", -1);
     set_y last_y;

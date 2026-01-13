@@ -144,6 +144,8 @@ keypress variables are measured in frames, but other times are measured in real 
     
 
     known bugs:
+        halli can get stuck inside floors that run across a scroll seam.
+        
         pafu doesn't have a proper turnaround animation yet.
         
         pafu is sometimes considered grounded for 1 rendered frame if she clips a corner while jumping diagonally up.

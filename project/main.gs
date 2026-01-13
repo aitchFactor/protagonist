@@ -113,6 +113,10 @@ onkey "h" {
   hitbox_view = not hitbox_view;
 }
 
+onkey "b" {
+  show_scroll_target = not show_scroll_target;
+}
+
 onkey "f" {
   fps_switch = (fps_switch + 1) % 4;
   if fps_switch == 0 { # 30hz

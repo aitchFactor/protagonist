@@ -1,16 +1,375 @@
 %include includes/solid.gs
+
 costumes 
-"gfx/bg/collision/*.png",
+"blank.png",
+"gfx/bg/black.png",
+"gfx/bg/*/*.png",
 ;
+%define chunk_width 256
+%define chunk_height 192
 var SPRITE_NAME = "Level";
+var chunk_name;
+
+var clone_layer_id;
+var clone_segment_id;
+
+
+
+
 
 on "boot" {
+    if true {
+        delete_this_clone;
+    }
+    goto 0, 0;
+    hurtbox = "blank";
     z_position = 128;
+    clone_layer_id = BgLayerType.None;
+    clone_segment_id = -1;
+    map_info = MapInfo{};
+    chunk_info = ChunkInfo{};
+
+    map_info = MapInfo{
+        map_name: "scroll-test",
+        map_left_edge: 0,
+        map_top_edge:  0,
+        map_right_edge: 2,
+        map_bottom_edge: 2};
+
+
+    broadcast_and_wait "load_map";
 }
 
-on "tick_000"{
-    switch_costume "undergrowth_v00_collision";
+onclone {
+    clone_id = clone_segment_id & "_" & clone_layer_id;
+    segment_zoomed_out_display;
+
 }
-on "tick_display"{
-    switch_costume "undergrowth_v00";
+
+proc segment_zoomed_out_display {
+    # receive the chunk info and arrange into a grid depending on what clone this is.
+
+    if clone_layer_id == BgLayerType.None {
+        if true{
+            delete_this_clone;
+        }
+        hurtbox = "blank";
+    }
+
+    if clone_segment_id < 1 or clone_segment_id > 9 {
+        if true {
+            delete_this_clone;
+        }
+        stop_this_script;
+    }
+
+    chunk_name = map_info.map_name;
+
+    local chunk_x = map_info.map_left_edge + chunk_info.chunk_x;
+    local chunk_y = map_info.map_top_edge + chunk_info.chunk_y;
+
+    chunk_x += (clone_segment_id % 3) - 1;
+    chunk_y += floor((clone_segment_id - 1) / 3) - 1;
+
+    local segment_x = chunk_info.viewport_x + chunk_width * chunk_x;
+    local segment_y = chunk_info.viewport_y + chunk_height * chunk_y;
+
+    if clone_layer_id == BgLayerType.Picture {
+         chunk_name = chunk_name & "_" & BgLayerType.Picture;
+    }
+    if clone_layer_id == BgLayerType.Solid {
+        chunk_name = chunk_name & "_" & BgLayerType.Solid;
+    }
+    if clone_layer_id == BgLayerType.Soft {
+        chunk_name = chunk_name & "_" & BgLayerType.Soft;
+    }
+
+    chunk_name = chunk_name & "_" & chunk_x & "," & -chunk_y;
+
+    if clone_layer_id == BgLayerType.Picture {
+        hurtbox = "blank";
+    }
+    else {
+        hurtbox = chunk_name;
+    }
+
+    switch_costume "blank";
+    switch_costume hurtbox;
+    x_position = segment_x;
+    y_position = segment_y;
+
+    # write the clone information to our Solids tracker.
+    init_properties;
+}
+proc set_camera_target {
+    if "player"."xvel.v1" == 0 or abs("player"."xvel.v1") >= 1.5 or abs("player"."x position") > 16 {
+        camera_target_x = "player"."x_position" + 12 * sign_of("player"."direction");
+    }
+
+    if "player"."grounded" {
+        camera_target_y = "player"."last_grounded_y" + 20;
+    }
+    else {
+            if ("player"."y position") * sign_of ("player"."yvel.v1") > 20{
+                camera_target_y = "player"."y_position" - 20 * sign_of ("player"."y_position");
+
+            }
+        }
+
+}
+proc pan_to_target {
+    # pan to the scroll target with a bit of rubberbanding and smoothing.
+    # confine scrolling to the scroll bounds.
+    local xmax = ((map_info.map_right_edge - 1) - map_info.map_left_edge) * chunk_width;
+    local ymin = (map_info.map_top_edge - (map_info.map_bottom_edge - 1)) * chunk_height;
+    camera_target_x = clamp(camera_target_x, 0, xmax);
+    camera_target_y = clamp(camera_target_y, ymin, 0);
+
+    local sign = sign_of(camera_target_x > camera_x);
+
+    local speed = ("player"."xvel.v1" * 1.2) * sign;
+    if speed < 0.5 {
+        speed = 0.5;
+    }
+    speed *= delta_time;
+    if abs(camera_x - camera_target_x) < speed {
+        camera_x = camera_target_x;
+    }
+    else {
+        camera_x += speed * sign;
+    }
+
+    camera_speed_x = speed;
+    show camera_speed_x;
+    # camera_y = camera_target_y;
+    sign = sign_of(camera_target_y > camera_y);
+    speed = ("player"."yvel.v1" * 1.2) * sign;
+    if speed < 1.5 {
+        speed = 1.5;
+    }
+    speed *= delta_time;
+
+    if abs(camera_y - camera_target_y) < speed {
+        camera_y = camera_target_y;
+    }
+    else {
+        camera_y += speed * sign;
+    }
+    camera_speed_y = speed;
+    show camera_speed_y;
+
+}
+
+proc solve_segments {
+    # solve for the properties of the centre segment (5) based on the current camera position.
+    local viewport_x = 0;
+    local grid_relative_camera_x = (camera_x) % chunk_width;
+    local chunk_x = round(camera_x / chunk_width);
+    # if grid_relative_camera_x >= (chunk_width * 0.5){
+    #     # case 1: left half should be in camera
+    #     chunk_x = floor(camera_x / chunk_width);
+    # }
+    # else {
+    #     # case 2: right half should be in camera
+    #     chunk_x = floor(camera_x / chunk_width) - 1;
+    #     viewport_x -= chunk_width;
+    # }
+
+    local viewport_y = 0;
+    local grid_relative_camera_y = (camera_y) % chunk_height;
+    local chunk_y = round(camera_y / chunk_height);
+    # if grid_relative_camera_y >= (chunk_height * 0.5){
+    #     # case 1: bottom half should be in camera
+    #     chunk_y = floor(camera_y / chunk_height) + 1;
+    # }
+    # else {
+    #     # case 2: top half should be in camera
+    #     chunk_y = floor(camera_y / chunk_height);
+    #     viewport_y += chunk_height;
+    # }
+
+    viewport_x -= camera_x;
+    viewport_y -= camera_y;
+
+    chunk_info = ChunkInfo {
+        viewport_x: viewport_x,
+        viewport_y: viewport_y,
+        chunk_x: chunk_x,
+        chunk_y: chunk_y,
+    };
+}
+
+proc load_map{
+    if true {
+        delete_this_clone;
+    }
+    # create 2x2 clone grid
+    # _______
+    # |1 | 2| 3
+    # |--+--+--
+    # |4 | 5| 6
+    # ---+--+--
+    # |7 | 8| 9
+    # --------
+    # try to centre 5 on the camera.
+
+    clone_segment_id = 1;
+    repeat 9 {
+        clone_layer_id = BgLayerType.Picture;
+        clone;
+        clone_layer_id = BgLayerType.Solid;
+        clone;
+        clone_segment_id++;
+    }
+    clone_segment_id = 0;
+
+    solve_segments;
+
+
+    # clone_layer_id = BgLayerType.Soft;
+    # clone;
+    clone_layer_id = BgLayerType.None;
+}
+on "load_map" {# conjectural name
+    load_map;
+} 
+
+on "tick_000"{
+    if clone_layer_id == BgLayerType.None {
+        stop_this_script;
+    }
+
+    if clone_layer_id == BgLayerType.Picture {
+        hide;
+    }
+    else {
+        show;
+    }
+}
+on "tick_cosmetics"{
+    if hitbox_view {
+        
+        stop_this_script;
+    }
+
+    if clone_layer_id == BgLayerType.Picture {
+        
+        switch_costume chunk_name;
+        show;
+    }
+    else {
+        hide;
+    }
+}
+
+
+
+on "tick_302"{
+    if clone_id != "root" {
+        stop_this_script;
+    } 
+    set_camera_target;
+    pan_to_target;
+    solve_segments;
+
+}
+
+on "tick_303" {
+    if clone_id == "root" {
+        stop_this_script;
+    }
+    segment_zoomed_out_display;
+}
+
+
+
+on "set_debug_options"{
+    if clone_id != "root"{
+        stop_this_script;
+    }
+    
+
+    # nine_segment_view;
+
+
+
+}
+nowarp proc nine_segment_view {
+    G_game_state = "scroll_test";
+    forever {
+        solve_segments;
+        broadcast "tick_303";
+        broadcast "tick_display";
+
+        set_pen_color "0xff4040";
+        set_pen_size 2;
+
+        if key_pressed("space"){
+            camera_x += mouse_x() * sqrt(2) * 0.1;
+            camera_y += mouse_y() * sqrt(2) * 0.1;
+
+        }
+
+        cam_preview_x = 0;
+        cam_preview_y = 0;
+
+        top = cam_preview_y + 90;
+        right = cam_preview_x + 120;
+        bottom = cam_preview_y - 90;
+        left = cam_preview_x - 120;
+
+        erase_all;
+        goto cam_preview_x, cam_preview_y;
+        pen_down;
+        pen_up;
+        
+        goto left, top;
+        pen_down;
+        goto right, top;
+        goto right, bottom;
+        goto left, bottom;
+        goto left, top;
+        pen_up;
+    }
+}
+
+nowarp proc nametable_view {
+    G_game_state = "scroll_test";
+    forever {
+        broadcast "tick_302";
+        broadcast "tick_303";
+        broadcast "tick_display";
+
+        set_pen_color "0xff4040";
+        set_pen_size 2;
+
+        if key_pressed("space"){
+            camera_x += mouse_x() * sqrt(2) * 0.1;
+            camera_y += mouse_y() * sqrt(2) * 0.1;
+
+        }
+
+        cam_preview_x = (camera_x - chunk_width * 0.5) % chunk_width;
+        cam_preview_x -= chunk_width * 0.5 - 16;
+        cam_preview_y = (camera_y - chunk_height * 0.5) % chunk_height;
+        cam_preview_y -= chunk_height * 0.5 + 16;
+
+        top = cam_preview_y + 90;
+        right = cam_preview_x + 120;
+        bottom = cam_preview_y - 90;
+        left = cam_preview_x - 120;
+
+        erase_all;
+        goto cam_preview_x, cam_preview_y;
+        pen_down;
+        pen_up;
+        
+        goto left, top;
+        pen_down;
+        goto right, top;
+        goto right, bottom;
+        goto left, bottom;
+        goto left, top;
+        pen_up;
+    }
 }

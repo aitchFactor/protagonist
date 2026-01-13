@@ -479,5 +479,5 @@ on "tick_108"{
 on "tick_303" {
 
     x_scroll = -camera_x; 
-    y_scroll = camera_y;
+    y_scroll = -camera_y;
 }

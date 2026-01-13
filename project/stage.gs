@@ -77,6 +77,7 @@ list Projectile projectile_queue;
 list Solid Solids;
 
 var hitbox_view;
+var show_scroll_target;
 
 var fps_switch;
 
@@ -94,6 +95,7 @@ var camera_target_y;
 struct MapInfo {
     map_name = "",
     # all coordinates measured in chunk size.
+    # these work like python slices: [0:3] -> [0, 1, 2]
     map_left_edge   = 0,
     map_top_edge    = 0,
     map_right_edge  = 0,
