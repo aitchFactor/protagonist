@@ -81,6 +81,7 @@ var Timer x_control_lock; # currently unused
 var Timer y_control_lock; # currently unused
 var Timer puff_timer;
 var Timer coyote_timer;
+var last_grounded_y;
 
 
 proc boot{
@@ -88,6 +89,7 @@ proc boot{
     x_position = -32;
     y_position = 180;
     z_position = 255;
+    last_grounded_y = 0;
     this_direction = 90;
     walk_counter = 0;
     grounded = 0;
@@ -465,6 +467,10 @@ proc check_grounded {
     change_y -1;
     grounded = is_colliding_solid("y", -1);
     set_y last_y;
+
+    if grounded{
+        last_grounded_y = y_position;
+    }
 }
 
 proc y_control move = true{
@@ -727,4 +733,8 @@ on "tick_display"{
         hide;
     }
 }
-#idea: pack tile info into "touching colour" block
+
+
+onkey "l" {
+  yvel.v1 = 2;
+}

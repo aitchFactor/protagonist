@@ -74,6 +74,11 @@ proc loop {
     broadcast "tick_201";
     broadcast "tick_202";
     broadcast "tick_203";
+
+    ### after all actors have moved, move the camera
+    broadcast "tick_301";
+    broadcast "tick_302";
+    broadcast "tick_303";
   }
 
   broadcast "tick_cosmetics";     # animation timing, decorative effects

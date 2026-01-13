@@ -476,3 +476,8 @@ on "tick_000"{
 on "tick_108"{
     actor_tick;
 }
+on "tick_303" {
+
+    x_scroll = -camera_x; 
+    y_scroll = camera_y;
+}

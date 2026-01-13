@@ -89,6 +89,19 @@ var camera_y;
 var camera_target_x;
 var camera_target_y;
 
+# costume name of the top-left corner of the map. 
+
+struct MapInfo {
+    map_name = "",
+    # all coordinates measured in chunk size.
+    map_left_edge   = 0,
+    map_top_edge    = 0,
+    map_right_edge  = 0,
+    map_bottom_edge = 0,
+}
+
+var MapInfo map_info;
+
 struct ChunkInfo {
     viewport_x = 0,
     viewport_y = 0,

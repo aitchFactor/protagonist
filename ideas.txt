@@ -87,6 +87,8 @@ Collision shenanigans
 
 - todo: make pafu's hurtbox smaller when she does a dash step
 
+- todo: add camera pan on look up/look down
+
 - todo: add scrolling
     - make script to slice levels - done
     - solving for costume name from camera coordinates
@@ -118,6 +120,7 @@ Collision shenanigans
         - dash skid (proper)
 
 
+- todo: make halli idle in time with the bpm of stage music
 
 - todo: cooldown functionality (ie, move endlag)
 
@@ -151,6 +154,7 @@ keypress variables are measured in frames, but other times are measured in real 
         
         game start is very laggy with compiler disabled; this is because of several "broadcast and wait" layers - it's practically lagless when they're all set to normal broadcasts, but I don't really want to do that.
         
+        puff graphic doesn't show on screen, probably due to scroll displacement error
 
 
 tips:
@@ -168,6 +172,7 @@ tips:
     - means that a variable was assigned from the struct list without that variable also being declared as the same type.
 
 
+- not knowing exactly what the "x position" variable was really stung me today :(
 
 - done: coyote time
 

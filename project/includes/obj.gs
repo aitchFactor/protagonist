@@ -219,11 +219,15 @@ on "tick_000"{
 
 }
 
+on "tick_301" {
+    x_position = round_256(x_position() - x_scroll); # -> 10
+    y_position = round_256(y_position() - y_scroll);
+}
+
 on "tick_display"{
     # round the "true" positional values to smooth out floating point error
-    x_position = round_256(x_position() - x_scroll);
-    y_position = round_256(y_position() - y_scroll);
-    x_scroll = round_256(x_scroll);
+    
+    x_scroll = round_256(x_scroll); # -> -10;
     y_scroll = round_256(y_scroll);
 
     point_in_direction this_direction * (-bool_to_sign(flipped));
@@ -238,7 +242,10 @@ on "tick_display"{
 
 on "tick_hitbox_view"{
     if hitbox_view {
-        switch_costume(hurtbox);
+        switch_costume hurtbox;
+        set_size 800;
+        goto x_position + x_scroll, y_position + y_scroll;
+        set_size 100;
     }
 }
 
