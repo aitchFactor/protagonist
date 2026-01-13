@@ -83,3 +83,18 @@ var fps_switch;
 # player 1: halli
 # player 2: pafu
 var player = 1;
+
+var camera_x;
+var camera_y;
+var camera_target_x;
+var camera_target_y;
+
+struct ChunkInfo {
+    viewport_x = 0,
+    viewport_y = 0,
+    chunk_x    = 0,
+    chunk_y    = 0, 
+    
+}
+
+var ChunkInfo chunk_info;

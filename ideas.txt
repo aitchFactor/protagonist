@@ -17,7 +17,8 @@ halli and pafu get different music?
 s
 ## Levels
 recolour tilesets with different music for "variety" :)
-two sizes: 12x4 or 16x3
+three sizes: 12x4, 24x2, or 8x6
+    screens should be grouped by scrollable regions of 2 rows or 2 columns to mimic performant scrolling on the NES.
 what connects each area? 
 
 act 1: 
@@ -54,6 +55,10 @@ act 4:
         music: nightmare castle
 
 
+Collision shenanigans
+    Currently this is colour-based, so all collision information can technically be put in one image file.
+    However, the architecture is more complex than necessary for this because I don't know what could go wrong and we might need to switch to sprite-based collision. In the meantime, it should be ok to export a single collision layer as "solid".
+
 ## log
 
 - abstract object backend has some hazy stuff, like local x/y scroll values
@@ -83,8 +88,12 @@ act 4:
 - todo: make pafu's hurtbox smaller when she does a dash step
 
 - todo: add scrolling
-    - debug room coordinate view
+    - make script to slice levels - done
+    - solving for costume name from camera coordinates
+    - position clones at camera coords
+    - debug room coordinate view ?
     - pan function
+    - player control camera
     
 - scrolling in jump around simulator
     0. parameter setting (once)

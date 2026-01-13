@@ -41,6 +41,11 @@ proc boot {
   ctrl_sr = 0;
   ctrl_start = 0;
 
+  camera_x = 0;
+  camera_y = 0;
+  camera_target_x = 0;
+  camera_target_y = 0;
+
   broadcast_and_wait "boot";
   G_game_state = "play";
 
@@ -58,6 +63,7 @@ proc loop {
 
     ### solids ticks (collisions with actors)
     broadcast "tick_001";
+    broadcast "tick_002";
     broadcast "tick_008";
 
     ### actor tick (collisions with solids)

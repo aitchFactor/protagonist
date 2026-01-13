@@ -2,6 +2,7 @@
 %include gfx/ply/hal/animation-data.gs
 %include gfx/ply/paf/animation-data.gs
 costumes 
+"blank.png" as "000_blank",
 "gfx/ply/hal/*.png",
 "gfx/ply/paf/*.png",
 ;

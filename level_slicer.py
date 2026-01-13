@@ -51,7 +51,7 @@ def main(argv=None):
     parent_name = infp.parent.stem
     out_folder = folder / "project/gfx/bg" / parent_name
 
-    save_sliced(im, out_folder, infp.stem)
+    save_sliced(im, out_folder, parent_name + "_" + infp.stem)
     
 
 if __name__ == ("__main__"):
