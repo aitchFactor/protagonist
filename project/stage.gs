@@ -55,6 +55,7 @@ enum BgLayerType {
     # or horizontal one-way walls 
 }
 # What could possibly go wrong?
+# For more entities with colours that could interfere with this process, we could have all non-solids ghost themselves at the beginning of a tick.
 # Note: up to 14 bits can be packed in a colour value; the top 5 bits of red and green and the top 4 bits of blue.
 enum BgLayerTypeColour {
     None    = "0x000000",

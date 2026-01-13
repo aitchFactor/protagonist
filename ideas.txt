@@ -83,6 +83,26 @@ act 4:
 - todo: make pafu's hurtbox smaller when she does a dash step
 
 - todo: add scrolling
+    - debug room coordinate view
+    - pan function
+    
+- scrolling in jump around simulator
+    0. parameter setting (once)
+    1. entities touch player
+    2. player
+        - read parameters to get scroll type.
+            - set scroll speed and target based on position, velocity, and last grounded y-coordinate.
+        - solve screen coordinates from scroll coordinates (should be a function, probably)
+        
+    3. background
+        - spawns 2x2 grid of screens
+        - each clone writes x/y positions and costume name to a list
+        - caps scroll coordinates to scroll bounds
+        - solve screen coordinates (again) for accurate screen transitions
+        
+    4. global
+        - scroll tile positions
+    5. entities
 
 - todo: pafu
         - ledge hang/getup/jump
@@ -97,6 +117,9 @@ act 4:
 - todo: test platform snap with ceilings
 
 - get frame data for shaman crest (pafu's attacks)
+
+
+- todo: simplify background layers to have only 1 collision layer
 
     
 clones can't realistically impact the game until one frame after spawning, so if they have to be instant, consider a hitbox on the clone spawner.
