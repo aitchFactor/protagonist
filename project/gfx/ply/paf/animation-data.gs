@@ -40,8 +40,10 @@ proc paf_anim_air_down {
 
 }
 
-proc paf_anim_walk_step {
-    clear_animation;
+proc paf_anim_walk_step refresh = true {
+    if $refresh {
+        clear_animation;
+    }
     # Header
     add AnimationHeader {
         num_pages: 4,
@@ -49,7 +51,7 @@ proc paf_anim_walk_step {
         loops: 0
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 6,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-walk_1",      duration: 11,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-walk_2",      duration: 10,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-walk_3",      duration: 10,    flip: false } to animations_queue_frames;
@@ -69,10 +71,22 @@ proc paf_anim_walk_land {
     add AnimationFrame {costume_name: "pafu-walk_3",      duration: 9,    flip: false } to animations_queue_frames;
 
 }
+%define paf_turn_direction_lock 10
 proc paf_anim_walk_turn_around {
-    # coming soon...
-    paf_anim_walk_step;
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 5,
+        loop_start: 0,
+        loops: 0
+    }   to animations_queue_header;
 
+    direction_lock.current = paf_turn_direction_lock / paf_walk;
+    add AnimationFrame {costume_name: "pafu-stand_4",     duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-turn_1",      duration: paf_turn_direction_lock - 2,    flip: true } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-turn_2",      duration: 6,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_1",      duration: 11,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_2",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_3",      duration: 10,    flip: false } to animations_queue_frames;
 }
 
 proc paf_anim_walk refresh = true {
@@ -160,10 +174,16 @@ func paf_state_animation(state, last_state) {
                     paf_anim_walk_turn_around;
                     refreshed = true;
                 }
-                if "idle" in $last_state{
-                    paf_anim_walk_step;
-                    refreshed = true;
+                if (".L" in $state and last_this_direction == 90) or
+                    (".R" in $state and last_this_direction == -90) {
+                        paf_anim_walk_turn_around;
                 }
+                else {
+                    if "idle" in $last_state{
+                        paf_anim_walk_step;
+                    }
+                }
+                refreshed = true;
                 paf_anim_walk (not refreshed);
                 return "paf_anim_walk";
             }

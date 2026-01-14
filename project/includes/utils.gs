@@ -45,6 +45,7 @@ func timer_boundary_crossed (Timer timer, boundary = 0) {
     if $timer.previous > $boundary and $timer.current <= $boundary {
         return true;
     }
+    return false;
 }
 
 func clamp (value, min = "-Infinity", max = "Infinity"){

@@ -41,8 +41,8 @@
 # estimate
 %define paf_jump_vel_smal (0.75)
 
-# mario's p-speed, less the silksong sprint multiplier, then smoothened to sqrt(2) and quantised to 1/256
-%define paf_walk 1.5
+# halfway between mario's walk and run speeds (not based on hollow knight)
+%define paf_walk 1.875
 
 # mario's p-speed 
 %define paf_run 3.18
@@ -82,6 +82,7 @@ var Timer y_control_lock; # currently unused
 var Timer puff_timer;
 var Timer coyote_timer;
 var last_grounded_y;
+var last_this_direction;
 
 
 proc boot{
@@ -91,6 +92,7 @@ proc boot{
     z_position = 255;
     last_grounded_y = 0;
     this_direction = 90;
+    last_this_direction = 90;
     walk_counter = 0;
     grounded = 0;
     jump_hold = 0;
@@ -603,7 +605,8 @@ proc ground_animation{
         }
     }
 
-    if player == 2 and state == "play.ground.idle"{
+    if player == 2 and "play.ground.walk" in state{
+        
 
     }
 
@@ -694,6 +697,8 @@ on "tick_000"{
     direction_lock  = decrement_timer(direction_lock);
     puff_timer      = decrement_timer(puff_timer);
     coyote_timer    = decrement_timer(coyote_timer);
+
+    last_this_direction = this_direction;
 
     if timer_boundary_crossed(direction_lock, 0){
         state_to_direction;

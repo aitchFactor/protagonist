@@ -157,10 +157,10 @@ proc animation_player {
     }
     else{
         local loop_length = (length current_animation_buffer)*0.5 - start;
-        frame = start + (round(animation_counter - start) % loop_length);
+        frame = start + (floor(animation_counter - start) % loop_length);
 
     }
-    frame = round(frame);
+    frame = floor(frame);
     switch_costume current_animation_buffer[(2 *frame) + 1];
     # "Flip" parameter
     flipped = current_animation_buffer[(2 * frame) + 2];
@@ -168,7 +168,7 @@ proc animation_player {
 
     animation_play_state.playing_time += delta_time;
 
-    if round(animation_counter) >= animation_play_state.total_frames {
+    if floor(animation_counter) >= animation_play_state.total_frames {
         repeat animations_queue_header[1].num_pages{
             delete animations_queue_frames[1];
         }
