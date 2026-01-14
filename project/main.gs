@@ -46,6 +46,8 @@ proc boot {
   camera_target_x = 0;
   camera_target_y = 0;
 
+  paused = 0;
+
   broadcast_and_wait "boot";
   G_game_state = "play";
 
@@ -53,45 +55,51 @@ proc boot {
 
 }
 
-proc loop {
+nowarp proc loop {
 
   broadcast "tick_debug_first";
   broadcast "tick_readinput";
-  if G_game_state == "play"{
-    ### restore game state to backend mode (scale, subpixels, hitbox modes)
-    broadcast "tick_000";
+  if not paused or key_pressed ("9"){
+    if G_game_state == "play"{
+      ### restore game state to backend mode (scale, subpixels, hitbox modes)
+      broadcast "tick_000";
 
-    ### solids ticks (collisions with actors)
-    broadcast "tick_001";
-    broadcast "tick_002";
-    broadcast "tick_008";
+      ### solids ticks (collisions with actors)
+      broadcast "tick_001";
+      broadcast "tick_002";
+      broadcast "tick_008";
 
-    ### actor tick (collisions with solids)
-    broadcast "tick_101";
-    broadcast "tick_108";
-    
-    ### post actor ticks: resolve actor-to-actor collisions
-    broadcast "tick_201";
-    broadcast "tick_202";
-    broadcast "tick_203";
+      ### actor tick (collisions with solids)
+      broadcast "tick_101";
+      broadcast "tick_108";
+      
+      ### post actor ticks: resolve actor-to-actor collisions
+      broadcast "tick_201";
+      broadcast "tick_202";
+      broadcast "tick_203";
 
-    ### after all actors have moved, move the camera
-    broadcast "tick_301";
-    broadcast "tick_302";
-    broadcast "tick_303";
+      ### after all actors have moved, move the camera
+      broadcast "tick_301";
+      broadcast "tick_302";
+      broadcast "tick_303";
+    }
+
+    broadcast "tick_cosmetics";     # animation timing, decorative effects
+    broadcast "tick_animation";     # execute animation player
+    broadcast "tick_display";       # set positional offsets, scrolling. and scale
+    broadcast "tick_hitbox_view";
+
+    broadcast "tick_zsort";         # execution order of sprites/clones for other broadcasts is undefined, so be careful.
+
+    broadcast "tick_sound_logic";   # parse audio queues
+    broadcast "tick_sound_play";    # play audio queues
   }
 
-  broadcast "tick_cosmetics";     # animation timing, decorative effects
-  broadcast "tick_animation";     # execute animation player
-  broadcast "tick_display";       # set positional offsets, scrolling. and scale
-  broadcast "tick_hitbox_view";
-
-  broadcast "tick_zsort";         # execution order of sprites/clones for other broadcasts is undefined, so be careful.
-
-  broadcast "tick_sound_logic";   # parse audio queues
-  broadcast "tick_sound_play";    # play audio queues
-
   broadcast "tick_check_pause";
+
+  if paused and debug_frame_advance {
+    until not key_pressed ("9"){};
+  }
 
   broadcast "tick_debug_last";
 }
@@ -131,4 +139,14 @@ onkey "f" {
   if fps_switch == 3 { # 20hz
     delta_time = 3;
   }
+}
+
+on "tick_check_pause" {
+  if debug_frame_advance and key_pressed ("9"){
+    paused = true;
+  }
+  if ctrl_start == 1 {
+    paused = not paused;
+  }
+
 }

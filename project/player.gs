@@ -711,6 +711,7 @@ on "tick_cosmetics"{
 }
 
 on "tick_108" {
+    actor_tick;
     # this is a special case where the animation needs to happen instantly - no 1-frame delayed state change.
     if collision_y == -1 {
         if is_buffered(ctrl_a){
@@ -721,7 +722,6 @@ on "tick_108" {
         #     jump_buffered = 2;
         #     state_machine ("play.air.spin");
         # }
-        
     }
 }
 
@@ -734,7 +734,6 @@ on "tick_display"{
     }
 }
 
-
 onkey "l" {
-  yvel.v1 = 2;
+  yvel.v1 = 5;
 }

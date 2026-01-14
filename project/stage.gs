@@ -89,6 +89,11 @@ var camera_x;
 var camera_y;
 var camera_target_x;
 var camera_target_y;
+var camera_y_max;
+var camera_y_min;
+
+var paused;
+var debug_frame_advance = 1;
 
 # costume name of the top-left corner of the map. 
 

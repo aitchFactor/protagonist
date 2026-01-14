@@ -57,3 +57,11 @@ func clamp (value, min = "-Infinity", max = "Infinity"){
     return $value;
 
 }
+
+func min (v1, v2) {
+    return clamp ($v1, max: $v2);
+}
+
+func max (v1, v2) {
+    return clamp ($v1, min: $v2);
+}

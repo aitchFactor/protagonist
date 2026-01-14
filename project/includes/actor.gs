@@ -426,8 +426,7 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
 proc speedcaps{
     # cap and round velocity.
 
-    collision_x
- = 0;
+    collision_x = 0;
     collision_y = 0;
 
     xvel.v1 = round_256(xvel.v1);
@@ -473,9 +472,9 @@ on "tick_000"{
     yvel.a = 0;
 }
 
-on "tick_108"{
-    actor_tick;
-}
+# on "tick_108"{
+#     actor_tick;
+# }
 on "tick_303" {
 
     x_scroll = -camera_x; 

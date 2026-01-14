@@ -56,13 +56,19 @@ on "tick_201"{
 
 onclone {
     this_direction = self.direction;
+    x_position = self.x_position;
+    y_position = self.y_position;
+    xvel.v1 = self.xvel;
+    yvel.v1 = self.yvel;
+    # follow does nothing at the moment.
+
     if clone_id == "puff_halli_side_light"{
         SPRITE_NAME = "Puff SLight";
         anim_side_light self.lifetime;
 
     }
     animation_player;
-    puff_tick_display;
+    sprite_display;
     show;
 }
 
@@ -79,44 +85,41 @@ on "tick_000"{
 on "tick_101"{
     if clone_id != "root" {
         if clone_id == "puff_halli_side_light"{
-            xvel = decelerate_advanced(self.xvel, 5/16, xvel.a, 1/16);
-            yvel = decelerate_advanced(self.yvel, 5/16, yvel.a, 1/16);
-            self.x_position += xvel.dx;
-            self.y_position += yvel.dx;
-            self.xvel = xvel.v1;
-            self.yvel = yvel.v1;
-
-            # reset struct variables
-            xvel = ContinuousVelocity{};
-            yvel = ContinuousVelocity{};
+            xvel = decelerate_advanced(xvel.v1, 5/16, xvel.a, 1/16);
+            yvel = decelerate_advanced(yvel.v1, 5/16, yvel.a, 1/16);
 
         }
     }
 }
-
-on "tick_008" {
-    if clone_id != "root"{
-        if self.follow != "" {
-            goto self.x_position + x_position + x_scroll + self.follow."x position", self.y_position + y_position + y_scroll + self.follow."y position";
-        }
-    }
+on "tick_108"{
+    speedcaps;
+    move_x xvel.dx, CollideAction.Nothing;
+    move_y yvel.dx, CollideAction.Nothing;
 }
 
-proc puff_tick_display {
-    x_position = round_256(x_position() - x_scroll);
-    y_position = round_256(y_position() - y_scroll);
-    self.x_position = round_256(self.x_position);
-    self.y_position = round_256(self.y_position);
-    x_scroll = round_256(x_scroll);
-    y_scroll = round_256(y_scroll);
+# on "tick_008" {
+#     if clone_id != "root"{
+#         if self.follow != "" {
+#             goto self.x_position + x_position + x_scroll + self.follow."x position", self.y_position + y_position + y_scroll + self.follow."y position";
+#         }
+#     }
+# }
 
-    point_in_direction this_direction * (-bool_to_sign(flipped));
+# proc puff_tick_display {
+#     x_position = round_256(x_position() - x_scroll);
+#     y_position = round_256(y_position() - y_scroll);
+#     self.x_position = round_256(self.x_position);
+#     self.y_position = round_256(self.y_position);
+#     x_scroll = round_256(x_scroll);
+#     y_scroll = round_256(y_scroll);
+
+#     point_in_direction this_direction * (-bool_to_sign(flipped));
 
 
-    set_size 800;
-    goto round(self.x_position + x_position + x_scroll + self.follow."x position") * 2, round(self.y_position + y_position + y_scroll + self.follow."y position") * 2;
-    set_size 200;
-}
+#     set_size 800;
+#     goto round(self.x_position + x_position + x_scroll + self.follow."x position") * 2, round(self.y_position + y_position + y_scroll + self.follow."y position") * 2;
+#     set_size 200;
+# }
 
 
 on "tick_cosmetics" {
@@ -125,6 +128,6 @@ on "tick_cosmetics" {
     }
 }   
 
-on "tick_display" {
-    puff_tick_display;
-}
+# on "tick_display" {
+#     puff_tick_display;
+# }

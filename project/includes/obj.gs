@@ -220,14 +220,13 @@ on "tick_000"{
 }
 
 on "tick_301" {
-    x_position = round_256(x_position() - x_scroll); # -> 10
+    # Remove scroll offset before scrolling occurs.
+    x_position = round_256(x_position() - x_scroll); 
     y_position = round_256(y_position() - y_scroll);
 }
 
-on "tick_display"{
-    # round the "true" positional values to smooth out floating point error
-    
-    x_scroll = round_256(x_scroll); # -> -10;
+proc sprite_display {
+    x_scroll = round_256(x_scroll);
     y_scroll = round_256(y_scroll);
 
     point_in_direction this_direction * (-bool_to_sign(flipped));
@@ -236,8 +235,10 @@ on "tick_display"{
     set_size 800;
     goto round(x_position + x_scroll) * 2, round(y_position + y_scroll) * 2;
     set_size 200;
+}
 
-
+on "tick_display"{
+    sprite_display;
 }
 
 on "tick_hitbox_view"{
