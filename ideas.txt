@@ -159,6 +159,10 @@ keypress variables are measured in frames, but other times are measured in real 
         game start is very laggy with compiler disabled; this is because of several "broadcast and wait" layers - it's practically lagless when they're all set to normal broadcasts, but I don't really want to do that.
         
         holding into a diagonal ceiling lets the player cling to it for some reason.
+        
+        puff gets stuck on terrain and doesn't have a proper hurtbox sprite.
+        
+        you can sometimes catch the bottom corner of terrain while falling.
 
 tips:
     - when changing a function/proc, make sure you check every existing instance of it.
