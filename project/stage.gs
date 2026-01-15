@@ -1,3 +1,4 @@
+
 # This is the Stage, list more backdrops separated by comma.
 costumes "gfx/bg/black.png";
 var G_game_state;
@@ -91,6 +92,9 @@ var camera_target_x;
 var camera_target_y;
 var camera_y_max;
 var camera_y_min;
+
+var player_spawn_chunk_x;
+var player_spawn_chunk_y;
 
 var paused;
 var debug_frame_advance = 1;

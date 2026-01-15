@@ -75,7 +75,7 @@ proc paf_anim_walk_land {
 proc paf_anim_walk_turn_around {
     clear_animation;
     add AnimationHeader {
-        num_pages: 5,
+        num_pages: 6,
         loop_start: 0,
         loops: 0
     }   to animations_queue_header;

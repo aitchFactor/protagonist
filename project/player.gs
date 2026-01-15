@@ -1,5 +1,6 @@
 %include includes/actor.gs
 %include includes/input-mapping.gs
+%include includes/defines.gs
 
 # note: don't include comments in the same line as a macro
 #20/16
@@ -88,7 +89,7 @@ var last_this_direction;
 proc boot{
     switch_costume FR_STAND;
     x_position = -32;
-    y_position = 180;
+    y_position = -32;
     z_position = 255;
     last_grounded_y = 0;
     this_direction = 90;
@@ -737,6 +738,11 @@ on "tick_display"{
     if G_game_state == "animviewer"{
         hide;
     }
+}
+
+on "load_map" {
+    x_position += player_spawn_chunk_x * chunk_width;
+    y_position += -player_spawn_chunk_y * chunk_height; 
 }
 
 onkey "l" {

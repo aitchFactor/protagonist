@@ -1,12 +1,12 @@
 %include includes/solid.gs
+%include includes/defines.gs
 
 costumes 
 "blank.png",
 "gfx/bg/black.png",
 "gfx/bg/*/*.png",
 ;
-%define chunk_width 256
-%define chunk_height 192
+
 var SPRITE_NAME = "Level";
 var chunk_name;
 
@@ -30,11 +30,14 @@ on "boot" {
     chunk_info = ChunkInfo{};
 
     map_info = MapInfo{
-        map_name: "scroll-test",
+        map_name: "level4",
         map_left_edge: 0,
         map_top_edge:  0,
-        map_right_edge: 2,
-        map_bottom_edge: 2};
+        map_right_edge: 16,
+        map_bottom_edge: 8};
+
+    player_spawn_chunk_x = 0;
+    player_spawn_chunk_y = 4;
 
 
     broadcast_and_wait "load_map";
@@ -101,20 +104,55 @@ proc segment_zoomed_out_display {
     # write the clone information to our Solids tracker.
     init_properties;
 }
+
+%define target_camera_height 64
+%define target_camera_pan 28
+
 proc set_camera_target {
-    if "player"."xvel.v1" == 0 or abs("player"."xvel.v1") >= 1.5 or abs("player"."x position") > 16 {
-        camera_target_x = "player"."x_position" + 12 * sign_of("player"."direction");
-    }
+    # if "player"."xvel.v1" == 0 or abs("player"."xvel.v1") >= 1.5 or abs("player"."x position") > 16 {
+    #     camera_target_x = "player"."x_position" + 12 * sign_of("player"."direction");
+    # }
+    if not ("player"."xvel.dx" == 0) or ctrl_left > 0 or ctrl_right > 0 {
+        camera_target_x += 2*"player"."xvel.dx";
 
-    if "player"."grounded" {
-        camera_target_y = "player"."last_grounded_y" + 20;
-    }
-    else {
-            if ("player"."y position") * sign_of ("player"."yvel.v1") > 20{
-                camera_target_y = "player"."y_position" - 20 * sign_of ("player"."y_position");
-
-            }
+        if abs("player"."x_position" - camera_target_x) > target_camera_pan {
+            camera_target_x = "player"."x_position" + (target_camera_pan * sign_of(-"player"."x_position" + camera_target_x)); 
         }
+    } 
+    else {
+        if not (sign_of(camera_target_x - "player"."x_position") == sign_of("player"."direction")){
+            camera_target_x = "player"."x_position" + target_camera_pan * 0.5 * sign_of ("player"."direction"); 
+        }  
+
+    }
+
+
+    # camera_target_y += 0.9 * "player"."yvel.dx";
+
+    # camera_target_y = "player"."last_grounded_y" + 28;
+    camera_y_min = "player"."y_position" - 20;
+    if "player"."yvel.dx" < 0 {
+        local lerp = 1 - ("player"."y_position" - "player"."last_grounded_y") / target_camera_height;
+        lerp = clamp(lerp, min: 0, max: 2);
+        # Have to round or else pafu's oscillating y velocity will trigger this.
+        camera_y_max += round("player"."yvel.dx" / delta_time) * delta_time * lerp;
+
+    }
+    
+    camera_y_max = min (camera_y_max, "player"."last_grounded_y" + target_camera_height);
+    camera_y_max = min (camera_y_max, "player"."y_position" + target_camera_height);
+    camera_y_max = max(camera_y_max, "player"."y_position");
+    # camera_y_max = min(camera_y_max, "player"."y_position");
+    camera_target_y = clamp(camera_target_y, camera_y_min, camera_y_max);
+    # if "player"."grounded" {
+    #     camera_target_y = "player"."last_grounded_y" + 20;
+    # }
+    # else {
+            
+
+
+            
+    #     }
 
 }
 proc pan_to_target {
@@ -127,9 +165,9 @@ proc pan_to_target {
 
     local sign = sign_of(camera_target_x > camera_x);
 
-    local speed = ("player"."xvel.v1" * 1.2) * sign;
-    if speed < 0.5 {
-        speed = 0.5;
+    local speed = ("player"."xvel.v1" * 1.5) * sign;
+    if speed < 0.4 {
+        speed = 0.4;
     }
     speed *= delta_time;
     if abs(camera_x - camera_target_x) < speed {
@@ -140,10 +178,11 @@ proc pan_to_target {
     }
 
     camera_speed_x = speed;
-    show camera_speed_x;
+
+
     # camera_y = camera_target_y;
     sign = sign_of(camera_target_y > camera_y);
-    speed = ("player"."yvel.v1" * 1.2) * sign;
+    speed = ("player"."yvel.v1" * 1.3) * sign;
     if speed < 1.5 {
         speed = 1.5;
     }
@@ -192,10 +231,10 @@ proc solve_segments {
     viewport_y -= camera_y;
 
     chunk_info = ChunkInfo {
-        viewport_x: viewport_x,
-        viewport_y: viewport_y,
-        chunk_x: chunk_x,
-        chunk_y: chunk_y,
+        viewport_x: round_256(viewport_x),
+        viewport_y: round_256(viewport_y),
+        chunk_x: round_256(chunk_x),
+        chunk_y: round_256(chunk_y),
     };
 }
 
@@ -222,8 +261,11 @@ proc load_map{
         clone_segment_id++;
     }
     clone_segment_id = 0;
-
+    camera_x = "player"."x_position";
+    camera_y = "player"."y_position";
     solve_segments;
+
+
 
 
     # clone_layer_id = BgLayerType.Soft;

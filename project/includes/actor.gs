@@ -1,6 +1,7 @@
 %include includes/utils.gs
 %include includes/obj.gs
-%define platform_snap 3;
+%define soft_platform_snap 3;
+%define platform_snap 1;
 
 var SPRITE_NAME = "Unnamed Actor";
 
@@ -398,12 +399,18 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
 
     # Soft platform snapping
     # recursion kinda risky but should work
-    if sign == -1 and inside_soft {
+    if sign == -1 {
         local before_snap_check = y_position();
         local before_dy_rounded = dy_rounded;
-        move_y platform_snap;
+        if inside_soft {
+            move_y soft_platform_snap;
+        }
+        else {
+            move_y platform_snap;
+        }
         dy_rounded = before_dy_rounded + (before_snap_check - y_position());
         sign = -1;
+        
     }
 
     repeat (abs(dy_rounded)){
