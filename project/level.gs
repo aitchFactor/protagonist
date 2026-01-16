@@ -30,14 +30,14 @@ on "boot" {
     chunk_info = ChunkInfo{};
 
     map_info = MapInfo{
-        map_name: "level4",
+        map_name: "step3",
         map_left_edge: 0,
         map_top_edge:  0,
-        map_right_edge: 16,
-        map_bottom_edge: 8};
+        map_right_edge: 8,
+        map_bottom_edge: 6};
 
     player_spawn_chunk_x = 0;
-    player_spawn_chunk_y = 4;
+    player_spawn_chunk_y = 1;
 
 
     broadcast_and_wait "load_map";
@@ -106,7 +106,7 @@ proc segment_zoomed_out_display {
 }
 
 %define target_camera_height 64
-%define target_camera_pan 28
+%define target_camera_pan 24
 
 proc set_camera_target {
     # if "player"."xvel.v1" == 0 or abs("player"."xvel.v1") >= 1.5 or abs("player"."x position") > 16 {
@@ -195,8 +195,10 @@ proc pan_to_target {
         camera_y += speed * sign;
     }
     camera_speed_y = speed;
-    show camera_speed_y;
 
+    camera_x = clamp(camera_x, 0, xmax);
+    camera_y = clamp(camera_y, ymin, 0);
+    
 }
 
 proc solve_segments {

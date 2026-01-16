@@ -48,10 +48,11 @@ struct Projectile{
 }
 
 enum BgLayerType {
+    # This is for having multiple clones/sprites of one layer type each.
     None    = "root",
     Picture = "gfx",
     Solid   = "solid",
-    Soft    = "soft"
+    Soft    = "soft",
     # maybe some gimmicky parallax stuff as well
     # or horizontal one-way walls 
 }
@@ -61,15 +62,20 @@ enum BgLayerType {
 enum BgLayerTypeColour {
     None    = "0x000000",
     Picture = "0xf8f8f0",
-    Solid   = "0x00f800",
-    Soft    = "0x00f8f8"
+    Solid   = "0x008000",
+    Soft    = "0x008080",
+    Spike   = "0x800000",
+    Pogo    = "0x806000"
 }
 
 enum BgLayerTypeBit {
+    # This is for colliding entities.
     # None    = "0x000000",
     # Picture = "0xf8f8f0",
     Solid   = 1,
-    Soft    = 2
+    Soft    = 2,
+    Spike   = 4,
+    Pogo    = 8,
 }
 
 list Projectile projectile_queue;
@@ -79,6 +85,9 @@ list Solid Solids;
 
 var hitbox_view;
 var show_scroll_target;
+var debug_show_checkpoints;
+# switch off to disable players from using frame advance on their own.
+var debug_frame_advance = 1;
 
 var fps_switch;
 
@@ -97,7 +106,6 @@ var player_spawn_chunk_x;
 var player_spawn_chunk_y;
 
 var paused;
-var debug_frame_advance = 1;
 
 # costume name of the top-left corner of the map. 
 
@@ -120,5 +128,18 @@ struct ChunkInfo {
     chunk_y    = 0, 
     
 }
+
+struct Checkpoint {
+    # chunk coords are where the checkpoint will be triggered.
+    chunk_x = 0,
+    chunk_y = 0,
+    # spawn coords are where the player will respawn from.
+    spawn_x = 0,
+    spawn_y = 0
+}
+
+# checkpoints for the current stage.
+list Checkpoint checkpoints;
+var current_checkpoint_index;
 
 var ChunkInfo chunk_info;

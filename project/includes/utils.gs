@@ -66,3 +66,15 @@ func min (v1, v2) {
 func max (v1, v2) {
     return clamp ($v1, min: $v2);
 }
+
+func quantise (value, granularity, floor_round_ceiling = 0) {
+    if $floor_round_ceiling == 0 {
+        return floor($value/$granularity) * $granularity;
+    }
+    if $floor_round_ceiling == 1 {
+        return round($value/$granularity) * $granularity;
+    }
+    if $floor_round_ceiling == 2{
+        return ceil($value/$granularity) * $granularity;
+    }
+}

@@ -98,29 +98,25 @@ Collision shenanigans
     - debug room coordinate view ?
     - pan function
     - player control camera
-    
-- scrolling in jump around simulator
-    0. parameter setting (once)
-    1. entities touch player
-    2. player
-        - read parameters to get scroll type.
-            - set scroll speed and target based on position, velocity, and last grounded y-coordinate.
-        - solve screen coordinates from scroll coordinates (should be a function, probably)
-        
-    3. background
-        - spawns 2x2 grid of screens
-        - each clone writes x/y positions and costume name to a list
-        - caps scroll coordinates to scroll bounds
-        - solve screen coordinates (again) for accurate screen transitions
-        
-    4. global
-        - scroll tile positions
-    5. entities
 
 - todo: pafu
+        - puff animations
         - ledge hang/getup/jump
         - dash skid (proper)
 
+- todo: halli 
+        - upwards/downwards puff
+        - health/game over
+            - save safe spawn location 
+            - 1st checkpoint = initial spawn position
+            - checkpoints should clear the immediate surroundings of enemies
+            
+        - respawning
+        - screen transitions
+        - jump sound effect
+- todo: level
+        - cave blob enemy
+        - cave blob with spike on its head enemy
 
 - todo: make halli idle in time with the bpm of stage music
 
@@ -163,6 +159,12 @@ keypress variables are measured in frames, but other times are measured in real 
         puff gets stuck on terrain and doesn't have a proper hurtbox sprite.
         
         you can sometimes catch the bottom corner of terrain while falling.
+        
+        sometimes you're unable to jump while holding against a wall (related to above?)
+        
+        erratic scrolling can cause the player to fall through terrain
+        
+        collision check when bordering a colour can succeed/fail depending on what colour is neighbouring that colour.
 
 tips:
     - when changing a function/proc, make sure you check every existing instance of it.

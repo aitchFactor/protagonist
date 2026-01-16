@@ -83,6 +83,7 @@ var Timer y_control_lock; # currently unused
 var Timer puff_timer;
 var Timer coyote_timer;
 var last_grounded_y;
+var last_grounded_x;
 var last_this_direction;
 
 
@@ -92,6 +93,7 @@ proc boot{
     y_position = -32;
     z_position = 255;
     last_grounded_y = 0;
+    last_grounded_x = 0;
     this_direction = 90;
     last_this_direction = 90;
     walk_counter = 0;
@@ -472,6 +474,7 @@ proc check_grounded {
     set_y last_y;
 
     if grounded{
+        last_grounded_x = x_position;
         last_grounded_y = y_position;
     }
 }

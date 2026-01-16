@@ -29,6 +29,9 @@ proc boot {
 
   delete Solids;
 
+  delete checkpoints;
+  current_checkpoint_index = 0;
+
   ctrl_up = 0;
   ctrl_down = 0;
   ctrl_left = 0;
@@ -141,6 +144,10 @@ onkey "f" {
   }
 }
 
+onkey "c" {
+  debug_show_checkpoints = not debug_show_checkpoints;
+}
+
 on "tick_check_pause" {
   if debug_frame_advance and key_pressed ("9"){
     paused = true;
@@ -150,3 +157,4 @@ on "tick_check_pause" {
   }
 
 }
+
