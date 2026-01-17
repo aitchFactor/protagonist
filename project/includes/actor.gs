@@ -2,7 +2,7 @@
 %include includes/obj.gs
 %include includes/collisions.gs
 %define soft_platform_snap 3;
-%define platform_snap 1;
+# %define platform_snap 1;
 
 var SPRITE_NAME = "Unnamed Actor";
 
@@ -324,9 +324,9 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
         if inside_soft {
             move_y soft_platform_snap;
         }
-        else {
-            move_y platform_snap;
-        }
+        # else {
+        #     move_y platform_snap;
+        # }
         dy_rounded = before_dy_rounded + (before_snap_check - y_position());
         sign = -1;
         

@@ -17,6 +17,44 @@ proc hal_side_light {
     } to projectile_queue;
 }
 
+proc hal_up_light {
+    # halli: puff stalls momentum
+    if yvel.v1 < 0 {
+        yvel.v1 = 0;
+    }
+    puff_timer.current = hal_puff_cooldown;
+    direction_lock.current = hal_puff_cooldown * 0.5;
+    add Projectile{
+        type: "puff",
+        name: "puff_halli_up_light",
+        lifetime: round(hal_puff_cooldown * 0.5),
+        direction: this_direction,
+        x_position: x_position,
+        y_position: y_position + 12,
+        xvel: xvel.v1,
+        yvel: yvel.v1 + jump_vel_smal,
+    } to projectile_queue;
+}
+
+proc hal_down_air {
+    # halli: puff stalls momentum (down air is the same as the others)
+    if yvel.v1 < 0 {
+        yvel.v1 = 0;
+    }
+    puff_timer.current = hal_puff_cooldown;
+    direction_lock.current = hal_puff_cooldown * 0.5;
+    add Projectile{
+        type: "puff",
+        name: "puff_halli_down_air",
+        lifetime: round(hal_puff_cooldown * 0.5),
+        direction: this_direction,
+        x_position: x_position,
+        y_position: y_position - 12,
+        xvel: xvel.v1,
+        yvel: yvel.v1 - max_fall,
+    } to projectile_queue;
+}
+
 proc paf_side_light {
     puff_timer.current = paf_puff_cooldown;
     direction_lock.current = paf_puff_cooldown * 0.25;

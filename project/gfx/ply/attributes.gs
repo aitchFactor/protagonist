@@ -22,6 +22,8 @@
 
 %define jump_vel 5
 
+%define hal_pogo_vel 4
+
 %define jump_vel_smal sqrt(12)
 
 %define jump_incr  (2/16)

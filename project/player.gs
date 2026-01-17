@@ -202,7 +202,17 @@ proc puff_control {
         state_machine("play.puff");
         if "puff" in state {
             if player == 1 {
-                hal_side_light;
+                if not grounded and ctrl_down > 0 {
+                    hal_down_air;
+                }
+                else {
+                    if ctrl_up > 0 {
+                        hal_up_light;
+                    }
+                    else {
+                        hal_side_light;
+                    }
+            }
             }
 
             if player == 2 {
@@ -515,7 +525,7 @@ proc hal_y_control move = true {
 
     if $move {
         local gravity = fall_gravity;
-        if ctrl_a > 0 or (yvel.v1 <= 0 and puff_timer.current >= hal_puff_cooldown * 0.75) {
+        if ctrl_a > 0 or ctrl_b > 0 or (yvel.v1 <= 0 and puff_timer.current >= hal_puff_cooldown * 0.75) {
             gravity = jump_gravity;
         }
         yvel = accelerate_advanced(yvel.v1, -gravity, yvel.a, -max_fall);
@@ -658,7 +668,7 @@ proc receive_events {
     repeat length player_events {
         if ev.type == "pogo" {
             if player == 1 {
-                yvel.v1 = jump_vel * 0.5;
+                yvel.v1 = hal_pogo_vel;
             }
             if player == 2 {
                 yvel.v1 = paf_jump_vel * 0.75;

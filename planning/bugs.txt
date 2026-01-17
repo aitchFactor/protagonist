@@ -29,3 +29,5 @@ known bugs:
     respawning can inconsistently leave player stuck in ground
 
     v_max values might be a pain in the butt when dashing becomes a thing (decel_still is used for run > walk as well as unpredictably during almost all times)
+    
+    coyote time jump fails to trigger jump sound.

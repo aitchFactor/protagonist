@@ -45,6 +45,35 @@ proc hal_side_light duration = 25 {
     # switch_costume "smoke-puff_1";
 }
 
+proc hal_up_light duration = 25 {
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 3,
+        loop_start: 2,
+        loops: -1
+    }   to animations_queue_header;
+    add AnimationFrame {costume_name: "smoke-puff-up_1",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-thin-up_1",      duration:  $duration - 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-thin-up_2",      duration: 1,    flip: false } to animations_queue_frames;
+    set_rotation_style_left_right;
+    # switch_costume "smoke-puff_1";
+}
+
+proc hal_down_air duration = 25 {
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 3,
+        loop_start: 2,
+        loops: -1
+    }   to animations_queue_header;
+    add AnimationFrame {costume_name: "smoke-puff-down_1",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-thin-down_1",      duration:  $duration - 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-thin-down_2",      duration: 1,    flip: false } to animations_queue_frames;
+    set_rotation_style_left_right;
+    # switch_costume "smoke-puff_1";
+}
+
+
 proc paf_side_light duration = 30 {
     clear_animation;
     add AnimationHeader {
@@ -126,6 +155,17 @@ onclone {
         hal_side_light self.lifetime;
 
     }
+
+    if clone_id == "puff_halli_down_air"{
+        SPRITE_NAME = "halli Puff DAir";
+        hal_down_air self.lifetime;
+
+    }
+    if clone_id == "puff_halli_up_light"{
+        SPRITE_NAME = "halli Puff ULight";
+        hal_up_light self.lifetime;
+
+    }
     if clone_id == "puff_pafu_side_light"{
         SPRITE_NAME = "Pafu Puff SLight";
         paf_side_light self.lifetime;
@@ -163,6 +203,16 @@ on "tick_101"{
             yvel = decelerate_advanced(yvel.v1, 5/16, yvel.a, 1/16);
 
         }
+        if clone_id == "puff_halli_up_light"{
+            xvel = decelerate_advanced(xvel.v1, decel_walk, xvel.a);
+            yvel = accelerate_advanced(yvel.v1, -fall_gravity, yvel.a);
+
+        }
+        if clone_id == "puff_halli_down_air"{
+            xvel = decelerate_advanced(xvel.v1, decel_walk, xvel.a);
+            yvel = accelerate_saturation(yvel.a, yvel.v1, jump_gravity, jump_gravity, 0, -fall_gravity, -max_walk, -max_fall);
+
+        }
         if clone_id == "puff_pafu_side_light"{
             xvel = decelerate_advanced(xvel.v1, 3/16, xvel.a, paf_walk);
             yvel = accelerate_advanced(yvel.v1, paf_gravity * 0.5, yvel.a, 3/16);
@@ -171,8 +221,6 @@ on "tick_101"{
         if clone_id == "puff_pafu_down_air"{
             xvel = accelerate_advanced(xvel.v1, -6/32 * sign_of(this_direction), xvel.a);
             yvel = accelerate_advanced(yvel.v1, 7/16, yvel.a, paf_jump_vel_smal);
-
-
 
         }
         if clone_id == "puff_pafu_up_light"{
