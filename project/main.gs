@@ -56,6 +56,8 @@ nowarp proc boot {
 
   paused = 0;
 
+  delete player_events;
+
   broadcast_and_wait "boot";
   broadcast_and_wait "tick_zsort";
   broadcast "load_map_001";
@@ -83,6 +85,7 @@ nowarp proc loop {
 
       ### actor tick (collisions with solids)
       broadcast "tick_101";
+      broadcast "tick_102";
       broadcast "tick_108";
       
       ### post actor ticks: resolve actor-to-actor collisions

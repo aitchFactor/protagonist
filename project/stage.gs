@@ -80,6 +80,13 @@ enum BgLayerTypeBit {
 
 list Projectile projectile_queue;
 
+struct PlayerEvent {
+    type    = "",
+    name    = "",
+    sender  = "undefined",
+}
+
+list PlayerEvent player_events;
 
 list Solid Solids;
 

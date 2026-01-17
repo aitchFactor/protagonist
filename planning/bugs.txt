@@ -1,7 +1,6 @@
 known bugs:
-    halli can get stuck inside floors that run across a scroll seam.
-    
-    pafu doesn't have a proper turnaround animation yet.
+    jumping while puffing doesn't let you release early even if you actually release the button.
+        This is because coyote time depends on the ground/air state which jumping during a puff doesn't change properly.
     
     pafu is sometimes considered grounded for 1 rendered frame if she clips a corner while jumping diagonally up.
     
@@ -16,6 +15,8 @@ known bugs:
     puff gets stuck on terrain and doesn't have a proper hurtbox sprite.
     
     you can sometimes catch the bottom corner of terrain while falling.
+    
+    you can sometimes get stuck in a wall by falling into a corner.
     
     sometimes you're unable to jump while holding against a wall (related to above?)
     

@@ -91,3 +91,9 @@ func unpack_checkpoint (Checkpoint x) Checkpoint {
     };
 
 }
+
+func bitmask (bits, select) {
+    # mask the value by the select parameter.
+    # only works if select is a power of 2.
+    return floor($bits / $select) % 2;
+}
