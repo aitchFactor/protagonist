@@ -1,0 +1,40 @@
+tips:
+    - when changing a function/proc, make sure you check every existing instance of it.
+    
+    - try to minimise empty space around hitbox graphics if you can, since it seems to affect the collision properties.
+    
+    - sprites/objects don't natively play animation, even though you can queue animations. You have to add a proc to drive the animation counter.
+    
+    - clones run on the same frame they are spawned, but they won't respond to any broadcasts that happened that frame.
+    
+    - animations that have a static end frame generally still need to loop on that static frame.
+    
+    - debug graphics need to either hide or go behind the level during the game loop to avoid interfering with collisions.
+
+"type mismatch: expected value, but got struct"
+    - means that a variable was assigned from the struct list without that variable also being declared as the same type.
+
+    - keypress variables are measured in frames, but other times are measured in real time (1 = 1/60 seconds)
+    
+    - clones can't realistically impact the game until one frame after spawning, so if they have to be instant, consider a hitbox on the clone spawner.
+    - object inheritance retains all scripts even if they are redefined (they coexist)
+
+Collision shenanigans
+    Currently this is colour-based, so all collision information can technically be put in one image file.
+    However, the architecture is more complex than necessary for this because I don't know what could go wrong and we might need to switch to sprite-based collision. In the meantime, it should be ok to export a single collision layer as "solid".
+    
+    
+    - (how) can functions take a behaviour as a parameter?
+    
+
+debug keymap:
+    9: frame advance (note: inputs are not counted per frame though, so any actions that trigger only on frame 1, like jumping, have to be timed)
+    F: cycle through delta-time options.
+    G: switch character
+    H: show hitbox view
+    L: infinite jump
+    C: show checkpoint locations 
+    shift-V: respawn from last level checkpoint
+    V: respawn from last mini checkpoint
+    B: show camera targets
+    

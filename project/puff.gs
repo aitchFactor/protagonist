@@ -1,6 +1,6 @@
 %include includes/actor.gs
 
-costumes "gfx/ply/smoke-puff_*.png/";
+costumes "gfx/ply/smoke-puff*.png/";
 
 var SPRITE_NAME = "Puff Projectile";
 
@@ -23,6 +23,33 @@ proc anim_side_light duration = 25 {
     }   to animations_queue_header;
     add AnimationFrame {costume_name: "smoke-puff_1",      duration: $duration - 5,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "smoke-puff_2",      duration: 1,    flip: false } to animations_queue_frames;
+    set_rotation_style_left_right;
+    # switch_costume "smoke-puff_1";
+}
+
+proc hal_side_light duration = 25 {
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 3,
+        loop_start: 2,
+        loops: -1
+    }   to animations_queue_header;
+    add AnimationFrame {costume_name: "smoke-puff_1",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-thin_1",      duration:  $duration - 4,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-thin_2",      duration: 1,    flip: false } to animations_queue_frames;
+    set_rotation_style_left_right;
+    # switch_costume "smoke-puff_1";
+}
+
+proc paf_side_light duration = 30 {
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 2,
+        loop_start: 1,
+        loops: -1
+    }   to animations_queue_header;
+    add AnimationFrame {costume_name: "smoke-puff-wide_1",      duration: $duration - 5,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-wide_2",      duration: 1,    flip: false } to animations_queue_frames;
     set_rotation_style_left_right;
     # switch_costume "smoke-puff_1";
 }
@@ -63,8 +90,13 @@ onclone {
     # follow does nothing at the moment.
 
     if clone_id == "puff_halli_side_light"{
-        SPRITE_NAME = "Puff SLight";
-        anim_side_light self.lifetime;
+        SPRITE_NAME = "Halli Puff SLight";
+        hal_side_light self.lifetime;
+
+    }
+    if clone_id == "puff_pafu_side_light"{
+        SPRITE_NAME = "Pafu Puff SLight";
+        paf_side_light self.lifetime;
 
     }
     animation_player;
@@ -87,6 +119,11 @@ on "tick_101"{
         if clone_id == "puff_halli_side_light"{
             xvel = decelerate_advanced(xvel.v1, 5/16, xvel.a, 1/16);
             yvel = decelerate_advanced(yvel.v1, 5/16, yvel.a, 1/16);
+
+        }
+        if clone_id == "puff_pafu_side_light"{
+            xvel = decelerate_advanced(xvel.v1, 1/16, xvel.a, 5/16);
+            # yvel = decelerate_advanced(yvel.v1, 5/16, yvel.a, 1/16);
 
         }
     }

@@ -1,3 +1,5 @@
+%include includes/defines.gs
+
 func bool_to_sign (x){
     if $x {
         return 1;
@@ -77,4 +79,15 @@ func quantise (value, granularity, floor_round_ceiling = 0) {
     if $floor_round_ceiling == 2{
         return ceil($value/$granularity) * $granularity;
     }
+}
+
+func unpack_checkpoint (Checkpoint x) Checkpoint {
+    # transform the raw coordinates of a checkpoint to the game's coordinates.
+    return Checkpoint {
+        chunk_x: $x.chunk_x,
+        chunk_y: -$x.chunk_y,
+        spawn_x: $x.spawn_x - chunk_width * 0.5,
+        spawn_y: -$x.spawn_y + chunk_height * 0.5,
+    };
+
 }

@@ -1,0 +1,30 @@
+known bugs:
+    halli can get stuck inside floors that run across a scroll seam.
+    
+    pafu doesn't have a proper turnaround animation yet.
+    
+    pafu is sometimes considered grounded for 1 rendered frame if she clips a corner while jumping diagonally up.
+    
+    y value oscillates at the subpixel level if gravity is not high enough to move 1 pixel per frame - happens to pafu at 30hz and both characters at higher hz
+    
+    halli and pafu's jump heights aren't exactly the same, potentially due to rounding error
+    
+    game start is very laggy with compiler disabled; this is because of several "broadcast and wait" layers - it's practically lagless when they're all set to normal broadcasts, but I don't really want to do that.
+    
+    holding into a diagonal ceiling lets the player cling to it for some reason.
+    
+    puff gets stuck on terrain and doesn't have a proper hurtbox sprite.
+    
+    you can sometimes catch the bottom corner of terrain while falling.
+    
+    sometimes you're unable to jump while holding against a wall (related to above?)
+    
+    erratic scrolling can cause the player to fall through terrain
+    
+    collision check when bordering a colour can succeed/fail depending on what colour is neighbouring that colour.
+    
+    animation queue rounding is 1 frame off sometimes at 165hz. (noticeable when spamming pafu's turnaround animation)
+    
+    respawning can inconsistently leave player stuck in ground
+
+    v_max values might be a pain in the butt when dashing becomes a thing (decel_still is used for run > walk as well as unpredictably during almost all times)

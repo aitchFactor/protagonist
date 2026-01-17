@@ -46,7 +46,7 @@ proc hal_anim_jump {
         add AnimationFrame {costume_name: "halli-walk-v01b_4",      duration: 3,    flip: false } to animations_queue_frames;
     } 
 
-    # start_sound "jump";
+    start_sound "jump";
 
     add AnimationHeader {
         num_pages: 1,
@@ -141,6 +141,7 @@ proc hal_anim_spin {
 }
 
 proc hal_anim_puff {
+    start_sound "huff";
     one_frame ("halli-puff-side");
 }
 

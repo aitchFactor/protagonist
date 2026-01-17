@@ -36,11 +36,8 @@ on "boot" {
         map_right_edge: 8,
         map_bottom_edge: 6};
 
-    player_spawn_chunk_x = 0;
-    player_spawn_chunk_y = 1;
 
 
-    broadcast_and_wait "load_map";
 }
 
 onclone {
@@ -156,8 +153,10 @@ proc set_camera_target {
 
 }
 proc pan_to_target {
-    # pan to the scroll target with a bit of rubberbanding and smoothing.
-    # confine scrolling to the scroll bounds.
+    # pan camera x/y to the scroll target.
+    camera_x += camera_subpixel_x;
+    camera_y += camera_subpixel_y;
+
     local xmax = ((map_info.map_right_edge - 1) - map_info.map_left_edge) * chunk_width;
     local ymin = (map_info.map_top_edge - (map_info.map_bottom_edge - 1)) * chunk_height;
     camera_target_x = clamp(camera_target_x, 0, xmax);
@@ -198,6 +197,11 @@ proc pan_to_target {
 
     camera_x = clamp(camera_x, 0, xmax);
     camera_y = clamp(camera_y, ymin, 0);
+
+    camera_subpixel_x = camera_x % 1;
+    camera_x = floor(camera_x);
+    camera_subpixel_y = camera_y % 1;
+    camera_y = floor(camera_y);
     
 }
 
@@ -263,8 +267,8 @@ proc load_map{
         clone_segment_id++;
     }
     clone_segment_id = 0;
-    camera_x = "player"."x_position";
-    camera_y = "player"."y_position";
+
+    # assume camera has been set to the right position already.
     solve_segments;
 
 
@@ -274,7 +278,7 @@ proc load_map{
     # clone;
     clone_layer_id = BgLayerType.None;
 }
-on "load_map" {# conjectural name
+on "load_map_002" {# conjectural name
     load_map;
 } 
 

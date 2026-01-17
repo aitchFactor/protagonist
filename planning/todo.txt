@@ -1,0 +1,86 @@
+
+- todo: graphics
+    - player
+        - pafu
+            - death angel
+            - spike touch
+            - sprint skid
+            - look up
+            - duck/crawl
+        - halli
+            - directional puff
+            - spike touch 
+            - death angel
+            - look down
+        - stage
+            - spikes
+            - background graphics
+            - cave chameleon enemy
+            - chameleon with spike on head
+            - flying enemy
+todo: sound
+    - spike hit (just rip from gradius)
+    - enemy sounds
+    - boss music
+    - switch palace
+- todo: programming
+    - stage
+        - other game states 
+        - internal borders (screen transitions)
+        - crushy wall
+        - horde section
+        - level clear
+        - enemies
+        - collectables (chickies)
+    - player
+        - directional puff
+        - spike pogo
+        - hp
+        - invincible flash
+        - spike touch
+        - control lock
+        - game over 
+        - respawn
+        - quantise player position (on the edge closest to the ground) to determine slope status 
+    - halli
+        - hitboxes
+        - charge attack
+        
+    - pafu
+
+        - ledge hang/getup/jump
+        - charge attack/sprint
+
+
+- todo: halli 
+        - upwards/downwards puff
+        - health/game over
+            - save safe spawn location 
+            - 1st checkpoint = initial spawn position
+            - checkpoints should clear the immediate surroundings of enemies
+            
+        - respawning
+        - screen transitions
+        - jump sound effect
+- todo: level
+        - cave blob enemy
+        - cave blob with spike on its head enemy
+
+- todo: make halli idle in time with the bpm of stage music
+
+- todo: cooldown functionality (ie, move endlag)
+
+- todo: 
+
+
+
+
+- todo: simplify background layers to have only 1 collision layer
+
+
+- todo: make pafu's hurtbox smaller when she does a dash step
+
+- todo: add camera pan on look up/look down
+
+- think of how to have collisions between actors
+

@@ -97,6 +97,8 @@ var player = 1;
 
 var camera_x;
 var camera_y;
+var camera_subpixel_x;
+var camera_subpixel_y;
 var camera_target_x;
 var camera_target_y;
 var camera_y_max;
@@ -141,5 +143,7 @@ struct Checkpoint {
 # checkpoints for the current stage.
 list Checkpoint checkpoints;
 var current_checkpoint_index;
+
+var Checkpoint mini_checkpoint;
 
 var ChunkInfo chunk_info;

@@ -1,0 +1,36 @@
+- done: test platform snap with ceilings
+
+- done: get frame data for shaman crest (pafu's attacks)
+
+- done - jump sound, puff sounds
+
+- done - puff for pafu
+
+- done: add scrolling
+    - make script to slice levels - done
+    - solving for costume name from camera coordinates
+    - position clones at camera coords
+    - debug room coordinate view ?
+    - pan function
+    - player control camera
+    
+- done: figure out how to scale jump force on x momentum
+
+- not knowing exactly what the "x position" variable was really stung me today :(
+
+- done: coyote time
+
+- done: make delta time implementation for puff animation less horrible
+
+- done: add smw-style running jump
+
+- done: halli puff animation (basic)
+- done: direction lock
+
+- done: add soft platforms
+
+- done: delta time
+
+- done: debug scratch space y-position on frame 1
+
+- done: collision information

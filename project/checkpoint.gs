@@ -17,17 +17,12 @@ proc level_loader {
         }
         clone_id = 0;
     } 
-}
+    
+    # set checkpoint to spawn point
+    checkpoint_unpacked = unpack_checkpoint(checkpoints[1]);
 
-func unpack_checkpoint (Checkpoint x) Checkpoint {
-    # transform the raw coordinates of a checkpoint to the game's coordinates.
-    return Checkpoint {
-        chunk_x: $x.chunk_x,
-        chunk_y: -$x.chunk_y,
-        spawn_x: $x.spawn_x - chunk_width * 0.5,
-        spawn_y: -$x.spawn_y + chunk_height * 0.5,
-    };
-
+    # add to global checkpoint list (shouldn't be read by other clones)
+    mini_checkpoint = checkpoint_unpacked;
 }
 
 on "boot" {
@@ -39,15 +34,17 @@ on "boot" {
     hide;
 }
 
-on "load_map" {
+on "load_map_001" {
     if clone_id == 0{
         level_loader;
     }
 }
+
 onclone {
     hide;
 }
 proc small_checkpoint {
+    show;
     local try_x = quantise("player"."last_grounded_x", 32, 0) + 16;
     local try_y = quantise("player"."last_grounded_y", 16, 1);
 
@@ -78,6 +75,10 @@ proc small_checkpoint {
     checkpoint_unpacked.spawn_x = try_x;
     checkpoint_unpacked.spawn_y = try_y;
 
+    # update the global variable.
+    mini_checkpoint = checkpoint_unpacked;
+
+    hide;
 }
 
 proc big_checkpoint {
@@ -87,6 +88,11 @@ proc big_checkpoint {
     if chunk_info.chunk_x == checkpoint_unpacked.chunk_x and chunk_info.chunk_y == checkpoint_unpacked.chunk_y {
         current_checkpoint_index = clone_id;
     }
+}
+
+on "tick_000" {
+    hide;
+    goto_back;
 }
 
 on "tick_303" {

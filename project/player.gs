@@ -40,10 +40,10 @@
 %define paf_jump_vel (100/21) 
 
 # estimate
-%define paf_jump_vel_smal (0.75)
+%define paf_jump_vel_smal paf_gravity
 
 # halfway between mario's walk and run speeds (not based on hollow knight)
-%define paf_walk 1.875
+%define paf_walk 1.6
 
 # mario's p-speed 
 %define paf_run 3.18
@@ -54,7 +54,8 @@
 
 %define paf_skid_threshold 2
 
-%define puff_cooldown 24
+%define hal_puff_cooldown 24
+%define paf_puff_cooldown 29
 
 %include gfx/ply/hal/animation-data.gs
 %include gfx/ply/paf/animation-data.gs
@@ -139,8 +140,16 @@ proc state_machine new_state = "boot"{
         stop_this_script;
     }
 
-    if "play" in new_state and "puff" in state and puff_timer.current > (puff_cooldown * 0.5) {
-        stop_this_script;
+    if "play" in new_state and "puff" in state {
+        if player == 1 and puff_timer.current > (hal_puff_cooldown * 0.5){
+            stop_this_script;
+        } 
+        if puff_timer.current > (paf_puff_cooldown * 0.5) and ctrl_left < 0 and ctrl_right < 0 and ctrl_a < 0  {
+            stop_this_script;
+        }
+        if player == 2 and puff_timer.current > (paf_puff_cooldown * 0.75) {
+            stop_this_script;
+        }
     }
 
     if new_state == "play" {
@@ -178,6 +187,10 @@ proc state_machine new_state = "boot"{
 
         # Spinjump outprioritises normal animations
         if "spin" in state and "air" in new_state {
+            stop_this_script;
+        }
+
+        if "jump" in state and ("up" in new_state or "down" in new_state) {
             stop_this_script;
         }
     }
@@ -236,30 +249,46 @@ proc puff_control {
         
         state_machine("play.puff");
         if "puff" in state {
-            puff_timer.current = puff_cooldown;
-            direction_lock.current = puff_cooldown * 0.5;
-            # halli: puff stalls momentum
-            if player == 1 and yvel.v1 < 0 {
-                yvel.v1 = 0;
+            if player == 1 {
+                # halli: puff stalls momentum
+                if yvel.v1 < 0 {
+                    yvel.v1 = 0;
+                }
+                puff_timer.current = hal_puff_cooldown;
+                direction_lock.current = hal_puff_cooldown * 0.5;
+                add Projectile{
+                    type: "puff",
+                    name: "puff_halli_side_light",
+                    lifetime: round(hal_puff_cooldown * 0.5),
+                    direction: this_direction,
+                    x_position: x_position + 16 * sign_of(this_direction),
+                    y_position: y_position,
+                    xvel: xvel.v1 + max_run * sign_of(this_direction),
+                    yvel: 0
+                } to projectile_queue;
             }
 
-            add Projectile{
-                type: "puff",
-                name: "puff_halli_side_light",
-                lifetime: round(puff_cooldown * 0.5),
-                direction: this_direction,
-                x_position: x_position + 16 * sign_of(this_direction),
-                y_position: y_position,
-                xvel: xvel.v1 + max_run * sign_of(this_direction),
-                yvel: 0
-            } to projectile_queue;
+            if player == 2 {
+                puff_timer.current = paf_puff_cooldown;
+                direction_lock.current = paf_puff_cooldown * 0.25;
+                add Projectile{
+                    type: "puff",
+                    name: "puff_pafu_side_light",
+                    lifetime: round(paf_puff_cooldown * 0.5),
+                    direction: this_direction,
+                    x_position: x_position + 16 * sign_of(this_direction),
+                    y_position: y_position,
+                    xvel: (paf_walk + paf_run) * 0.5 * sign_of(this_direction),
+                    yvel: 0
+                } to projectile_queue;
+            }
 
 
         }
 
     }
 
-    if puff_timer.current <= (puff_cooldown * 0.5) and puff_timer.previous > (puff_cooldown * 0.5) {
+    if puff_timer.current <= (hal_puff_cooldown * 0.5) and puff_timer.previous > (hal_puff_cooldown * 0.5) {
         state_machine("play");
     }
 
@@ -550,7 +579,7 @@ proc hal_y_control move = true {
 
     if $move {
         local gravity = fall_gravity;
-        if ctrl_a > 0 or (yvel.v1 <= 0 and puff_timer.current >= puff_cooldown * 0.75) {
+        if ctrl_a > 0 or (yvel.v1 <= 0 and puff_timer.current >= hal_puff_cooldown * 0.75) {
             gravity = jump_gravity;
         }
         yvel = accelerate_advanced(yvel.v1, -gravity, yvel.a, -max_fall);
@@ -575,7 +604,7 @@ proc paf_y_control {
         if ctrl_a > 0 and (is_buffered(ctrl_a) or jump_buffered == 1) {
             
             yvel.v1 = paf_jump_vel;
-            state_machine ("play.air.up");
+            state_machine ("play.air.jump");
             grounded = false;
             jump_hold = 1;
         }
@@ -673,10 +702,19 @@ proc animation_timing{
         stop_this_script;
     }
 
-    # if puff_timer.current == puff_cooldown {
+    # if puff_timer.current == hal_puff_cooldown {
     #     state_machine ("play.puff");
     # }
 
+}
+
+proc goto_checkpoint Checkpoint check {
+    x_position = $check.spawn_x;
+    y_position = $check.spawn_y; 
+    camera_x = quantise($check.spawn_x, chunk_width, 0);
+    camera_y = quantise($check.spawn_y, chunk_height, 2);
+    x_scroll = -camera_x;
+    y_scroll = -camera_y; 
 }
 
 onflag{
@@ -743,9 +781,18 @@ on "tick_display"{
     }
 }
 
-on "load_map" {
-    x_position += player_spawn_chunk_x * chunk_width;
-    y_position += -player_spawn_chunk_y * chunk_height; 
+on "load_map_002" {
+    # first checkpoint in the list is the level start spawn point.
+    goto_checkpoint unpack_checkpoint(checkpoints[1]);
+
+}
+
+on "player_respawn_big" {
+    goto_checkpoint unpack_checkpoint(checkpoints[current_checkpoint_index]);
+}
+
+on "player_respawn_small" {
+    goto_checkpoint (mini_checkpoint);
 }
 
 onkey "l" {

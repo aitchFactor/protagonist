@@ -1,0 +1,87 @@
+halli has super mario world physics, pafu has hollow knight physics
+fastfalling?
+dashing?
+attacking?
+grapple hook / slingshotting? 
+
+no dialogue >:(
+
+overall theme: revisit (what a bad theme, right?)
+
+
+halli and pafu get different music?
+
+5 bosses
+s
+## Levels
+recolour tilesets with different music for "variety" :)
+three sizes: 12x4, 24x2, or 8x6
+    screens should be grouped by scrollable regions of 2 rows or 2 columns to mimic performant scrolling on the NES.
+what connects each area? 
+
+introduction: halli's home is dramatically stolen by the notorious "land pirates".
+act 1: 
+    (steps are shown in-game as paw prints, ie "step 1" = 🐾-1
+    step 1: forest floor
+    
+story development: grappling hook
+
+act 2: 
+
+    step 2: canopy (forest/sky) (see: fluffy bluff galaxy)
+    
+    step 3: switch palace (cliffside)
+
+    step 4: organic beat (airship infiltration)
+        gimmick: grapple hook flips platforms (like in super mario galaxy 2)
+        note: music sync gimmicks aren't practical for scratch
+    
+story development:
+    - xaraxos has been steam/diesel powered this whole time 
+
+act 3:
+    step 5: sand hell (airship crossing)
+    
+    step 6: sky fortress (collectathon, castle in the sky ripoff)
+    
+    step 7: lava + sky theme (night)  
+        music: nightmare castle
+
+act 4: 
+    step 8: palace (collectathon)
+        
+
+
+
+## log
+
+- abstract object backend has some hazy stuff, like local x/y scroll values
+
+
+
+
+
+
+
+
+
+
+
+
+
+- huge castle rising out of the ground gimmick
+
+
+
+
+
+    
+
+
+pafu charge attack recoil = dash???
+
+
+
+
+
+

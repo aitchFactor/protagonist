@@ -279,6 +279,7 @@ proc check_soft {
 
 
 proc move_x dx = 0, on_collide_action = CollideAction.Stop{
+    local rounded_x = round(x_position());
     x_remainder += $dx;
     local dx_rounded = round(x_remainder);
     if dx_rounded == 0 {
@@ -395,6 +396,10 @@ proc actor_tick{
 on "tick_000"{
     xvel.a = 0;
     yvel.a = 0;
+
+    # necessary for the 1st frame of the game loop
+    # x_scroll = -camera_x;
+    # y_scroll = -camera_y;
 }
 
 # on "tick_108"{
@@ -405,3 +410,4 @@ on "tick_303" {
     x_scroll = -camera_x; 
     y_scroll = -camera_y;
 }
+

@@ -11,7 +11,7 @@ onflag {
   }
 }
 
-proc boot {
+nowarp proc boot {
   G_game_state = "boot";
   fps = 0;
   delta_time = 2; # 30fps
@@ -44,14 +44,23 @@ proc boot {
   ctrl_sr = 0;
   ctrl_start = 0;
 
+  # camera_x and camera_y should always be integer.
   camera_x = 0;
+  camera_subpixel_x = 0;
   camera_y = 0;
+  camera_subpixel_y = 0;
   camera_target_x = 0;
   camera_target_y = 0;
+  camera_y_max  = 0;
+  camera_y_min  = 0;
 
   paused = 0;
 
   broadcast_and_wait "boot";
+  broadcast_and_wait "tick_zsort";
+  broadcast "load_map_001";
+  broadcast "load_map_002";
+  broadcast_and_wait "load_map_003";
   G_game_state = "play";
 
   broadcast_and_wait "set_debug_options";
@@ -158,3 +167,12 @@ on "tick_check_pause" {
 
 }
 
+
+onkey "v" {
+  if key_pressed ("shift") {
+    broadcast "player_respawn_big";
+  }
+  else {
+    broadcast "player_respawn_small";
+  }
+}

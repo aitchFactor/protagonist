@@ -67,6 +67,7 @@ func get_colliding_types() {
 }
 
 func is_colliding_solid(axis, sign){
+    
     local last_costume = costume_number();
     # try to switch to the soft variant of the current hitbox costume, if there is one
     switch_costume costume_name() & "-soft";

@@ -24,8 +24,21 @@ proc paf_anim_jumpsquat {
 }
 
 proc paf_anim_air_up {
-    # start_sound "jump";
     one_frame "pafu-jump_1";
+}
+
+proc paf_anim_jump {
+    start_sound "jump-paf";
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 3,
+        loop_start: 2,
+        loops: -1
+    }   to animations_queue_header;
+    # Frames
+    add AnimationFrame {costume_name: "pafu-jump_1",      duration: 22,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-jump_2",      duration: 6,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-jump_3",      duration: 1,   flip: false } to animations_queue_frames;
 }
 proc paf_anim_air_down {
     clear_animation;
@@ -80,9 +93,10 @@ proc paf_anim_walk_turn_around {
         loops: 0
     }   to animations_queue_header;
 
-    direction_lock.current = paf_turn_direction_lock / paf_walk;
+    # unused; I was wrong.
+    # direction_lock.current = paf_turn_direction_lock / paf_walk;
     add AnimationFrame {costume_name: "pafu-stand_4",     duration: 2,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-turn_1",      duration: paf_turn_direction_lock - 2,    flip: true } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-turn_1",      duration: paf_turn_direction_lock - 2,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-turn_2",      duration: 6,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-walk_1",      duration: 11,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-walk_2",      duration: 10,    flip: false } to animations_queue_frames;
@@ -139,6 +153,11 @@ proc paf_anim_spin {
 
 }
 
+proc paf_anim_puff {
+    start_sound "puff";
+    one_frame ("pafu-puff-side");
+}
+
 
 func paf_state_animation(state, last_state) {
     # library of every animation to play for each state.
@@ -155,6 +174,10 @@ func paf_state_animation(state, last_state) {
         }
 
         if "ground" in $state {
+            if "puff"       in $state {
+                paf_anim_puff;
+                return "paf_anim_puff";
+            }
             if "skid"       in $state{
                 paf_anim_skid;
                 return "paf_anim_skid";
@@ -184,17 +207,35 @@ func paf_state_animation(state, last_state) {
                     }
                 }
                 refreshed = true;
+                if "puff" in $last_state {
+                    refreshed = false;
+                }
                 paf_anim_walk (not refreshed);
                 return "paf_anim_walk";
             }
             return "undefined";
         }
         if "air" in $state {
+            if "puff"       in $state {
+                paf_anim_puff;
+                return "paf_anim_puff";
+            }
+            if "jump" in $state {
+                paf_anim_jump;
+                return "paf_anim_jump";
+            }
             if "up" in $state {
+                if $last_state == "play.air.jump"{
+                    return "play.air.jump";
+                }
                 paf_anim_air_up;
                 return "paf_anim_air_up";
+
             }
             if "down" in $state {
+                if $last_state == "play.air.jump"{
+                    return "play.air.jump";
+                }
                 paf_anim_air_down;
                 return "paf_anim_air_down";
             }
