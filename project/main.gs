@@ -14,7 +14,7 @@ onflag {
 nowarp proc boot {
   G_game_state = "boot";
   fps = 0;
-  delta_time = 2; # 30fps
+  delta_time = 60/200; # 30fps
 
   delete z_positions;
   delete input;
@@ -31,6 +31,8 @@ nowarp proc boot {
 
   delete checkpoints;
   current_checkpoint_index = 0;
+
+  show fps;
 
   ctrl_up = 0;
   ctrl_down = 0;
@@ -67,6 +69,26 @@ nowarp proc boot {
 
   broadcast_and_wait "set_debug_options";
 
+}
+
+proc calculate_fps {
+    delete fps_list[10];
+    insert timer() at fps_list[1];
+    reset_timer;
+    fps = 0;
+    local i = 1;
+    repeat length fps_list {
+      fps += fps_list[i];
+      i++;
+    }
+    fps = 10 / fps;
+}
+
+list fps_list;
+onflag {
+  forever {
+    calculate_fps;
+  }
 }
 
 nowarp proc loop {
@@ -178,4 +200,9 @@ onkey "v" {
   else {
     broadcast "player_respawn_small";
   }
+}
+
+on "tick_000"{
+  delete collision_checks;
+  delete collision_colour_checks;
 }

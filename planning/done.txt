@@ -1,3 +1,5 @@
+- directional puff
+- spike pogo
 - done: test platform snap with ceilings
 
 - done: get frame data for shaman crest (pafu's attacks)

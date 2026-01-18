@@ -14,7 +14,8 @@ proc solid_tick{
         stop_this_script;
     }
 
-    add properties to Solids;
+    # currently unused and disabled for performance
+    # add properties to Solids;
 }
 
 on "boot"{

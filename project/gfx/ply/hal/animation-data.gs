@@ -140,9 +140,19 @@ proc hal_anim_spin {
 
 }
 
-proc hal_anim_puff {
+proc hal_anim_puff_side {
     start_sound "huff";
     one_frame ("halli-puff-side");
+}
+
+proc hal_anim_puff_up {
+    start_sound "huff";
+    one_frame ("halli-puff-up");
+}
+
+proc hal_anim_puff_down {
+    start_sound "huff";
+    one_frame ("halli-puff-down");
 }
 
 func hal_state_animation(state, last_state) {
@@ -158,8 +168,18 @@ func hal_state_animation(state, last_state) {
 
         if "ground" in $state {
             if "puff"       in $state {
-                hal_anim_puff;
-                return "hal_anim_puff";
+                if "side" in $state {
+                    hal_anim_puff_side;
+                    return "hal_anim_puff_side";
+                }
+                if "up" in $state {
+                    hal_anim_puff_up;
+                    return "hal_anim_puff_up";
+                }
+                if "down" in $state {
+                    hal_anim_puff_down;
+                    return "hal_anim_puff_down";
+            }
             }
             if "skid"       in $state{
                 hal_anim_skid;
@@ -190,6 +210,24 @@ func hal_state_animation(state, last_state) {
             return "undefined";
         }
         if "air" in $state {
+            if "puff" in $state {
+                if "side" in $state {
+                    hal_anim_puff_side;
+                    return "hal_anim_puff_side";
+                }
+                if "up" in $state {
+                    hal_anim_puff_up;
+                    return "hal_anim_puff_up";
+                }
+                if "down" in $state {
+                    hal_anim_puff_down;
+                    return "hal_anim_puff_down";
+                }
+            }
+            if "jump" in $state {
+                hal_anim_jump;
+                return "hal_anim_jump";
+            }
             if "up" in $state {
                 if "ground" in $last_state{
                     hal_anim_jump;
@@ -208,10 +246,7 @@ func hal_state_animation(state, last_state) {
                 hal_anim_spin;
                 return "hal_anim_spin";
             }
-            if "puff" in $state {
-                hal_anim_puff;
-                return "hal_anim_puff";
-            }
+            
             
             return "undefined";
         }

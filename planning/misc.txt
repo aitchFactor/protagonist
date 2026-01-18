@@ -26,6 +26,8 @@ Collision shenanigans
     
     - (how) can functions take a behaviour as a parameter?
     
+checkpoint system won't work with moving platforms.
+
 
 debug keymap:
     9: frame advance (note: inputs are not counted per frame though, so any actions that trigger only on frame 1, like jumping, have to be timed)

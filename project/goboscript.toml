@@ -1,7 +1,7 @@
 # goboscript project configuration
 
 # The target number of frames per second (FPS)
-frame_rate = 30
+frame_rate = 200
 
 # Maximum number of clones that can exist simultaneously
 max_clones = 300.0

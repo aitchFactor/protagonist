@@ -1,3 +1,8 @@
+enum PuffType {
+    Side = "side",
+    Up  = "up",
+    Down = "down",
+}
 proc hal_side_light {
     # halli: puff stalls momentum
     if yvel.v1 < 0 {
@@ -15,6 +20,8 @@ proc hal_side_light {
         xvel: xvel.v1 + max_run * sign_of(this_direction),
         yvel: 0
     } to projectile_queue;
+    puff_type = PuffType.Side;
+    
 }
 
 proc hal_up_light {
@@ -29,11 +36,13 @@ proc hal_up_light {
         name: "puff_halli_up_light",
         lifetime: round(hal_puff_cooldown * 0.5),
         direction: this_direction,
-        x_position: x_position,
+        x_position: x_position + 4 * sign_of (this_direction),
         y_position: y_position + 12,
         xvel: xvel.v1,
         yvel: yvel.v1 + jump_vel_smal,
     } to projectile_queue;
+
+    puff_type = PuffType.Up;
 }
 
 proc hal_down_air {
@@ -48,11 +57,13 @@ proc hal_down_air {
         name: "puff_halli_down_air",
         lifetime: round(hal_puff_cooldown * 0.5),
         direction: this_direction,
-        x_position: x_position,
+        x_position: x_position + 8 * sign_of (this_direction),
         y_position: y_position - 12,
         xvel: xvel.v1,
         yvel: yvel.v1 - max_fall,
     } to projectile_queue;
+
+    puff_type = PuffType.Down;
 }
 
 proc paf_side_light {
@@ -68,6 +79,8 @@ proc paf_side_light {
         xvel: paf_run * sign_of(this_direction),
         yvel: 0
     } to projectile_queue;
+
+    puff_type = PuffType.Side;
 }
 
 proc paf_down_air {
@@ -86,6 +99,8 @@ proc paf_down_air {
     } to projectile_queue;
     yvel.v1 = paf_jump_vel * 0.25;
     jump_hold = 0;
+
+    puff_type = PuffType.Down;
 }
 
 proc paf_up_light {
@@ -101,4 +116,6 @@ proc paf_up_light {
         xvel: 0,
         yvel: paf_jump_vel + max(yvel.v1 * 0.5, 0),
     } to projectile_queue;
+
+    puff_type = PuffType.Up;
 }

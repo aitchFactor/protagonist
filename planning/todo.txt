@@ -23,8 +23,12 @@ todo: sound
     - enemy sounds
     - boss music
     - switch palace
+    
+- todo: level
+    - 
 - todo: programming
     - stage
+        - software tile types (parse the tile type when slicing the level)
         - other game states 
         - internal borders (screen transitions)
         - crushy wall
@@ -35,8 +39,6 @@ todo: sound
     - player
         - state driver / behaviours / statuses overhaul
             - startup / active / endlag / cancellable moves
-        - directional puff
-        - spike pogo
         - hp
         - invincible flash
         - spike touch
@@ -68,6 +70,7 @@ todo: sound
         - screen transitions
         - jump sound effect
 - todo: level
+        - make spikes only work with positive
         - cave blob enemy
         - cave blob with spike on its head enemy
 

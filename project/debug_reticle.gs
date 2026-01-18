@@ -1,5 +1,6 @@
 costumes
 "gfx/debug/reticle.png";
+%include includes/utils.gs
 
 on "tick_debug_last" {
     if not show_scroll_target {
@@ -18,6 +19,10 @@ on "tick_debug_last" {
         target_y = camera_y_max;
     }
     goto (camera_target_x - camera_x) * 2, (target_y - camera_y) * 2;
+
+    # if clone_id == "tile"{
+    #     goto ((quantise("player"."x_position", 16) - camera_x)  * 2), (quantise("player"."y_position", 16) - camera_y) * 2;
+    # }
 }
 
 onflag {
@@ -25,6 +30,8 @@ onflag {
     clone;
     clone_id = "min";
     clone;
+    # clone_id = "tile";
+    # clone;
     clone_id = "root";
 }
 onclone {

@@ -1,2 +1,2 @@
-%define chunk_width 256
-%define chunk_height 192
+%define chunk_width 128
+%define chunk_height 96

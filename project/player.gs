@@ -52,6 +52,7 @@ proc boot{
     grounded = 0;
     jump_hold = 0;
     jump_buffered = 0;
+    puff_type = "";
     direction_lock = Timer{};
     x_control_lock = Timer{};
     y_control_lock = Timer{};
@@ -92,7 +93,7 @@ proc state_machine new_state = "boot"{
         stop_this_script;
     }
 
-    if "play" in new_state and "puff" in state {
+    if "play" in new_state and "puff" in state and not ("puff" in new_state) {
         if player == 1 and puff_timer.current > (hal_puff_cooldown * 0.5){
             stop_this_script;
         } 
@@ -121,6 +122,7 @@ proc state_machine new_state = "boot"{
         if "air" in state {
             new_state = ("play.air.puff");
         }
+
     }
 
 
@@ -142,9 +144,9 @@ proc state_machine new_state = "boot"{
             stop_this_script;
         }
 
-        if "jump" in state and ("up" in new_state or "down" in new_state) {
-            stop_this_script;
-        }
+        # if "jump" in state and ("up" in new_state or "down" in new_state) {
+        #     stop_this_script;
+        # }
     }
     # ground -> skid and vice versa
     if new_state == "play.ground"{
@@ -196,6 +198,8 @@ proc state_to_direction {
     }
 }
 
+var puff_type;
+
 proc puff_control {
     if ctrl_b > 0 and ctrl_b <= (4/delta_time) and puff_timer.current <= 0 { # 4 frame buffer.
         
@@ -228,6 +232,9 @@ proc puff_control {
                     }
                 }
             }
+
+            # push the direction of the puff to the state.
+            state_machine(state & "." & puff_type);
 
         }
 
@@ -504,7 +511,7 @@ proc hal_y_control move = true {
             if $move{
                 yvel.v1 = jump_vel + 2 * (jump_incr) * abs(xvel.dx / delta_time) ;
             }
-            state_machine ("play.air.up");
+            state_machine ("play.air.jump");
             grounded = false;
             jump_hold = 1;
             
@@ -607,13 +614,13 @@ proc air_animation{
         if player == 2 {
             fall_threshold = paf_jump_vel_smal;
         }
-        if yvel.v1 > fall_threshold {
-            state_machine ("play.air.up");
+        if yvel.v1 < fall_threshold {
+            state_machine ("play.air.down");
 
         }
-        else {
-            state_machine ("play.air.down");
-        }
+        # else {
+        #     state_machine ("play.air.down");
+        # }
 
     }
 
@@ -654,13 +661,27 @@ proc animation_timing{
 
 }
 
-proc goto_checkpoint Checkpoint check {
+proc goto_checkpoint Checkpoint check, snap_camera = false {
     x_position = $check.spawn_x;
     y_position = $check.spawn_y; 
-    camera_x = quantise($check.spawn_x, chunk_width, 1);
-    camera_y = quantise($check.spawn_y, chunk_height, 1);
+    camera_x = $check.spawn_x;
+    camera_y = $check.spawn_y;
+    if $snap_camera {
+        camera_x = quantise(camera_x, chunk_width, 1);
+        camera_y = quantise(camera_y, chunk_height, 1);
+    }
+
+    camera_target_x = camera_x;
+    camera_target_y = camera_y;
+
     x_scroll = -camera_x;
     y_scroll = -camera_y; 
+
+
+    xvel = ContinuousVelocity{};
+    yvel = ContinuousVelocity{};
+    x_remainder = 0;
+    y_remainder = 0;
 }
 
 %define ev player_events[1]
@@ -676,6 +697,15 @@ proc receive_events {
         } 
 
         delete player_events[1];
+    }
+}
+
+proc check_spike {
+    if yvel.v1 > 0 {
+        stop_this_script;
+    }
+    if bitmask(get_colliding_types(), BgLayerTypeBit.Spike) {
+        broadcast "player_respawn_small";
     }
 }
 
@@ -715,6 +745,10 @@ on "tick_102"{
     player_tick;
 }
 
+on "tick_201" {
+    check_spike;
+}
+
 on "tick_cosmetics"{
     animation_timing;
 
@@ -752,7 +786,7 @@ on "load_map_002" {
 }
 
 on "player_respawn_big" {
-    goto_checkpoint unpack_checkpoint(checkpoints[current_checkpoint_index]);
+    goto_checkpoint unpack_checkpoint(checkpoints[current_checkpoint_index]), true;
 }
 
 on "player_respawn_small" {

@@ -14,11 +14,12 @@ on "boot" {
 
 on "tick_cosmetics"{
     if G_game_state == "animviewer"{
+        hidden = 0;
         show;
         animation_counter += delta_time;
     }
     else {
-        hide;
+        hidden = 1;
     }
 }
 

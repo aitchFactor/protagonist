@@ -22,6 +22,8 @@ var animation_counter;
 
 var this_direction;
 
+var hidden;
+
 
 # var animation_start;
 proc sprite_boot {
@@ -207,7 +209,7 @@ on "tick_zsort" {
 
 on "tick_000"{
     switch_costume hurtbox;
-    set_size 800;
+    set_size 150;
     goto x_position + x_scroll, y_position + y_scroll;
     set_size 100;
     # if costume_name() == "stand-paf"{
@@ -232,9 +234,23 @@ proc sprite_display {
     point_in_direction this_direction * (-bool_to_sign(flipped));
 
 
-    set_size 800;
-    goto round(x_position + x_scroll) * 2, round(y_position + y_scroll) * 2;
+    set_size 300;
+    local x = round(x_position + x_scroll) * 2;
+    local y = round(y_position + y_scroll) * 2;
+    goto x, y; 
     set_size 200;
+
+    if x_position() == x and y_position() == y {
+        if not hidden {
+            show;
+        }
+        else {
+            hide;
+        }
+    } 
+    else {
+        hide;
+    }
 }
 
 on "tick_display"{
@@ -244,7 +260,7 @@ on "tick_display"{
 on "tick_hitbox_view"{
     if hitbox_view {
         switch_costume hurtbox;
-        set_size 800;
+        set_size 150;
         goto x_position + x_scroll, y_position + y_scroll;
         set_size 100;
     }

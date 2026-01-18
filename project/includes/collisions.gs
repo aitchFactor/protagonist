@@ -1,33 +1,39 @@
-func get_colliding() Solid{
-    # return the struct entry of the first colliding solid.
-    # this means that any sprite can mark itself as a Solid, although we cannot detect properties of individual clones of a sprite.
-    local i = 0;
-    repeat length Solids {
-        i++;
-        if touching(Solids[i].raw_name){
-            return Solids[i];
-        }
-    }
-    return Solid{};
-}
+var SPRITE_NAME = "undefined";
+# func get_colliding() Solid{
+#     # return the struct entry of the first colliding solid.
+#     # this means that any sprite can mark itself as a Solid, although we cannot detect properties of individual clones of a sprite.
+#     local i = 0;
+#     repeat length Solids {
+#         i++;
+#         add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: Solids[i].raw_name} to collision_checks;
+#         if touching(Solids[i].raw_name){
+#             return Solids[i];
+#         }
+#     }
+#     return Solid{};
+# }
 
 var Solid get_colliding_type_local;
 func get_colliding_type() {
     # Check the type by the colour of the detected collision.
     # Each type's priority is implemented here.
 
-    get_colliding_type_local = get_colliding();
+    # get_colliding_type_local = get_colliding();
 
-    if get_colliding_type_local.raw_name == "" {
-        return BgLayerType.None;
-    }
+    # if get_colliding_type_local.raw_name == "" {
+    #     return BgLayerType.None;
+    # }
+    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Solid} to collision_colour_checks;
     if touching_color(BgLayerTypeColour.Solid) {
         return BgLayerType.Solid;
     }
+    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Soft} to collision_colour_checks;
     if touching_color(BgLayerTypeColour.Soft) {
         return BgLayerType.Soft;
     }
     # Picture should be the lowest priority.
+    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Picture} to collision_colour_checks;
+
     if touching_color(BgLayerTypeColour.Picture) {
         return BgLayerType.Picture;
     }
@@ -39,22 +45,25 @@ func get_colliding_types() {
     # Get the collision of all layers in a ?-bit integer.
     # But just remember, each pixel can currently only be of one layer type.
     local res = 0;
-    get_colliding_type_local = get_colliding();
+    # get_colliding_type_local = get_colliding();
 
-    if get_colliding_type_local.raw_name == "" {
-        return 0;
-    }
+    # if get_colliding_type_local.raw_name == "" {
+    #     return 0;
+    # }
+    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Solid} to collision_colour_checks;
     if touching_color(BgLayerTypeColour.Solid) {
         res += BgLayerTypeBit.Solid;
     }
+    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Soft} to collision_colour_checks;
     if touching_color(BgLayerTypeColour.Soft) {
         res += BgLayerTypeBit.Soft;
     }
 
+    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Spike} to collision_colour_checks;
     if touching_color(BgLayerTypeColour.Spike) {
         res += BgLayerTypeBit.Spike;
     }
-
+    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Pogo} to collision_colour_checks;
     if touching_color(BgLayerTypeColour.Pogo) {
         res += BgLayerTypeBit.Pogo;
     }
@@ -84,6 +93,10 @@ func is_colliding_solid(axis, sign){
     }
 
     inside_soft = touching_soft;
+
+    if bitmask(collisions, BgLayerTypeBit.Solid) {
+        return true;
+    }
 
     if get_colliding_type() == BgLayerType.Solid{
         return true;

@@ -14,7 +14,7 @@ var Projectile self;
 on "boot" {
     lifetime = 0;
     self = Projectile {};
-    z_position = 256;
+    z_position = 254;
     hide;
 }
 

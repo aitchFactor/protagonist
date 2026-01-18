@@ -114,7 +114,19 @@ var camera_y_min;
 var player_spawn_chunk_x;
 var player_spawn_chunk_y;
 
+struct CollisionCheck {
+    sprite,
+    costume,
+    touching,
+}
+
+list CollisionCheck collision_checks;
+
+list CollisionCheck collision_colour_checks;
+
 var paused;
+
+var acc;
 
 # costume name of the top-left corner of the map. 
 

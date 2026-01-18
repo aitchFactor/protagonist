@@ -153,9 +153,19 @@ proc paf_anim_spin {
 
 }
 
-proc paf_anim_puff {
+proc paf_anim_puff_side {
     start_sound "puff";
     one_frame ("pafu-puff-side");
+}
+
+proc paf_anim_puff_up {
+    start_sound "puff";
+    one_frame ("pafu-puff-up");
+}
+
+proc paf_anim_puff_down {
+    start_sound "puff";
+    one_frame ("pafu-puff-down");
 }
 
 
@@ -175,8 +185,18 @@ func paf_state_animation(state, last_state) {
 
         if "ground" in $state {
             if "puff"       in $state {
-                paf_anim_puff;
-                return "paf_anim_puff";
+                if "side" in $state {
+                    paf_anim_puff_side;
+                    return "paf_anim_puff_side";
+                }
+                if "up" in $state {
+                    paf_anim_puff_up;
+                    return "paf_anim_puff_up";
+                }
+                if "down" in $state {
+                    paf_anim_puff_down;
+                    return "paf_anim_puff_down";
+                }
             }
             if "skid"       in $state{
                 paf_anim_skid;
@@ -217,8 +237,18 @@ func paf_state_animation(state, last_state) {
         }
         if "air" in $state {
             if "puff"       in $state {
-                paf_anim_puff;
-                return "paf_anim_puff";
+                if "side" in $state {
+                    paf_anim_puff_side;
+                    return "paf_anim_puff_side";
+                }
+                if "up" in $state {
+                    paf_anim_puff_up;
+                    return "paf_anim_puff_up";
+                }
+                if "down" in $state {
+                    paf_anim_puff_down;
+                    return "paf_anim_puff_down";
+                }
             }
             if "jump" in $state {
                 paf_anim_jump;

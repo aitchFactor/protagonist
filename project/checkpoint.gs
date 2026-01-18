@@ -1,9 +1,10 @@
-%include gfx/bg/step3/checkpoints.gs
+%include gfx/bg/step3/data.gs
 %include includes/collisions.gs
 %include includes/defines.gs
 %include includes/utils.gs
-costumes "blank.png", "gfx/debug/reticle.png", "gfx/24x24.png", "gfx/8x24.png";
+costumes "blank.png", "gfx/debug/reticle.png", "gfx/24x24.png", "gfx/8x24.png", "gfx/1x1.png";
 
+var SPRITE_NAME = "Checkpoint";
 var clone_id;
 var Checkpoint checkpoint_unpacked;
 
@@ -48,24 +49,48 @@ proc small_checkpoint {
     local try_x = quantise("player"."last_grounded_x", 32, 0) + 16;
     local try_y = quantise("player"."last_grounded_y", 16, 1);
 
-    # check this point is not inside a wall.
-    clear_graphic_effects;
-    switch_costume "24x24";
-    set_size 100;
+    # stop if we are offscreen.
     goto try_x - camera_x, try_y - camera_y;
-
-    if is_colliding_solid("", 0){
+    if not (x_position() == (try_x - camera_x) and y_position() == (try_y - camera_y)){
         stop_this_script;
     }
 
-    # check there is a floor under the spawn point.
+    # check this point is not inside a wall.
+    clear_graphic_effects;
     switch_costume "8x24";
-    change_y -5;
+    set_size 100;
+    change_x -8;
+    local collides = get_colliding_types();
+    if bitmask(collides, BgLayerTypeBit.Solid) {
+        stop_this_script;
+    }
+    if bitmask(collides, BgLayerTypeBit.Spike) {
+        stop_this_script;
+    }
+
+    change_x 16;
+
+    collides = get_colliding_types();
+    if bitmask(collides, BgLayerTypeBit.Solid) {
+        stop_this_script;
+    }
+    if bitmask(collides, BgLayerTypeBit.Spike) {
+        stop_this_script;
+    }
+
+    goto try_x - camera_x, try_y - camera_y;
+    # check there is a floor under the spawn point.
+    switch_costume "1x1";
+    change_y -20;
     change_x 12;
     if not is_colliding_solid("y", -1){
         stop_this_script;
     }
-    change_x -24;
+    change_x -12;
+    if not is_colliding_solid("y", -1){
+        stop_this_script;
+    }
+    change_x -12;
     if not is_colliding_solid("y", -1){
         stop_this_script;
     }

@@ -43,7 +43,7 @@ proc get_input_data {
     poll_input_for_using "D", "s", "down arrow", "", false;
     poll_input_for_using "L", "a", "left arrow", "", mouse_down() and mouse_x() < 0;
     poll_input_for_using "R", "d", "right arrow", "", mouse_down() and mouse_x() > 0;
-    poll_input_for_using "A", "m", "z", "space", false;
+    poll_input_for_using "A", "m", "z", "space", mouse_down() and mouse_y() > 90;
     poll_input_for_using "B", "n", "x", "shift", false;
     poll_input_for_using "X", "j", "v", "", false;
     poll_input_for_using "Y", "h", "v", "", false;

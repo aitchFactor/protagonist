@@ -25,7 +25,7 @@ def parse_argv(argv):
     return options
 
 def save_sliced(image:Image, folder:Path, filename_stem:Path):
-    screen_dimensions = (256, 192)
+    screen_dimensions = (128, 96)
     width, height = image.size
     if not folder.exists():
         folder.mkdir()
