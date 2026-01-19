@@ -3,7 +3,6 @@
 
 costumes "gfx/ply/smoke-puff*.png/",
 "gfx/2x16.png",
-"gfx/2x2.png",
 "gfx/ply/pogo.png";
 
 var SPRITE_NAME = "Puff Projectile";
@@ -15,6 +14,7 @@ on "boot" {
     lifetime = 0;
     self = Projectile {};
     z_position = 254;
+    fast_collisions = true;
     hide;
 }
 
@@ -97,7 +97,6 @@ proc paf_down_air duration = 30 {
     add AnimationFrame {costume_name: "smoke-puff-wide-down_1",      duration: $duration - 5,    flip: true } to animations_queue_frames;
     add AnimationFrame {costume_name: "smoke-puff-wide-down_2",      duration: 1,    flip: true } to animations_queue_frames;
     set_rotation_style_left_right;
-    last_hurtbox = "2x16";
     # switch_costume "smoke-puff_1";
 }
 
@@ -147,7 +146,7 @@ onclone {
     y_position = self.y_position;
     xvel.v1 = self.xvel;
     yvel.v1 = self.yvel;
-    last_hurtbox = "2x2";
+    bounding_box = BoundingBox {diameter_x: 0, diameter_y: 0};
     # follow does nothing at the moment.
 
     if clone_id == "puff_halli_side_light"{
@@ -228,7 +227,6 @@ on "tick_101"{
             yvel = decelerate_advanced(yvel.v1, paf_gravity * 2.5, yvel.a, paf_jump_vel_smal);
 
         }
-        switch_costume last_hurtbox;
         speedcaps;
         move_x xvel.dx, CollideAction.Nothing;
         move_y yvel.dx, CollideAction.Nothing;
@@ -240,13 +238,15 @@ on "tick_101"{
 }
 
 proc check_pogo {
-    last_costume = costume_number();
-    switch_costume "pogo";
-    if bitmask (get_colliding_types(), BgLayerTypeBit.Pogo) {
+    local BoundingBox last_bb = bounding_box;
+    bounding_box = BoundingBox {centre_x: 0, centre_y: -4, diameter_x: 16, diameter_y: 24};
+    local types = get_colliding_types();
+    local success = bitmask (types, BgLayerTypeBit.Pogo) or bitmask (types, BgLayerTypeBit.Soft) or bitmask (types, BgLayerTypeBit.Solid);
+    if success {
         add PlayerEvent {type: "pogo", name: "", sender: SPRITE_NAME} to player_events;
         delete_this_clone;
     }
-    switch_costume last_costume;
+    bounding_box = last_bb;
 }
 
 # on "tick_008" {

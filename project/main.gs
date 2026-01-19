@@ -142,7 +142,12 @@ nowarp proc loop {
 }
 
 on "tick_000"{
+  
   delete Solids;
+
+  if hitbox_view {
+    erase_all;
+  }
 }
 
 on "tick_zsort"{
@@ -151,11 +156,12 @@ on "tick_zsort"{
 }
 
 onkey "g" {
-  player = ((player) % 2) + 1; 
+  broadcast "switch_player";
 }
 
 onkey "h" {
   hitbox_view = not hitbox_view;
+  erase_all;
 }
 
 onkey "b" {

@@ -321,12 +321,21 @@ proc move_y dy = 0, on_collide_action = CollideAction.Stop{
     if sign == -1 {
         local before_snap_check = y_position();
         local before_dy_rounded = dy_rounded;
+        local BoundingBox last_bb = bounding_box;
+        ##############
+        # snap to a platform by moving upwards and adding the distance to the downwards movement here.
+        # to preserve the collision invariant, recurse into another safe move_y procedure.
+
+
+
         if inside_soft {
             move_y soft_platform_snap;
         }
         # else {
         #     move_y platform_snap;
         # }
+        ################
+        bounding_box = last_bb;
         dy_rounded = before_dy_rounded + (before_snap_check - y_position());
         sign = -1;
         

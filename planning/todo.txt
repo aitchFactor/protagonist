@@ -1,3 +1,9 @@
+testing
+    - done switch player proper event handling
+    - player (halli and pafu)
+    - soft platforms
+    - checkpoints
+    - puff
 
 - todo: graphics
     - player
@@ -28,6 +34,7 @@ todo: sound
     - 
 - todo: programming
     - stage
+        - change collisions to use corner bounds and/or 8x8 tile corners 
         - software tile types (parse the tile type when slicing the level)
         - other game states 
         - internal borders (screen transitions)
@@ -39,6 +46,7 @@ todo: sound
     - player
         - state driver / behaviours / statuses overhaul
             - startup / active / endlag / cancellable moves
+            - design events to be converted to one-time as quickly as possible
         - hp
         - invincible flash
         - spike touch

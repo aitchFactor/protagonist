@@ -1,4 +1,5 @@
 var SPRITE_NAME = "undefined";
+costumes "gfx/256x256.png", "gfx/2x2.png";
 # func get_colliding() Solid{
 #     # return the struct entry of the first colliding solid.
 #     # this means that any sprite can mark itself as a Solid, although we cannot detect properties of individual clones of a sprite.
@@ -13,6 +14,20 @@ var SPRITE_NAME = "undefined";
 #     return Solid{};
 # }
 
+struct BoundingBox {
+    centre_x = 0,
+    centre_y = 0,
+    diameter_x,
+    diameter_y
+}
+var BoundingBox bounding_box;
+# In fast mode, only the edges of the bounding box will be checked.
+var fast_collisions;
+
+on "boot" {
+    fast_collisions = false;
+}
+
 var Solid get_colliding_type_local;
 func get_colliding_type() {
     # Check the type by the colour of the detected collision.
@@ -23,18 +38,15 @@ func get_colliding_type() {
     # if get_colliding_type_local.raw_name == "" {
     #     return BgLayerType.None;
     # }
-    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Solid} to collision_colour_checks;
-    if touching_color(BgLayerTypeColour.Solid) {
+    if bb_touching(BgLayerTypeColour.Solid) {
         return BgLayerType.Solid;
     }
-    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Soft} to collision_colour_checks;
-    if touching_color(BgLayerTypeColour.Soft) {
+    if bb_touching(BgLayerTypeColour.Soft) {
         return BgLayerType.Soft;
     }
     # Picture should be the lowest priority.
-    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Picture} to collision_colour_checks;
 
-    if touching_color(BgLayerTypeColour.Picture) {
+    if bb_touching(BgLayerTypeColour.Picture) {
         return BgLayerType.Picture;
     }
 
@@ -50,21 +62,17 @@ func get_colliding_types() {
     # if get_colliding_type_local.raw_name == "" {
     #     return 0;
     # }
-    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Solid} to collision_colour_checks;
-    if touching_color(BgLayerTypeColour.Solid) {
+    if bb_touching(BgLayerTypeColour.Solid) {
         res += BgLayerTypeBit.Solid;
     }
-    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Soft} to collision_colour_checks;
-    if touching_color(BgLayerTypeColour.Soft) {
+    if bb_touching(BgLayerTypeColour.Soft) {
         res += BgLayerTypeBit.Soft;
     }
 
-    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Spike} to collision_colour_checks;
-    if touching_color(BgLayerTypeColour.Spike) {
+    if bb_touching(BgLayerTypeColour.Spike) {
         res += BgLayerTypeBit.Spike;
     }
-    add CollisionCheck {sprite: SPRITE_NAME, costume: costume_name(), touching: BgLayerTypeColour.Pogo} to collision_colour_checks;
-    if touching_color(BgLayerTypeColour.Pogo) {
+    if bb_touching(BgLayerTypeColour.Pogo) {
         res += BgLayerTypeBit.Pogo;
     }
     # Picture should be the lowest priority.
@@ -78,13 +86,20 @@ func get_colliding_types() {
 func is_colliding_solid(axis, sign){
     
     local last_costume = costume_number();
-    # try to switch to the soft variant of the current hitbox costume, if there is one
-    switch_costume costume_name() & "-soft";
+    # solve for the lowest pixel row of the current bounding box.
+    local BoundingBox last = bounding_box;
+
+    bounding_box = BoundingBox {
+        centre_x: bounding_box.centre_x,
+        diameter_x: bounding_box.diameter_x,
+        centre_y: bounding_box.centre_y - bounding_box.diameter_y/2,
+        diameter_y: 0};
 
     # If not overlapping a soft platform, reset the variable.
 
     local collisions = get_colliding_types();
-    switch_costume last_costume;
+    bounding_box = last;
+    
     touching_soft = floor(collisions / BgLayerTypeBit.Soft) % 2;
 
     # if going down, not overlapping last frame, and touching now
@@ -102,4 +117,136 @@ func is_colliding_solid(axis, sign){
         return true;
     }
     return false;
+}
+
+proc set_bounding_box BoundingBox box {
+    # sets the size of the bounding box for this collider to some dimensions
+    # centred on the sprite. 
+    bounding_box.diameter_x = $box.diameter_x;
+    bounding_box.diameter_y = $box.diameter_y;
+    bounding_box.centre_x = $box.centre_x;
+    bounding_box.centre_y = $box.centre_y;
+}
+
+func bb_touching (sprite, pen = false) {
+
+    local last_x = x_position();
+    local last_y = y_position();
+    local last_costume = costume_number();
+    local last_size = size();
+    switch_costume "256x256";
+    set_size 100;
+    set_size 1;
+    switch_costume "2x2";
+    ############################
+
+    local res =_bb_trace (last_x, last_y, $sprite, $pen);
+
+    ############################
+    goto last_x, last_y;
+    switch_costume last_costume;
+    set_size last_size;
+    return res;
+
+} 
+
+%define trace_tile_size_x 8
+%define trace_tile_size_y trace_tile_size_x
+func _bb_trace (last_x, last_y, thing, pen = false) {
+    # don't use this on its own.
+
+    #   1 -- 2
+    #   |    |
+    #   3 -- 4
+    local range_j = ceil(bounding_box.diameter_y / trace_tile_size_y);
+    local j = (-range_j * 0.5) + 1;
+    if fast_collisions == 0 {
+        repeat range_j - 1{
+            set_y $last_y + bounding_box.centre_y + j * trace_tile_size_y;
+            if _bb_trace_x ($last_x, $thing, $pen) {
+                return true;
+            }
+            j++;
+        }
+    }
+    j = -1;
+    repeat 2 {
+        set_y $last_y + bounding_box.centre_y + bounding_box.diameter_y * 0.5 * j;
+        if _bb_trace_x ($last_x, $thing, $pen) {
+            return true;
+        }
+        j += 2;
+    }
+    
+    return false;
+
+}
+
+func _bb_trace_x (last_x, thing, pen = false) {
+    local range_i = ceil((bounding_box.diameter_x) / trace_tile_size_x);
+    local i = (-range_i * 0.5) + 1;
+    if fast_collisions == 0 {
+        repeat range_i - 1 {
+
+            set_x $last_x + bounding_box.centre_x + i * trace_tile_size_x;
+            
+            if $pen {
+                set_size 50;
+                stamp;
+                switch_costume "256x256";
+                set_size 100;
+                set_size 1;
+                switch_costume "2x2";
+            }
+
+            add CollisionCheck {sprite: SPRITE_NAME, touching: $thing, costume: costume_name()} to collision_checks;
+            if $thing[1] & $thing[2] == "0x" {
+                if touching_color ($thing) {
+                    return true;
+                }
+            }
+            else {
+                if touching ($thing) {
+                    return true;
+                }
+            }
+
+            i++;
+
+        }
+    }
+    i = -1;
+    repeat 2 {
+        set_x $last_x + bounding_box.centre_x - bounding_box.diameter_x * 0.5 * i;
+        if $pen {
+            set_size 50;
+            stamp;
+            switch_costume "256x256";
+            set_size 100;
+            set_size 1;
+            switch_costume "2x2";
+        }
+        add CollisionCheck {sprite: SPRITE_NAME, touching: $thing, costume: costume_name()} to collision_checks;
+        if $thing[1] & $thing[2] == "0x" {
+            if touching_color ($thing) {
+                return true;
+            }
+        }
+        else {
+            if touching ($thing) {
+                return true;
+            }
+        }
+        i += 2;
+    }
+
+    return false;
+}
+
+on "tick_hitbox_view" {
+    if hitbox_view {
+        if bb_touching("", true) {
+            # intentionally left blank.
+        }
+    }
 }

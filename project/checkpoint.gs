@@ -2,7 +2,7 @@
 %include includes/collisions.gs
 %include includes/defines.gs
 %include includes/utils.gs
-costumes "blank.png", "gfx/debug/reticle.png", "gfx/24x24.png", "gfx/8x24.png", "gfx/1x1.png";
+costumes "blank.png", "gfx/debug/reticle.png", "gfx/24x24.png", "gfx/8x24.png";
 
 var SPRITE_NAME = "Checkpoint";
 var clone_id;
@@ -32,6 +32,9 @@ on "boot" {
     }
     clone_id = 0;
     checkpoint_unpacked = Checkpoint{};
+    last_try_x = "Infinity";
+    last_try_y = "Infinity";
+    
     hide;
 }
 
@@ -46,8 +49,14 @@ onclone {
 }
 proc small_checkpoint {
     show;
+    set_rotation_style_do_not_rotate;
     local try_x = quantise("player"."last_grounded_x", 32, 0) + 16;
     local try_y = quantise("player"."last_grounded_y", 16, 1);
+
+    # stop if we already have checked this point.
+    if try_x == last_try_x and try_y == last_try_y {
+        stop_this_script;
+    }
 
     # stop if we are offscreen.
     goto try_x - camera_x, try_y - camera_y;
@@ -57,9 +66,12 @@ proc small_checkpoint {
 
     # check this point is not inside a wall.
     clear_graphic_effects;
-    switch_costume "8x24";
-    set_size 100;
-    change_x -8;
+    bounding_box = BoundingBox {
+        diameter_x: 24,
+        diameter_y: 24,
+        centre_x: 0,
+        centre_y: 0
+    };
     local collides = get_colliding_types();
     if bitmask(collides, BgLayerTypeBit.Solid) {
         stop_this_script;
@@ -68,29 +80,24 @@ proc small_checkpoint {
         stop_this_script;
     }
 
-    change_x 16;
-
-    collides = get_colliding_types();
-    if bitmask(collides, BgLayerTypeBit.Solid) {
-        stop_this_script;
-    }
-    if bitmask(collides, BgLayerTypeBit.Spike) {
-        stop_this_script;
-    }
-
     goto try_x - camera_x, try_y - camera_y;
-    # check there is a floor under the spawn point.
-    switch_costume "1x1";
-    change_y -20;
-    change_x 12;
+    # check there is a floor under all parts of the spawn point.
+    bounding_box = BoundingBox {
+        diameter_x: 6,
+        diameter_y: 0,
+        centre_x: 0,
+        centre_y: -20
+    };
+
+    bounding_box.centre_x = -10;
     if not is_colliding_solid("y", -1){
         stop_this_script;
     }
-    change_x -12;
+    bounding_box.centre_x = 0;
     if not is_colliding_solid("y", -1){
         stop_this_script;
     }
-    change_x -12;
+    bounding_box.centre_x = 10;
     if not is_colliding_solid("y", -1){
         stop_this_script;
     }

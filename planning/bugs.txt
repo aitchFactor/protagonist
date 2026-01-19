@@ -1,4 +1,6 @@
 known bugs:
+    wall climbing is trivial - need to make vertical puffs bounce off walls 
+    
     jumping while puffing doesn't let you release early even if you actually release the button.
         This is because coyote time depends on the ground/air state which jumping during a puff doesn't change properly.
     

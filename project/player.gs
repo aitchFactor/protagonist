@@ -62,12 +62,9 @@ proc boot{
     hp = 4;
     state_machine("play");
 
-    if player == 1 {
-        hurtbox = "stand";
-    }
-    if player == 2 {
-        hurtbox = "stand-paf";
-    }
+    set_player player;
+
+    fast_collisions = true;
 
 }
 
@@ -276,9 +273,6 @@ proc x_control move = true{
 # }
 
 proc hal_x_control move = true {
-    # hurtbox changes
-    hurtbox = "stand";
-    switch_costume hurtbox;
 
     # physics step
     local new_state = "";
@@ -356,8 +350,7 @@ proc hal_x_control move = true {
 }
 
 proc paf_x_control {
-    hurtbox = "stand-paf";
-    switch_costume hurtbox;
+
 
 
     local acceleration = 0;
@@ -734,6 +727,8 @@ on "tick_000"{
     coyote_timer    = decrement_timer(coyote_timer);
     delete player_events; 
 
+    switch_costume hurtbox;
+
     last_this_direction = this_direction;
 
     if timer_boundary_crossed(direction_lock, 0){
@@ -791,6 +786,23 @@ on "player_respawn_big" {
 
 on "player_respawn_small" {
     goto_checkpoint (mini_checkpoint);
+}
+
+proc set_player p{
+    if $p == 1 {
+        hurtbox = "stand_14x16";
+        set_bounding_box box: bb_hal_stand;
+    }
+    if $p == 2 {
+        hurtbox = "stand-10x16";
+        set_bounding_box(bb_paf_stand);
+    }
+    switch_costume hurtbox;
+}
+
+on "switch_player" {
+    player = ((player) % 2) + 1; 
+    set_player player;
 }
 
 onkey "l" {

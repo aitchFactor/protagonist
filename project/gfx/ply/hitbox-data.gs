@@ -1,3 +1,6 @@
+%define bb_hal_stand BoundingBox {centre_x: 0, centre_y: -4, diameter_x: 14, diameter_y: 16}
+%define bb_paf_stand BoundingBox {centre_x: 0, centre_y: -4, diameter_x: 10, diameter_y: 16}
+
 enum PuffType {
     Side = "side",
     Up  = "up",

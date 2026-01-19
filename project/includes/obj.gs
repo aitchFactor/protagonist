@@ -212,6 +212,7 @@ on "tick_000"{
     set_size 150;
     goto x_position + x_scroll, y_position + y_scroll;
     set_size 100;
+    set_rotation_style_do_not_rotate;
     # if costume_name() == "stand-paf"{
     #     set_size 100;
     # }
@@ -230,6 +231,8 @@ on "tick_301" {
 proc sprite_display {
     x_scroll = round_256(x_scroll);
     y_scroll = round_256(y_scroll);
+
+    set_rotation_style_left_right;
 
     point_in_direction this_direction * (-bool_to_sign(flipped));
 
