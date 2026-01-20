@@ -128,9 +128,9 @@ var paused;
 
 var acc;
 
-# costume name of the top-left corner of the map. 
 
 struct MapInfo {
+    # costume name stem of the map.
     map_name = "",
     # all coordinates measured in chunk size.
     # these work like python slices: [0:3] -> [0, 1, 2]
@@ -140,7 +140,14 @@ struct MapInfo {
     map_bottom_edge = 0,
 }
 
+
 var MapInfo map_info;
+
+# An array determining which map is loaded if a level transition enters some chunk. 
+list map_lut;
+
+# A list of maps that could be loaded in this level.
+list MapInfo map_list; 
 
 struct ChunkInfo {
     viewport_x = 0,

@@ -95,7 +95,7 @@ proc paf_down_air {
         name: "puff_pafu_down_air",
         lifetime: round(paf_puff_cooldown * 0.5),
         direction: this_direction,
-        x_position: x_position + 7 * sign_of(this_direction),
+        x_position: x_position + 5 * sign_of(this_direction),
         y_position: y_position - 12,
         xvel: paf_walk * sign_of(this_direction),
         yvel: -paf_max_fall,

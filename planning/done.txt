@@ -1,3 +1,10 @@
+- collisions overhaul
+    - done switch player proper event handling
+    - player (halli and pafu)
+    - soft platforms
+    - checkpoints
+    - puff
+
 - directional puff
 - spike pogo
 - done: test platform snap with ceilings

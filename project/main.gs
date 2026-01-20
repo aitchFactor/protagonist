@@ -14,7 +14,7 @@ onflag {
 nowarp proc boot {
   G_game_state = "boot";
   fps = 0;
-  delta_time = 60/200; # 30fps
+  delta_time = 2; # 30fps
 
   delete z_positions;
   delete input;
