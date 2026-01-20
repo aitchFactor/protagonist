@@ -54,9 +54,15 @@ proc small_checkpoint {
     local try_y = quantise("player"."last_grounded_y", 16, 1);
 
     # stop if we already have checked this point.
+    if try_x == checkpoint_unpacked.spawn_x and try_y == checkpoint_unpacked.spawn_y {
+        stop_this_script;
+    }
     if try_x == last_try_x and try_y == last_try_y {
         stop_this_script;
     }
+
+    last_try_x = try_x;
+    last_try_y = try_y;
 
     # stop if we are offscreen.
     goto try_x - camera_x, try_y - camera_y;
@@ -67,8 +73,8 @@ proc small_checkpoint {
     # check this point is not inside a wall.
     clear_graphic_effects;
     bounding_box = BoundingBox {
-        diameter_x: 24,
-        diameter_y: 24,
+        diameter_x: 32,
+        diameter_y: 20,
         centre_x: 0,
         centre_y: 0
     };

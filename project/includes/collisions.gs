@@ -162,7 +162,7 @@ func _bb_trace (last_x, last_y, thing, pen = true) {
     local j = (-range_j * 0.5) + 1;
     repeat range_j - 1{
         set_y $last_y + bounding_box.centre_y + j * trace_tile_size_y;
-        if _bb_trace_x ($last_x, $thing, full: not fast_collisions, $pen) {
+        if _bb_trace_x ($last_x, $thing, not fast_collisions, $pen) {
             return true;
         }
         j++;
@@ -170,7 +170,7 @@ func _bb_trace (last_x, last_y, thing, pen = true) {
     j = -1;
     repeat 2 {
         set_y $last_y + bounding_box.centre_y + bounding_box.diameter_y * 0.5 * j;
-        if _bb_trace_x ($last_x, $thing, full: true, $pen) {
+        if _bb_trace_x ($last_x, $thing, true, $pen) {
             return true;
         }
         j += 2;
