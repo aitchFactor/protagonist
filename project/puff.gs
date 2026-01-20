@@ -239,12 +239,18 @@ on "tick_101"{
 
 proc check_pogo {
     local BoundingBox last_bb = bounding_box;
-    bounding_box = BoundingBox {centre_x: 0, centre_y: -4, diameter_x: 16, diameter_y: 24};
+    bounding_box = BoundingBox {centre_x: 0, centre_y: -8, diameter_x: 18, diameter_y: 32};
+    if bitmask (get_colliding_types(), BgLayerTypeBit.Pogo) {
+        add PlayerEvent {type: "pogo", name: "", sender: SPRITE_NAME} to player_events;
+        delete_this_clone;
+    }
+    # smaller hitbox for normal tiles.
+    bounding_box = BoundingBox {centre_x: -4 * sign_of(this_direction), centre_y: -8, diameter_x: 0, diameter_y: 0};
     local types = get_colliding_types();
     local success = bitmask (types, BgLayerTypeBit.Pogo) or bitmask (types, BgLayerTypeBit.Soft) or bitmask (types, BgLayerTypeBit.Solid);
     if success {
         add PlayerEvent {type: "pogo", name: "", sender: SPRITE_NAME} to player_events;
-        delete_this_clone;
+        delete_this_clone;  
     }
     bounding_box = last_bb;
 }
