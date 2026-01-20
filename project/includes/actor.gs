@@ -405,10 +405,11 @@ proc actor_tick{
 on "tick_000"{
     xvel.a = 0;
     yvel.a = 0;
+    set_ghost_effect 100;
+}
 
-    # necessary for the 1st frame of the game loop
-    # x_scroll = -camera_x;
-    # y_scroll = -camera_y;
+on "tick_display" {
+    set_ghost_effect 0;
 }
 
 # on "tick_108"{
