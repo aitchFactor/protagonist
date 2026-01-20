@@ -152,7 +152,7 @@ func bb_touching (sprite, pen = false) {
 
 %define trace_tile_size_x 8
 %define trace_tile_size_y trace_tile_size_x
-func _bb_trace (last_x, last_y, thing, pen = false) {
+func _bb_trace (last_x, last_y, thing, pen = true) {
     # don't use this on its own.
 
     #   1 -- 2
@@ -160,19 +160,17 @@ func _bb_trace (last_x, last_y, thing, pen = false) {
     #   3 -- 4
     local range_j = ceil(bounding_box.diameter_y / trace_tile_size_y);
     local j = (-range_j * 0.5) + 1;
-    if fast_collisions == 0 {
-        repeat range_j - 1{
-            set_y $last_y + bounding_box.centre_y + j * trace_tile_size_y;
-            if _bb_trace_x ($last_x, $thing, $pen) {
-                return true;
-            }
-            j++;
+    repeat range_j - 1{
+        set_y $last_y + bounding_box.centre_y + j * trace_tile_size_y;
+        if _bb_trace_x ($last_x, $thing, full: not fast_collisions, $pen) {
+            return true;
         }
+        j++;
     }
     j = -1;
     repeat 2 {
         set_y $last_y + bounding_box.centre_y + bounding_box.diameter_y * 0.5 * j;
-        if _bb_trace_x ($last_x, $thing, $pen) {
+        if _bb_trace_x ($last_x, $thing, full: true, $pen) {
             return true;
         }
         j += 2;
@@ -182,10 +180,10 @@ func _bb_trace (last_x, last_y, thing, pen = false) {
 
 }
 
-func _bb_trace_x (last_x, thing, pen = false) {
+func _bb_trace_x (last_x, thing, full, pen = false) {
     local range_i = ceil((bounding_box.diameter_x) / trace_tile_size_x);
     local i = (-range_i * 0.5) + 1;
-    if fast_collisions == 0 {
+    if $full {
         repeat range_i - 1 {
 
             set_x $last_x + bounding_box.centre_x + i * trace_tile_size_x;
