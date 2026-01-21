@@ -15,6 +15,7 @@ on "boot" {
     self = Projectile {};
     z_position = 254;
     fast_collisions = true;
+    hidden = true;
     hide;
 }
 
@@ -147,6 +148,7 @@ onclone {
     xvel.v1 = self.xvel;
     yvel.v1 = self.yvel;
     bounding_box = BoundingBox {diameter_x: 0, diameter_y: 0};
+    hidden = false;
     # follow does nothing at the moment.
 
     if clone_id == "puff_halli_side_light"{
