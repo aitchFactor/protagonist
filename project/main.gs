@@ -66,8 +66,13 @@ nowarp proc boot {
 
   broadcast_and_wait "boot";
   broadcast_and_wait "tick_zsort";
+  # checkpoints
   broadcast "load_map_001";
+  # player position
   broadcast "load_map_002";
+  # map section (taken from player position)
+  broadcast "reload_map";
+  # level segments
   broadcast_and_wait "load_map_003";
   G_game_state = "play";
 

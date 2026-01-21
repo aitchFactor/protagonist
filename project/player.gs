@@ -713,6 +713,7 @@ proc check_spike {
     }
     if bitmask(get_colliding_types(), BgLayerTypeBit.Spike) {
         broadcast "player_respawn_small";
+        broadcast "reload_map";
     }
 }
 

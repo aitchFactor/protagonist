@@ -20,12 +20,6 @@ proc level_loader {
     # initialise mini checkpoint
     mini_checkpoint = checkpoint_unpacked;
 
-    # load the level section here, cause it's first (needs better solution long term)
-
-    if map_info.map_name == "step3" {
-        map_info = step3_atlas (x_to_chunk(checkpoint_unpacked.spawn_x), y_to_chunk(checkpoint_unpacked.spawn_y));
-    }
-    
     repeat length (checkpoints) {
         clone_id ++;
         clone;
