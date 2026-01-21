@@ -103,7 +103,7 @@ proc paf_anim_walk_turn_around {
     add AnimationFrame {costume_name: "pafu-walk_3",      duration: 10,    flip: false } to animations_queue_frames;
 }
 
-proc paf_anim_walk refresh = true {
+proc paf_anim_walk refresh = true, duration = 9 {
     if $refresh {
         clear_animation;
     }
@@ -114,13 +114,17 @@ proc paf_anim_walk refresh = true {
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "pafu-walk_4",      duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_5",      duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_6",      duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_7",      duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_8",      duration: 9,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-walk_9",      duration: 9,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_4",      duration: $duration,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_5",      duration: $duration,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_6",      duration: $duration,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_7",      duration: $duration,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_8",      duration: $duration,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-walk_9",      duration: $duration,    flip: false } to animations_queue_frames;
 
+}
+
+proc paf_anim_level_clear {
+    paf_anim_walk true, 2;
 }
 
 proc paf_anim_skid {
@@ -278,5 +282,13 @@ func paf_state_animation(state, last_state) {
         }
 
         return "undefined";
+    }
+    if "level_end" in $state {
+        if "ground" in $state {
+            paf_anim_level_clear;
+        }
+        if "air" in $state {
+            paf_anim_air_down;
+        }
     }
 }

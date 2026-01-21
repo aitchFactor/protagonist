@@ -222,11 +222,7 @@ on "tick_000"{
 
 }
 
-on "tick_301" {
-    # Remove scroll offset before scrolling occurs.
-    x_position = round_256(x_position() - x_scroll); 
-    y_position = round_256(y_position() - y_scroll);
-}
+
 
 proc sprite_display {
     x_scroll = round_256(x_scroll);

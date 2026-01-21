@@ -94,7 +94,7 @@ proc hal_anim_walk_fromskid {
 
 }
 
-proc hal_anim_walk refresh = true{
+proc hal_anim_walk refresh = true, duration = 10{
     if $refresh {
         clear_animation;
     }
@@ -105,11 +105,15 @@ proc hal_anim_walk refresh = true{
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "halli-walk-v01b_4",      duration: 10,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01b_5",      duration: 10,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01b_6",      duration: 10,    flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "halli-walk-v01b_7",      duration: 10,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_4",      duration: $duration,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_5",      duration: $duration,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_6",      duration: $duration,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "halli-walk-v01b_7",      duration: $duration,    flip: false } to animations_queue_frames;
 
+}
+
+proc hal_anim_level_clear {
+    hal_anim_walk true, 2;
 }
 
 proc hal_anim_skid {
@@ -252,5 +256,14 @@ func hal_state_animation(state, last_state) {
         }
 
         return "undefined";
+    }
+
+    if "level_end" in $state {
+        if "ground" in $state {
+            hal_anim_level_clear;
+        }
+        if "air" in $state {
+            hal_anim_air_down;
+        }
     }
 }

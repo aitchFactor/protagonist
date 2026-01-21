@@ -164,6 +164,7 @@ onclone {
     yvel.v1 = self.yvel;
     bounding_box = BoundingBox {diameter_x: 0, diameter_y: 0};
     hidden = false;
+    hurtbox = "smoke-puff-burst_1";
     # follow does nothing at the moment.
 
     if clone_id == "puff_halli_side_light"{

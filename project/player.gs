@@ -492,7 +492,7 @@ func is_buffered(value){
 }
 
 proc hal_y_control move = true {
-    # Halli's physics, which he gained by eating some kind of hollow pebble that had paper sticking to it.
+    # Halli's physics, which he learned by eating some kind of hollow pebble that had paper sticking to it.
     # make sure velocity changes come before gravity/accelerating forces.
 
     if ctrl_a == -1 {
@@ -712,7 +712,12 @@ proc check_spike {
         stop_this_script;
     }
     if bitmask(get_colliding_types(), BgLayerTypeBit.Spike) {
-        broadcast "player_respawn_small";
+        if respawn_mode == RespawnMode.Big {
+            broadcast "player_respawn_big";
+        }
+        else {
+            broadcast "player_respawn_small";
+        }
         broadcast "reload_map";
     }
 }
@@ -800,6 +805,25 @@ on "tick_108" {
     }
 }
 
+on "level_end" {
+    state_machine ("level_end.air");
+    xvel = ContinuousVelocity{};
+    yvel = ContinuousVelocity{};
+}
+
+on "tick_level_end" {
+    yvel = accelerate_advanced(yvel.v1, -fall_gravity, yvel.a, -max_fall);
+    # yvel = accelerate_advanced(-1, 0, 0, -4);
+    check_grounded;
+    if grounded {
+        state_machine ("level_end.ground");
+    }
+    if state == "level_end.ground" {
+        xvel = accelerate_advanced(1.25, 0, 0, 1.25);
+    }
+    this_direction = 90;
+}
+
 on "tick_display"{
     if G_game_state == "play"{
         show;
@@ -846,4 +870,10 @@ on "switch_player" {
 
 onkey "l" {
   yvel.v1 = 5;
+}
+
+onkey "8" {
+    current_checkpoint_index = 9;
+    broadcast "player_respawn_big";
+    broadcast "reload_map";
 }

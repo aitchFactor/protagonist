@@ -13,10 +13,10 @@ on "tick_debug_last" {
     local target_y = camera_target_y;
 
     if clone_id == "min"{
-        target_y = camera_y_min;
+        target_y = camera_target_y_min;
     }
     if clone_id == "max" {
-        target_y = camera_y_max;
+        target_y = camera_target_y_max;
     }
     goto (camera_target_x - camera_x) * 2, (target_y - camera_y) * 2;
 
@@ -48,5 +48,7 @@ onclone {
 }
 
 onkey "b" {
-    think clone_id, 0.5;
+    if debug {
+        think clone_id, 0.5;
+    }
 }

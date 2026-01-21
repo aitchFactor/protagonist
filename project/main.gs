@@ -34,7 +34,9 @@ nowarp proc boot {
   delete checkpoints;
   current_checkpoint_index = 0;
 
-  show fps;
+  if debug {
+    show fps;
+  }
 
   ctrl_up = 0;
   ctrl_down = 0;
@@ -55,14 +57,16 @@ nowarp proc boot {
   camera_subpixel_y = 0;
   camera_target_x = 0;
   camera_target_y = 0;
-  camera_y_max  = 0;
-  camera_y_min  = 0;
+  camera_target_y_max  = 0;
+  camera_target_y_min  = 0;
 
   paused = 0;
 
   area_transition_direction = "";
 
   delete player_events;
+
+  broadcast_and_wait "configure";
 
   broadcast_and_wait "boot";
   broadcast_and_wait "tick_zsort";
@@ -77,6 +81,8 @@ nowarp proc boot {
   G_game_state = "play";
 
   broadcast_and_wait "set_debug_options";
+
+  broadcast "mus_kirb";
 
 }
 
@@ -110,6 +116,9 @@ nowarp proc loop {
     }
     if G_game_state == "area_transition" {
       area_transition_tick;
+    }
+    if G_game_state == "level_end" {
+      level_end_tick;
     }
 
     broadcast "tick_cosmetics";     # animation timing, decorative effects
@@ -224,7 +233,14 @@ nowarp proc play_tick {
     broadcast "tick_303";
 }
 
-
+nowarp proc level_end_tick {
+  broadcast "tick_000";
+  broadcast "tick_level_end";
+  broadcast "tick_108";
+  broadcast "tick_301";
+  # broadcast "tick_302";
+  # broadcast "tick_303";
+}
 
 
 
@@ -239,36 +255,46 @@ nowarp proc play_tick {
 
 
 onkey "g" {
-  broadcast "switch_player";
+  if debug {
+    broadcast "switch_player";
+  }
 }
 
 onkey "h" {
-  hitbox_view = not hitbox_view;
-  erase_all;
+  if debug {
+    hitbox_view = not hitbox_view;
+    erase_all;
+  }
 }
 
 onkey "b" {
-  show_scroll_target = not show_scroll_target;
+  if debug {
+    show_scroll_target = not show_scroll_target;
+  }
 }
 
 onkey "f" {
-  fps_switch = (fps_switch + 1) % 4;
-  if fps_switch == 0 { # 30hz
-    delta_time = 2;
-  }
-  if fps_switch == 1 { # 60hz
-    delta_time = 1;
-  }
-  if fps_switch == 2 { # 165hz
-    delta_time = 60/165; 
-  }
-  if fps_switch == 3 { # 20hz
-    delta_time = 3;
+  if debug {
+    fps_switch = (fps_switch + 1) % 4;
+    if fps_switch == 0 { # 30hz
+      delta_time = 2;
+    }
+    if fps_switch == 1 { # 60hz
+      delta_time = 1;
+    }
+    if fps_switch == 2 { # 165hz
+      delta_time = 60/165; 
+    }
+    if fps_switch == 3 { # 20hz
+      delta_time = 3;
+    }
   }
 }
 
 onkey "c" {
-  debug_show_checkpoints = not debug_show_checkpoints;
+  if debug {
+    debug_show_checkpoints = not debug_show_checkpoints;
+  }
 }
 
 on "tick_check_pause" {

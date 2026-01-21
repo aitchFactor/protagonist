@@ -395,6 +395,11 @@ proc actor_tick{
 }
 
 # Note: remember to call the actor tick in an instantiated actor.
+on "tick_301" {
+    # Remove scroll offset before scrolling occurs.
+    x_position = round_256(x_position() - x_scroll); 
+    y_position = round_256(y_position() - y_scroll);
+}
 
 on "tick_000"{
     xvel.a = 0;

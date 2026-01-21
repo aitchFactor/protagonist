@@ -29,6 +29,11 @@ on "boot" {
     clone_segment_id = -1;
     map_info = MapInfo{};
     chunk_info = ChunkInfo{};
+    camera_mode = CameraMode.Player;
+    camera_x_min = "";
+    camera_x_max = "";
+    camera_y_min = "";
+    camera_y_max = "";
 
     map_info = step3_header;
 
@@ -131,20 +136,20 @@ proc set_camera_target {
     # camera_target_y += 0.9 * "player"."yvel.dx";
 
     # camera_target_y = "player"."last_grounded_y" + 28;
-    camera_y_min = "player"."y_position" - 20;
+    camera_target_y_min = "player"."y_position" - 20;
     if "player"."yvel.dx" < 0 {
         local lerp = 1 - ("player"."y_position" - "player"."last_grounded_y") / target_camera_height;
         lerp = clamp(lerp, min: 0, max: 2);
         # Have to round or else pafu's oscillating y velocity will trigger this.
-        camera_y_max += round("player"."yvel.dx" / delta_time) * delta_time * lerp;
+        camera_target_y_max += round("player"."yvel.dx" / delta_time) * delta_time * lerp;
 
     }
     
-    camera_y_max = min (camera_y_max, "player"."last_grounded_y" + target_camera_height);
-    camera_y_max = min (camera_y_max, "player"."y_position" + target_camera_height);
-    camera_y_max = max(camera_y_max, "player"."y_position");
-    # camera_y_max = min(camera_y_max, "player"."y_position");
-    camera_target_y = clamp(camera_target_y, camera_y_min, camera_y_max);
+    camera_target_y_max = min (camera_target_y_max, "player"."last_grounded_y" + target_camera_height);
+    camera_target_y_max = min (camera_target_y_max, "player"."y_position" + target_camera_height);
+    camera_target_y_max = max(camera_target_y_max, "player"."y_position");
+    # camera_target_y_max = min(camera_target_y_max, "player"."y_position");
+    camera_target_y = clamp(camera_target_y, camera_target_y_min, camera_target_y_max);
     # if "player"."grounded" {
     #     camera_target_y = "player"."last_grounded_y" + 20;
     # }
@@ -160,11 +165,25 @@ proc pan_to_target {
     # pan camera x/y to the scroll target.
     camera_x += camera_subpixel_x;
     camera_y += camera_subpixel_y;
+    
+    local xmin = camera_x_min;
+    local xmax = camera_x_max;
+    local ymin = camera_y_min;
+    local ymax = camera_y_max;
 
-    local xmin = visible_width * 0.5 - chunk_width * 0.5 + (map_info.map_left_edge * chunk_width);
-    local xmax = (-visible_width * 0.5 + chunk_width * 0.5) + ((map_info.map_right_edge - 1)) * chunk_width;
-    local ymin = ((visible_height * 0.5) - chunk_height * 0.5) + (- (map_info.map_bottom_edge - 1)) * chunk_height;
-    local ymax = -(visible_height * 0.5) + chunk_height * 0.5 - (map_info.map_top_edge * chunk_height);
+    if xmin == "" {
+        xmin = visible_width * 0.5 - chunk_width * 0.5 + (map_info.map_left_edge * chunk_width);
+    }
+    if xmax == "" {
+        xmax = (-visible_width * 0.5 + chunk_width * 0.5) + ((map_info.map_right_edge - 1)) * chunk_width;
+    }
+    if ymin == "" {
+        ymin = ((visible_height * 0.5) - chunk_height * 0.5) + (- (map_info.map_bottom_edge - 1)) * chunk_height;
+    }
+    if ymax == "" {
+        ymax = -(visible_height * 0.5) + chunk_height * 0.5 - (map_info.map_top_edge * chunk_height);
+    }
+
 
     # xmin = "-Infinity";
     # xmax = "Infinity";
@@ -291,7 +310,7 @@ proc load_map{
     # clone;
     clone_layer_id = BgLayerType.None;
 }
-on "load_map_002" {# conjectural name
+on "load_map_003" {# conjectural name
     load_map;
 } 
 
@@ -329,8 +348,14 @@ on "tick_302"{
     if clone_id != "root" {
         stop_this_script;
     } 
-    set_camera_target;
-    pan_to_target;
+    if camera_mode == CameraMode.Player {
+    
+        set_camera_target;
+    }
+    if camera_mode == CameraMode.Player or camera_mode == CameraMode.FreeTarget {
+        pan_to_target;
+
+    }
     solve_segments;
 
 }
@@ -351,17 +376,22 @@ on "tick_303" {
 }
 
 on "level_fadeout" {
-    repeat round(4 / delta_time) {
-        change_brightness_effect -25 * delta_time;
+    if clone_layer_id == BgLayerType.Picture {
+        repeat round(4 / delta_time) {
+            change_brightness_effect -25 * delta_time;
+        }
+        set_brightness_effect -100;
     }
-    set_brightness_effect -100;
 }
 
 on "level_fadein" {
-    repeat floor(4 / delta_time) {
-        change_brightness_effect 25 * delta_time;
+    if clone_layer_id == BgLayerType.Picture {
+        repeat floor(4 / delta_time) {
+            change_brightness_effect 25 * delta_time;
+        }
+        set_brightness_effect 0;
+
     }
-    set_brightness_effect 0;
 }
 
 on "set_debug_options"{

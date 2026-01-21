@@ -35,6 +35,7 @@ on "boot" {
     checkpoint_unpacked = Checkpoint{};
     last_try_x = "Infinity";
     last_try_y = "Infinity";
+    respawn_mode = RespawnMode.Big;
     
     hide;
 }

@@ -36,9 +36,10 @@ list Solid Solids;
 
 var hitbox_view;
 var show_scroll_target;
+var debug;
 var debug_show_checkpoints;
 # switch off to disable players from using frame advance on their own.
-var debug_frame_advance = 1;
+var debug_frame_advance = 0;
 
 var fps_switch;
 
@@ -52,8 +53,23 @@ var camera_subpixel_x;
 var camera_subpixel_y;
 var camera_target_x;
 var camera_target_y;
-var camera_y_max;
+var camera_target_y_max;
+var camera_target_y_min;
+
+# "" means calculate automatically
+var camera_x_min;
+var camera_x_max;
 var camera_y_min;
+var camera_y_max;
+
+
+
+enum CameraMode {
+    Player, # normal gameplay
+    FreeTarget, # something else sets the target with panning handled as normal
+    FreePan     # something else controls all camera movement
+}
+var camera_mode;
 
 var player_spawn_chunk_x;
 var player_spawn_chunk_y;
@@ -88,6 +104,12 @@ list MapInfo map_list;
 list Checkpoint checkpoints;
 var current_checkpoint_index;
 
+
 var Checkpoint mini_checkpoint;
+var respawn_mode;
+enum RespawnMode {
+    Big,
+    Small
+}
 
 var ChunkInfo chunk_info;
