@@ -198,9 +198,9 @@ func accelerate_saturation (acc, v, a1, a2, d1, d2, s = "Infinity", z = 0) Conti
         acceleration_saturation_return_case = AccelerationSaturationCase.UnderBounds;
     }
     else {
-        # case 2: velocity is beyond saturation (decelerate with d2)
+        # case 2: velocity is beyond saturation (decelerate with d2 with saturation as the "minimum")
         if v > s {
-            accelerate_saturation_vel = decelerate_advanced(v, -d2, $acc, z);
+            accelerate_saturation_vel = accelerate_advanced(v, d2, $acc, s);
             acceleration_saturation_return_case = AccelerationSaturationCase.OverBounds;
         }
         else {
@@ -210,7 +210,7 @@ func accelerate_saturation (acc, v, a1, a2, d1, d2, s = "Infinity", z = 0) Conti
                 acceleration_saturation_return_case = AccelerationSaturationCase.BoundedAcceleration;
             }
             else {
-                accelerate_saturation_vel = decelerate_advanced(v, -a1 - d1, $acc, z);
+                accelerate_saturation_vel = accelerate_advanced(v, a1 + d1, $acc, z);
                 acceleration_saturation_return_case = AccelerationSaturationCase.BoundedDeceleration;
             }
         }
