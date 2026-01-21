@@ -90,6 +90,12 @@ proc state_machine new_state = "boot"{
         stop_this_script;
     }
 
+    if "play.air" in new_state {
+        if "play.ground.puff" in state {
+            new_state = "play.air.puff";
+        }
+    }
+
     if "play" in new_state and "puff" in state and not ("puff" in new_state) {
         if player == 1 and puff_timer.current > (hal_puff_cooldown * 0.5){
             stop_this_script;
@@ -141,6 +147,7 @@ proc state_machine new_state = "boot"{
             stop_this_script;
         }
 
+
         # if "jump" in state and ("up" in new_state or "down" in new_state) {
         #     stop_this_script;
         # }
@@ -166,6 +173,7 @@ proc state_machine new_state = "boot"{
         }
 
     }
+
 
 
 
@@ -607,6 +615,12 @@ proc air_animation{
         if player == 2 {
             fall_threshold = paf_jump_vel_smal;
         }
+        if "jump" in state {
+            fall_threshold = 0;
+        }
+        else {
+            fall_threshold = "Infinity";
+        }
         if yvel.v1 < fall_threshold {
             state_machine ("play.air.down");
 
@@ -702,8 +716,27 @@ proc check_spike {
     }
 }
 
-onflag{
-    sort_depth false, false;
+proc check_edges {
+    local chunk_x = x_to_chunk(x_position);
+    local chunk_y = y_to_chunk(y_position);
+    if chunk_x < map_info.map_left_edge {
+        area_transition_direction = Direction.Left;
+    } 
+    if chunk_x >= map_info.map_right_edge  {
+        area_transition_direction = Direction.Right;
+    }
+    if chunk_y < map_info.map_top_edge  {
+        area_transition_direction = Direction.Up;
+
+    }
+    if chunk_y >= map_info.map_bottom_edge  {
+        area_transition_direction = Direction.Down;
+    } 
+    if area_transition_direction != "" {
+        G_game_state = "area_transition";
+        chunk_query_x = chunk_x;
+        chunk_query_y = chunk_y;
+    }
 }
 
 on "boot"{
@@ -741,6 +774,7 @@ on "tick_102"{
 }
 
 on "tick_201" {
+    check_edges;
     check_spike;
 }
 
@@ -774,9 +808,13 @@ on "tick_display"{
     }
 }
 
+on "tick_hitbox_view" {
+    if hitbox_view {
+    }
+}
+
 on "load_map_002" {
-    # first checkpoint in the list is the level start spawn point.
-    goto_checkpoint unpack_checkpoint(checkpoints[1]);
+    goto_checkpoint unpack_checkpoint(checkpoints[map_info.spawn_checkpoint_index]);
 
 }
 

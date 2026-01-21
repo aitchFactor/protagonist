@@ -13,13 +13,7 @@ enum CollideAction {
     Squish,
     
 }
-# enum Direction {
-#     None,
-#     Up,
-#     Right,
-#     Down,
-#     Left
-# }
+
 struct Collision {
     wall,
     collider,

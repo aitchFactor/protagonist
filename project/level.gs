@@ -1,3 +1,4 @@
+%include gfx/bg/step3/data.gs
 %include includes/solid.gs
 %include includes/defines.gs
 
@@ -29,12 +30,7 @@ on "boot" {
     map_info = MapInfo{};
     chunk_info = ChunkInfo{};
 
-    map_info = MapInfo{
-        map_name: "step3",
-        map_left_edge: 0,
-        map_top_edge:  0,
-        map_right_edge: 8,
-        map_bottom_edge: 6};
+    map_info = step3_header;
 
 
 
@@ -43,6 +39,9 @@ on "boot" {
 onclone {
     clone_id = clone_segment_id & "_" & clone_layer_id;
     segment_zoomed_out_display;
+    if clone_layer_id == BgLayerType.Solid {
+        z_position = 129;
+    }
 
 }
 
@@ -65,8 +64,8 @@ proc segment_zoomed_out_display {
 
     chunk_name = map_info.map_name;
 
-    local chunk_x = map_info.map_left_edge + chunk_info.chunk_x;
-    local chunk_y = map_info.map_top_edge + chunk_info.chunk_y;
+    local chunk_x = chunk_info.chunk_x;
+    local chunk_y = chunk_info.chunk_y;
 
     chunk_x += (clone_segment_id % 3) - 1;
     chunk_y += floor((clone_segment_id - 1) / 3) - 1;
@@ -93,8 +92,13 @@ proc segment_zoomed_out_display {
         hurtbox = chunk_name;
     }
 
-    switch_costume "blank";
-    switch_costume hurtbox;
+    if costume_name() != hurtbox {
+        switch_costume hurtbox;
+    }
+    if costume_name() != hurtbox {
+        switch_costume "blank";
+    }
+
     x_position = segment_x;
     y_position = segment_y;
 
@@ -157,10 +161,19 @@ proc pan_to_target {
     camera_x += camera_subpixel_x;
     camera_y += camera_subpixel_y;
 
-    local xmax = ((map_info.map_right_edge - 1) - map_info.map_left_edge) * chunk_width;
-    local ymin = (map_info.map_top_edge - (map_info.map_bottom_edge - 1)) * chunk_height;
-    camera_target_x = clamp(camera_target_x, 0, xmax);
-    camera_target_y = clamp(camera_target_y, ymin, 0);
+    local xmin = visible_width * 0.5 - chunk_width * 0.5 + (map_info.map_left_edge * chunk_width);
+    local xmax = (-visible_width * 0.5 + chunk_width * 0.5) + ((map_info.map_right_edge - 1)) * chunk_width;
+    local ymin = ((visible_height * 0.5) - chunk_height * 0.5) + (- (map_info.map_bottom_edge - 1)) * chunk_height;
+    local ymax = -(visible_height * 0.5) + chunk_height * 0.5 - (map_info.map_top_edge * chunk_height);
+
+    # xmin = "-Infinity";
+    # xmax = "Infinity";
+    # ymin = "-Infinity";
+    # ymax = "Infinity";
+
+
+    camera_target_x = clamp(camera_target_x, xmin, xmax);
+    camera_target_y = clamp(camera_target_y, ymin, ymax);
 
     local sign = sign_of(camera_target_x > camera_x);
 
@@ -195,8 +208,8 @@ proc pan_to_target {
     }
     camera_speed_y = speed;
 
-    camera_x = clamp(camera_x, 0, xmax);
-    camera_y = clamp(camera_y, ymin, 0);
+    camera_x = clamp(camera_x, xmin, xmax);
+    camera_y = clamp(camera_y, ymin, ymax);
 
     camera_subpixel_x = camera_x % 1;
     camera_x = floor(camera_x);
@@ -322,6 +335,14 @@ on "tick_302"{
 
 }
 
+on "solve_segments" {
+    if clone_id != "root" {
+        # set_ghost_effect 100;
+        stop_this_script;
+    } 
+    solve_segments;
+}
+
 on "tick_303" {
     if clone_id == "root" {
         stop_this_script;
@@ -329,7 +350,19 @@ on "tick_303" {
     segment_zoomed_out_display;
 }
 
+on "level_fadeout" {
+    repeat round(4 / delta_time) {
+        change_brightness_effect -25 * delta_time;
+    }
+    set_brightness_effect -100;
+}
 
+on "level_fadein" {
+    repeat floor(4 / delta_time) {
+        change_brightness_effect 25 * delta_time;
+    }
+    set_brightness_effect 0;
+}
 
 on "set_debug_options"{
     if clone_id != "root"{
@@ -361,10 +394,10 @@ nowarp proc nine_segment_view {
         cam_preview_x = 0;
         cam_preview_y = 0;
 
-        top = cam_preview_y + 90;
-        right = cam_preview_x + 120;
-        bottom = cam_preview_y - 90;
-        left = cam_preview_x - 120;
+        top = cam_preview_y + visible_height * 0.5;
+        right = cam_preview_x + visible_width * 0.5;
+        bottom = cam_preview_y - visible_height * 0.5;
+        left = cam_preview_x - visible_width * 0.5;
 
         erase_all;
         goto cam_preview_x, cam_preview_y;
@@ -402,10 +435,10 @@ nowarp proc nametable_view {
         cam_preview_y = (camera_y - chunk_height * 0.5) % chunk_height;
         cam_preview_y -= chunk_height * 0.5 + 16;
 
-        top = cam_preview_y + 90;
-        right = cam_preview_x + 120;
-        bottom = cam_preview_y - 90;
-        left = cam_preview_x - 120;
+        top = cam_preview_y + visible_height * 0.5;
+        right = cam_preview_x + visible_width * 0.5;
+        bottom = cam_preview_y - visible_height * 0.5;
+        left = cam_preview_x - visible_width * 0.5;
 
         erase_all;
         goto cam_preview_x, cam_preview_y;

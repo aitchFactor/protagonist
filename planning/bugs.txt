@@ -32,3 +32,7 @@ known bugs:
     coyote time jump fails to trigger jump sound.
     
     camera often jitters when moving right on pafu at high hz.
+    
+    puff can sometimes get stuck on a corner when it visually looks like it should trigger a pogo.
+    
+    coyote time doesn't work

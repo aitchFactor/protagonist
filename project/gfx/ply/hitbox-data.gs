@@ -63,7 +63,7 @@ proc hal_down_air {
         x_position: x_position + 8 * sign_of (this_direction),
         y_position: y_position - 12,
         xvel: xvel.v1,
-        yvel: yvel.v1 - max_fall,
+        yvel: yvel.v1 - max_fall * 0.5,
     } to projectile_queue;
 
     puff_type = PuffType.Down;

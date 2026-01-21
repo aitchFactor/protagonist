@@ -1,4 +1,6 @@
 %include includes/sprite-engine.gs
+%include includes/utils.gs
+%include includes/defines.gs
 # This is a sprite.
 costumes "blank.png";
 
@@ -58,6 +60,8 @@ nowarp proc boot {
 
   paused = 0;
 
+  area_transition_direction = "";
+
   delete player_events;
 
   broadcast_and_wait "boot";
@@ -97,28 +101,10 @@ nowarp proc loop {
   broadcast "tick_readinput";
   if not paused or key_pressed ("9"){
     if G_game_state == "play"{
-      ### restore game state to backend mode (scale, subpixels, hitbox modes)
-      broadcast "tick_000";
-
-      ### solids ticks (collisions with actors)
-      broadcast "tick_001";
-      broadcast "tick_002";
-      broadcast "tick_008";
-
-      ### actor tick (collisions with solids)
-      broadcast "tick_101";
-      broadcast "tick_102";
-      broadcast "tick_108";
-      
-      ### post actor ticks: resolve actor-to-actor collisions
-      broadcast "tick_201";
-      broadcast "tick_202";
-      broadcast "tick_203";
-
-      ### after all actors have moved, move the camera
-      broadcast "tick_301";
-      broadcast "tick_302";
-      broadcast "tick_303";
+      play_tick;
+    }
+    if G_game_state == "area_transition" {
+      area_transition_tick;
     }
 
     broadcast "tick_cosmetics";     # animation timing, decorative effects
@@ -133,6 +119,8 @@ nowarp proc loop {
   }
 
   broadcast "tick_check_pause";
+
+
 
   if paused and debug_frame_advance {
     until not key_pressed ("9"){};
@@ -154,6 +142,96 @@ on "tick_zsort"{
   delete z_positions;
   sort_depth "-Infinity", false;
 }
+
+var _transition_status;
+%define ts _transition_status
+var Timer _transition_timer;
+%define tt _transition_timer
+%define transition_duration 15
+%include gfx/bg/step3/data.gs
+nowarp proc area_transition_tick {
+  if ts == 0 {
+    broadcast_and_wait "level_fadeout";
+    tt.current = transition_duration;
+    ts ++;
+  }
+
+  if ts == 2 {
+    broadcast_and_wait "level_fadein";
+    G_game_state = "play";
+    area_transition_direction = "";
+    ts = 0;
+  }
+  if ts == 1 {
+    tt = decrement_timer(tt);
+
+    local delta = ceil(transition_duration / delta_time);
+
+    if area_transition_direction == Direction.Up {
+      camera_y +=  visible_height / delta;
+    }
+    if area_transition_direction == Direction.Right {
+      camera_x += visible_width / delta;
+    }
+    if area_transition_direction == Direction.Down {
+      camera_y -= visible_height / delta;
+    }
+    if area_transition_direction == Direction.Left {
+      camera_x -= visible_width / delta;
+    }
+
+
+    if timer_boundary_crossed(tt) {
+      # TODO: generalise
+      if map_info.map_name == "step3" {
+        map_info = step3_atlas(chunk_query_x, chunk_query_y);
+      }
+      broadcast "solve_segments";
+      ts++;
+    }
+    broadcast "tick_303";
+  }
+
+}
+
+nowarp proc play_tick {
+    ### restore game state to backend mode (scale, subpixels, hitbox modes)
+    broadcast "tick_000";
+
+    ### solids ticks (collisions with actors)
+    broadcast "tick_001";
+    broadcast "tick_002";
+    broadcast "tick_008";
+
+    ### actor tick (collisions with solids)
+    broadcast "tick_101";
+    broadcast "tick_102";
+    broadcast "tick_108";
+    
+    ### post actor ticks: resolve actor-to-actor collisions
+    broadcast "tick_201";
+    broadcast "tick_202";
+    broadcast "tick_203";
+
+    ### after all actors have moved, move the camera
+    broadcast "tick_301";
+    broadcast "tick_302";
+    broadcast "tick_303";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 onkey "g" {
   broadcast "switch_player";

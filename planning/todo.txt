@@ -1,13 +1,11 @@
-testing
-    - done switch player proper event handling
-    - player (halli and pafu)
-    - soft platforms
-    - checkpoints
-    - puff
+
+- DONE fix camera scroll bounds that are not (0,0)
+- DONE add a behaviour when player touches the scroll bounds. 
+- add section reload on respawn.
 
 - todo: graphics
     - player
-        - pafu
+a        - pafu
             - death angel
             - spike touch
             - sprint skid

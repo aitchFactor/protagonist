@@ -92,6 +92,14 @@ func unpack_checkpoint (Checkpoint x) Checkpoint {
 
 }
 
+func x_to_chunk (x) {
+    return round($x / chunk_width);
+}
+
+func y_to_chunk (y) {
+    return -round($y / chunk_height);
+}
+
 func bitmask (bits, select) {
     # mask the value by the select parameter.
     # only works if select is a power of 2.

@@ -11,19 +11,26 @@ var Checkpoint checkpoint_unpacked;
 
 proc level_loader {
     if map_info.map_name == "step3" {
-        step3_checkpoints;
-        repeat length (checkpoints) {
-            clone_id ++;
-            clone;
-        }
-        clone_id = 0;
+    step3_checkpoints;
     } 
     
     # set checkpoint to spawn point
-    checkpoint_unpacked = unpack_checkpoint(checkpoints[1]);
+    checkpoint_unpacked = unpack_checkpoint(checkpoints[map_info.spawn_checkpoint_index]);
 
-    # add to global checkpoint list (shouldn't be read by other clones)
+    # initialise mini checkpoint
     mini_checkpoint = checkpoint_unpacked;
+
+    # load the level section here, cause it's first (needs better solution long term)
+
+    if map_info.map_name == "step3" {
+        map_info = step3_atlas (x_to_chunk(checkpoint_unpacked.spawn_x), y_to_chunk(checkpoint_unpacked.spawn_y));
+    }
+    
+    repeat length (checkpoints) {
+        clone_id ++;
+        clone;
+    }
+    clone_id = 0;
 }
 
 on "boot" {

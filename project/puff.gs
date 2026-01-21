@@ -3,7 +3,7 @@
 
 costumes "gfx/ply/smoke-puff*.png/",
 "gfx/2x16.png",
-"gfx/ply/pogo.png";
+"blank.png";
 
 var SPRITE_NAME = "Puff Projectile";
 
@@ -112,6 +112,21 @@ proc paf_up_light duration = 30 {
     add AnimationFrame {costume_name: "smoke-puff-wide-up_2",      duration: 1,    flip: false } to animations_queue_frames;
     set_rotation_style_left_right;
     # switch_costume "smoke-puff_1";
+}
+
+proc anim_burst {
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 5,
+        loop_start: 4,
+        loops: -1
+    }   to animations_queue_header;
+    add AnimationFrame {costume_name: "smoke-puff-burst_1",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-burst_2",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-burst_3",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "smoke-puff-burst_4",      duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "blank",      duration: 1,    flip: false } to animations_queue_frames;
+
 }
 
 proc receive_projectile {
@@ -239,12 +254,21 @@ on "tick_101"{
     }
 }
 
+proc burst {
+    clone_id = "burst";  
+    self.lifetime = 10;
+    xvel.dx *= 0.4;
+    xvel.v1 *= 0.4;
+    yvel = accelerate_advanced(0.5, 0, yvel.a);
+    anim_burst;
+}
+
 proc check_pogo {
     local BoundingBox last_bb = bounding_box;
-    bounding_box = BoundingBox {centre_x: 0, centre_y: -8, diameter_x: 18, diameter_y: 32};
+    bounding_box = BoundingBox {centre_x: 0, centre_y: -8, diameter_x: 18, diameter_y: 24};
     if bitmask (get_colliding_types(), BgLayerTypeBit.Pogo) {
         add PlayerEvent {type: "pogo", name: "", sender: SPRITE_NAME} to player_events;
-        delete_this_clone;
+        burst;
     }
     # smaller hitbox for normal tiles.
     bounding_box = BoundingBox {centre_x: -4 * sign_of(this_direction), centre_y: -8, diameter_x: 0, diameter_y: 0};
@@ -252,7 +276,7 @@ proc check_pogo {
     local success = bitmask (types, BgLayerTypeBit.Pogo) or bitmask (types, BgLayerTypeBit.Soft) or bitmask (types, BgLayerTypeBit.Solid);
     if success {
         add PlayerEvent {type: "pogo", name: "", sender: SPRITE_NAME} to player_events;
-        delete_this_clone;  
+        burst;
     }
     bounding_box = last_bb;
 }
