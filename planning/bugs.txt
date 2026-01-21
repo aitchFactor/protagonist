@@ -1,8 +1,6 @@
 known bugs:
     
-    jumping while puffing doesn't let you release early even if you actually release the button.
-        This is because coyote time depends on the ground/air state which jumping during a puff doesn't change properly.
-    
+    respawning from a checkpoint in another zone looks ugly and can leave the player stuck.
     
     y value oscillates at the subpixel level if gravity is not high enough to move 1 pixel per frame - happens to pafu at 30hz and both characters at higher hz
     
@@ -29,10 +27,9 @@ known bugs:
 
     v_max values might be a pain in the butt when dashing becomes a thing (decel_still is used for run > walk as well as unpredictably during almost all times)
     
-    coyote time jump fails to trigger jump sound.
+    coyote time jump fails to trigger jump sound (maybe)
     
     camera often jitters when moving right on pafu at high hz.
     
     puff can sometimes get stuck on a corner when it visually looks like it should trigger a pogo.
     
-    coyote time doesn't work
