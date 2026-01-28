@@ -1,12 +1,14 @@
 %include includes/actor.gs
 %include includes/input-mapping.gs
 %include includes/defines.gs
-%include gfx/ply/attributes.gs
 
 
-%include gfx/ply/hal/animation-data.gs
-%include gfx/ply/hitbox-data.gs
-%include gfx/ply/paf/animation-data.gs
+%include includes/ply/attributes
+%include includes/ply/hal-animation-data
+%include includes/ply/paf-animation-data
+%include includes/ply/hitbox-data
+%include includes/ply/abilities
+%include includes/ply/state-machine
 
 
 
@@ -32,11 +34,14 @@ var Timer x_control_lock; # currently unused
 var Timer y_control_lock; # currently unused
 var Timer puff_timer;
 var Timer coyote_timer;
+var Timer ledgegrab_timer;
 var last_grounded_y;
 var last_grounded_x;
 var last_this_direction;
 
 var hp;
+
+
 
 
 proc boot{
@@ -70,155 +75,6 @@ proc boot{
 
 
 
-
-proc state_machine new_state = "boot"{
-    # Change the player state, necessary for any time when gameplay is different (ie, can't jump in air).
-    # States can be changed during the control or cosmetic phases, or by cutscenes.
-    # In this function, you can change which states are allowed to transition to which.
-    # If the state changes, the animation for that state will be played.
-
-    ### gates ###
-
-    local new_state = $new_state;
-
-    if state == new_state {
-        stop_this_script;
-    }
-    if state == "boot" {
-        state = new_state;
-        animation_counter = 0;
-        stop_this_script;
-    }
-
-    if "play.air" in new_state {
-        if "play.ground.puff" in state {
-            new_state = "play.air.puff";
-        }
-    }
-
-    if "play" in new_state and "puff" in state and not ("puff" in new_state or "roll" in new_state) {
-        if player == 1 and puff_timer.current > (hal_puff_cooldown * 0.5){
-            stop_this_script;
-        } 
-        if puff_timer.current > (paf_puff_cooldown * 0.5) and ctrl_left < 0 and ctrl_right < 0 and ctrl_a < 0  {
-            stop_this_script;
-        }
-        if player == 2 and puff_timer.current > (paf_puff_cooldown * 0.75) {
-            stop_this_script;
-        }
-    }
-
-    if "puff" in state and "roll" in new_state {
-        puff_timer.current -= paf_puff_cooldown * 0.5;
-
-        direction_lock.current = -1;
-        # don't hard reset the direction lock because we still want the expired routine to trigger
-        # direction_lock.previous = -1;
-    } 
-
-    if new_state == "play" {
-        if grounded {
-            new_state = "play.ground";
-        }
-        else {
-            new_state = "play.air";
-        }
-
-    }
-    if new_state == "play.puff"{
-
-        if "ground" in state{
-            new_state = ("play.ground.puff");
-        }
-        if "air" in state {
-            new_state = ("play.air.puff");
-        }
-
-    }
-
-
-    # Don't remove walk direction
-    if new_state == "play.ground.walk" {
-        if "play.ground.walk" in state {
-            stop_this_script;
-        }
-    } 
-    
-    # air ignores skid
-    if "air" in state {
-        if "skid" in new_state {
-            stop_this_script;
-        }
-
-        # Spinjump outprioritises normal animations
-        if ("spin" in state or "roll" in state){
-            local allowed = false;
-            if "ground" in new_state {
-                allowed = true;
-            }
-            if "puff" in new_state {
-                allowed = true;
-            }
-            if not allowed {
-                stop_this_script;
-            }
-        }
-
-
-        # if "jump" in state and ("up" in new_state or "down" in new_state) {
-        #     stop_this_script;
-        # }
-    }
-    # ground -> skid and vice versa
-    if new_state == "play.ground"{
-        if xvel.v1 == 0 {
-            new_state = "play.ground.idle";
-            
-        }
-        else {
-            if sign_of (xvel.v1) == sign_of(this_direction){
-                if this_direction == 90{
-                    new_state = "play.ground.walk._R";
-                }
-                else{
-                    new_state = "play.ground.walk._L";
-                }
-            }
-            else{
-                new_state = "play.ground.skid";
-            }
-        }
-
-    }
-
-
-
-
-    # animation_counter = 0;
-    if player == 1 {
-        local anim_name = hal_state_animation (new_state, state);
-    }
-    if player == 2 {
-        local anim_name = paf_state_animation (new_state, state);
-    }
-    state = new_state;
-
-
-
-    ### effects ###
-    if direction_lock.current <= 0 {
-        state_to_direction;
-    }
-}
-
-proc state_to_direction {
-    if "._L" in state {
-        this_direction = -90;
-    }
-    if "._R" in state {
-        this_direction = 90;
-    }
-}
 
 var puff_type;
 
@@ -648,6 +504,7 @@ proc air_animation{
 
     }
 
+
     if direction_lock.current <= 0 {
         if ctrl_right > 0 {
 
@@ -657,6 +514,11 @@ proc air_animation{
             this_direction = (-90);
         }
 
+    }
+    if ".roll" in state {
+        # run at 2x speed to allow subframe timing
+        animation_counter += 2 * delta_time;
+        stop_this_script;
     }
 
     animation_counter += delta_time;
@@ -741,7 +603,7 @@ proc check_spike {
     }
 }
 
-proc check_edges {
+proc check_screen_transition {
     local chunk_x = x_to_chunk(x_position);
     local chunk_y = y_to_chunk(y_position);
     if chunk_x < map_info.map_left_edge {
@@ -764,6 +626,70 @@ proc check_edges {
     }
 }
 
+func _check_grab() {
+
+
+
+    # check grab box is in a wall
+    bounding_box = bb_paf_grab_1;
+    add bb_paf_grab_1 to debug_bb_list;
+    local bits = get_colliding_types();
+    if not bitmask(bits, BgLayerTypeBit.Solid) {
+        return false;
+    }
+    if bitmask(bits, BgLayerTypeBit.Spike) {
+        return false;
+    }
+
+
+    # check grab box is in the corner of a wall
+    bounding_box = bb_paf_grab_2;
+    add bb_paf_grab_2 to debug_bb_list;
+    bits = get_colliding_types();
+    if bitmask(bits, BgLayerTypeBit.Solid) or bitmask (bits, BgLayerTypeBit.Spike) {
+        return false;
+    }
+
+    return true;
+}
+
+proc check_grab {
+    if grounded {
+        stop_this_script;
+    }
+
+    if player != 2 {
+        stop_this_script;
+    }
+
+    # need to be holding a direction to grab
+    if ctrl_left < 0 and ctrl_right < 0 {
+        stop_this_script;
+    }
+
+    local BoundingBox last_bb = bounding_box;
+
+    if _check_grab() {
+        state_machine ("play.air.ledgegrab");
+
+        if "ledgegrab" in state {
+
+            ledgegrab_timer.current = paf_ledgegrab_length;
+
+        }
+    }
+
+    bounding_box = last_bb;
+}
+
+proc paf_getup {
+    # ...
+
+    if timer_boundary_crossed(ledgegrab_timer) {
+        state_machine ("play")
+    }
+}
+
 on "boot"{
     boot;
 }
@@ -783,7 +709,9 @@ on "tick_000"{
     direction_lock  = decrement_timer(direction_lock);
     puff_timer      = decrement_timer(puff_timer);
     coyote_timer    = decrement_timer(coyote_timer);
+    ledgegrab_timer = decrement_timer(ledgegrab_timer);
     delete player_events; 
+    delete debug_bb_list;
 
     switch_costume hurtbox;
 
@@ -799,8 +727,10 @@ on "tick_102"{
 }
 
 on "tick_201" {
-    check_edges;
+    check_screen_transition;
     check_spike;
+    
+    
 }
 
 on "tick_cosmetics"{
@@ -810,7 +740,17 @@ on "tick_cosmetics"{
 }
 
 on "tick_108" {
-    actor_tick;
+    local interrupt = false;
+
+    if "ledgegrab" in state {
+        interrupt = true;
+
+
+    }
+
+    if not interrupt {
+        actor_tick;
+    }
     # this is a special case where the animation needs to happen instantly - no 1-frame delayed state change.
     if collision_y == -1 {
         if is_buffered(ctrl_a){
@@ -821,6 +761,13 @@ on "tick_108" {
         #     jump_buffered = 2;
         #     state_machine ("play.air.spin");
         # }
+    }
+
+
+    check_grab;
+
+    if "ledgegrab" in state {
+        paf_getup;
     }
 }
 
@@ -854,6 +801,7 @@ on "tick_display"{
 
 on "tick_hitbox_view" {
     if hitbox_view {
+        hide;
     }
 }
 

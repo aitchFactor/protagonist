@@ -176,7 +176,7 @@ proc paf_anim_puff_down {
     one_frame ("pafu-puff-down");
 }
 
-proc paf_ledgegrab {
+proc paf_anim_ledgegrab {
     clear_animation;
     add AnimationHeader {
         num_pages: 7,
@@ -199,12 +199,14 @@ proc paf_anim_roll {
         loop_start: 0,
         loops: 3
     }   to animations_queue_header;
-    add AnimationFrame {costume_name: "pafu-roll_1",     duration: 2,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-roll_2",     duration: 2,   flip: false } to animations_queue_frames;  
-    add AnimationFrame {costume_name: "pafu-roll_3",     duration: 2,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-roll_4",     duration: 2,   flip: false } to animations_queue_frames;  
-    add AnimationFrame {costume_name: "pafu-roll_5",     duration: 2,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-roll_6",     duration: 2,   flip: false } to animations_queue_frames;  
+    
+     
+    add AnimationFrame {costume_name: "pafu-roll_3",     duration: 3,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_4",     duration: 3,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-roll_5",     duration: 3,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_6",     duration: 3,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-roll_1",     duration: 3,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_2",     duration: 3,   flip: false } to animations_queue_frames; 
 
     paf_anim_air_down refresh: false;
 }
@@ -294,6 +296,11 @@ func paf_state_animation(state, last_state) {
             return "undefined";
         }
         if "air" in $state {
+            if "ledgegrab" in $state {
+                paf_anim_ledgegrab;
+                return "paf_anim_ledgegrab";
+            }
+            
             if "puff"       in $state {
                 if "side" in $state {
                     paf_anim_puff_side;
@@ -335,7 +342,7 @@ func paf_state_animation(state, last_state) {
                 paf_anim_roll;
                 return "paf_anim_roll";
             }
-            
+
             return "undefined";
         }
 

@@ -9,7 +9,7 @@ costumes
 var SPRITE_NAME = "Animation Preview";
 
 on "boot" {
-    z_position = 255;
+    z_position = -999;
 }
 
 on "tick_cosmetics"{
@@ -24,11 +24,17 @@ on "tick_cosmetics"{
 }
 
 on "set_debug_options"{
-    # G_game_state = "animviewer";
+    G_game_state = "animviewer";
 
 
     # ### add animations here...
-    # paf_anim_walk_step;
+
+    paf_anim_ledgegrab;
+
     # paf_anim_walk;
 
+}
+
+onkey "4" {
+    paf_anim_ledgegrab;
 }

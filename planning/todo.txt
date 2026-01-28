@@ -1,7 +1,10 @@
 
 - DONE fix camera scroll bounds that are not (0,0)
 - DONE add a behaviour when player touches the scroll bounds. 
-- add section reload on respawn.
+- DONE add section reload on respawn.
+
+- fence player in at smoosher section.
+
 
 - todo: graphics
     - player
@@ -12,7 +15,7 @@ a        - pafu
             - look up
             - duck/crawl
         - halli
-            - directional puff
+            - DONE - directional puff
             - spike touch 
             - death angel
             - look down
@@ -60,6 +63,7 @@ todo: sound
     - pafu
 
         - ledge hang/getup/jump
+            - jump is completely bufferable from animation start and actionable from the animation frame where pafu rises above the ledge
         - charge attack/sprint
         - make dair slower and worse
             - make dair cancellable on hit
@@ -76,7 +80,7 @@ todo: sound
         - screen transitions
         - jump sound effect
 - todo: level
-        - make spikes only work with positive
+        - DONE make spikes only work with positive
         - cave blob enemy
         - cave blob with spike on its head enemy
 

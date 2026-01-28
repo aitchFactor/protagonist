@@ -24,6 +24,8 @@ var BoundingBox bounding_box;
 # In fast mode, only the edges of the bounding box will be checked.
 var fast_collisions;
 
+list BoundingBox debug_bb_list;
+
 on "boot" {
     fast_collisions = false;
 }
@@ -240,11 +242,24 @@ func _bb_trace_x (last_x, thing, full, pen = false) {
 
     return false;
 }
-
-on "tick_hitbox_view" {
+proc hitbox_view {
     if hitbox_view {
+        local BoundingBox last_bb = bounding_box;
+
         if bb_touching("", true) {
             # intentionally left blank.
         }
+        until length(debug_bb_list) == 0 {
+            bounding_box = debug_bb_list[1];
+            delete debug_bb_list[1];
+            if bb_touching("", true) {}
+        }
+
+        bounding_box = last_bb;
     }
+    delete debug_bb_list;
+
+}
+on "tick_hitbox_view" {
+    hitbox_view;
 }

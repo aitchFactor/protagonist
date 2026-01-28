@@ -55,3 +55,5 @@
 %define hal_puff_cooldown 24
 
 %define paf_puff_cooldown 29
+
+%define paf_ledgegrab_length 23
