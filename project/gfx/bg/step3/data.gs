@@ -84,6 +84,10 @@ func step3_atlas (chunk_x, chunk_y) MapInfo {
         
 } 
 
+func get_step3b() MapInfo {
+    return step3b_header;
+}
+
 # broadcasts are too risky, as these scripts could appear multiple times in many sprites.
 # on "step3_atlas" {
 #     map_info = step3_atlas(chunk_query_x, chunk_query_y);
