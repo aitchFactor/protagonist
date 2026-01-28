@@ -36,10 +36,11 @@ list Solid Solids;
 
 var hitbox_view;
 var show_scroll_target;
-var debug;
+var debug = true;
 var debug_show_checkpoints;
 # switch off to disable players from using frame advance on their own.
-var debug_frame_advance = 0;
+var debug_frame_advance = true;
+list debug_log;
 
 var fps_switch;
 
