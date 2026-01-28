@@ -7,7 +7,10 @@ on "configure" {
     set_size 200;
     goto_front;
     ask "What FPS? (type 30 if not sure)";
-    if answer() - 0 == answer() {
+    delta_time = answer();
+    delta_time += 1;
+    delta_time -= 1;
+    if delta_time == answer() {
         delta_time = 60 / answer();
     }
     else {
