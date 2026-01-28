@@ -1,8 +1,10 @@
 # animations are stored as explicit entries of a header/frames pair.
 # make sure you always insert a header and frames at the same time.
 
-proc paf_anim_idle {
-    clear_animation;
+proc paf_anim_idle refresh = true {
+    if $refresh {
+        clear_animation;
+    }
     # Header
     add AnimationHeader {
         num_pages: 5,
@@ -40,8 +42,10 @@ proc paf_anim_jump {
     add AnimationFrame {costume_name: "pafu-jump_2",      duration: 6,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-jump_3",      duration: 1,   flip: false } to animations_queue_frames;
 }
-proc paf_anim_air_down {
-    clear_animation;
+proc paf_anim_air_down refresh = true {
+    if $refresh {
+        clear_animation;
+    }
     add AnimationHeader {
         num_pages: 2,
         loop_start: 1,
@@ -172,6 +176,51 @@ proc paf_anim_puff_down {
     one_frame ("pafu-puff-down");
 }
 
+proc paf_ledgegrab {
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 7,
+        loop_start: 0,
+        loops: 0
+    }   to animations_queue_header;
+    add AnimationFrame {costume_name: "pafu-ledgegrab_1",     duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-ledgegrab_2",     duration: 3,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-ledgegrab_3",     duration: 3,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-ledgegrab_4",     duration: 4,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-ledgegrab_5",     duration: 3,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-ledgegrab_6",     duration: 3,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-ledgegrab_7",     duration: 5,   flip: false } to animations_queue_frames;  
+}
+
+proc paf_anim_roll {
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 6,
+        loop_start: 0,
+        loops: 3
+    }   to animations_queue_header;
+    add AnimationFrame {costume_name: "pafu-roll_1",     duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_2",     duration: 2,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-roll_3",     duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_4",     duration: 2,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-roll_5",     duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_6",     duration: 2,   flip: false } to animations_queue_frames;  
+
+    paf_anim_air_down refresh: false;
+}
+
+proc paf_anim_land {
+    clear_animation;
+    add AnimationHeader {
+        num_pages: 2,
+        loop_start: 0,
+        loops: 0
+    }   to animations_queue_header;
+    
+    add AnimationFrame {costume_name: "pafu-ledgegrab_8",     duration: 5,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-ledgegrab_9",     duration: 5,   flip: false } to animations_queue_frames; 
+}
+
 
 func paf_state_animation(state, last_state) {
     # library of every animation to play for each state.
@@ -207,7 +256,12 @@ func paf_state_animation(state, last_state) {
                 return "paf_anim_skid";
             }
             if "idle"       in $state {
-                paf_anim_idle;
+                local refreshed = false;
+                if "air" in $last_state {
+                    paf_anim_land;
+                    refreshed = true;
+                }
+                paf_anim_idle not refreshed;
                 return "paf_anim_idle";
             }
             
@@ -221,8 +275,8 @@ func paf_state_animation(state, last_state) {
                     paf_anim_walk_turn_around;
                     refreshed = true;
                 }
-                if (".L" in $state and last_this_direction == 90) or
-                    (".R" in $state and last_this_direction == -90) {
+                if ("._L" in $state and last_this_direction == 90) or
+                    ("._R" in $state and last_this_direction == -90) {
                         paf_anim_walk_turn_around;
                 }
                 else {
@@ -276,6 +330,10 @@ func paf_state_animation(state, last_state) {
             if "spin" in $state {
                 paf_anim_spin;
                 return "paf_anim_spin";
+            }
+            if "roll" in $state {
+                paf_anim_roll;
+                return "paf_anim_roll";
             }
             
             return "undefined";

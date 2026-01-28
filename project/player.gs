@@ -96,7 +96,7 @@ proc state_machine new_state = "boot"{
         }
     }
 
-    if "play" in new_state and "puff" in state and not ("puff" in new_state) {
+    if "play" in new_state and "puff" in state and not ("puff" in new_state or "roll" in new_state) {
         if player == 1 and puff_timer.current > (hal_puff_cooldown * 0.5){
             stop_this_script;
         } 
@@ -107,6 +107,14 @@ proc state_machine new_state = "boot"{
             stop_this_script;
         }
     }
+
+    if "puff" in state and "roll" in new_state {
+        puff_timer.current -= paf_puff_cooldown * 0.5;
+
+        direction_lock.current = -1;
+        # don't hard reset the direction lock because we still want the expired routine to trigger
+        # direction_lock.previous = -1;
+    } 
 
     if new_state == "play" {
         if grounded {
@@ -143,8 +151,17 @@ proc state_machine new_state = "boot"{
         }
 
         # Spinjump outprioritises normal animations
-        if "spin" in state and "air" in new_state {
-            stop_this_script;
+        if ("spin" in state or "roll" in state){
+            local allowed = false;
+            if "ground" in new_state {
+                allowed = true;
+            }
+            if "puff" in new_state {
+                allowed = true;
+            }
+            if not allowed {
+                stop_this_script;
+            }
         }
 
 
@@ -161,10 +178,10 @@ proc state_machine new_state = "boot"{
         else {
             if sign_of (xvel.v1) == sign_of(this_direction){
                 if this_direction == 90{
-                    new_state = "play.ground.walk.R";
+                    new_state = "play.ground.walk._R";
                 }
                 else{
-                    new_state = "play.ground.walk.L";
+                    new_state = "play.ground.walk._L";
                 }
             }
             else{
@@ -195,10 +212,10 @@ proc state_machine new_state = "boot"{
 }
 
 proc state_to_direction {
-    if ".L" in state {
+    if "._L" in state {
         this_direction = -90;
     }
-    if ".R" in state {
+    if "._R" in state {
         this_direction = 90;
     }
 }
@@ -348,10 +365,10 @@ proc hal_x_control move = true {
 
     if new_state != "" and "ground" in state {
         if ctrl_right > 0 {
-            new_state = new_state & ".R";
+            new_state = new_state & "._R";
         }
         if ctrl_left > 0 {
-            new_state = new_state & ".L";
+            new_state = new_state & "._L";
         }
         state_machine (new_state);
     }
@@ -368,14 +385,14 @@ proc paf_x_control {
 
     local new_state = "";
     if ctrl_left > 0 {
-        new_state = "play.ground.walk.L";
+        new_state = "play.ground.walk._L";
 
         if xvel.v1 > -paf_walk{
             speed_max = -paf_walk;
 
             if xvel.v1 > paf_skid_threshold { # braking from a sprint
                 acceleration += -paf_decel;
-                new_state = "play.ground.skid.L";
+                new_state = "play.ground.skid._L";
             }
             else {
                 acceleration += -2 * paf_walk;
@@ -393,14 +410,14 @@ proc paf_x_control {
     }
     else {
         if ctrl_right > 0 {
-            new_state = "play.ground.walk.R";
+            new_state = "play.ground.walk._R";
 
             if xvel.v1 < paf_walk{
                 speed_max = paf_walk;
 
                 if xvel.v1 < -paf_skid_threshold { # braking from sprint
                     acceleration += paf_decel;
-                    new_state = "play.ground.skid.R";
+                    new_state = "play.ground.skid._R";
                 }
                 else {
                     acceleration += 2 * paf_walk;
@@ -700,6 +717,7 @@ proc receive_events {
             }
             if player == 2 {
                 yvel.v1 = paf_jump_vel * 0.75;
+                state_machine ("play.air.roll");
             }
         } 
 
@@ -712,6 +730,7 @@ proc check_spike {
         stop_this_script;
     }
     if bitmask(get_colliding_types(), BgLayerTypeBit.Spike) {
+        start_sound "thud";
         if respawn_mode == RespawnMode.Big {
             broadcast "player_respawn_big";
         }
@@ -873,7 +892,7 @@ onkey "l" {
 }
 
 onkey "8" {
-    current_checkpoint_index = 9;
+    current_checkpoint_index = 6;
     broadcast "player_respawn_big";
     broadcast "reload_map";
 }

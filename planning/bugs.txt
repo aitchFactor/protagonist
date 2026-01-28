@@ -1,5 +1,9 @@
 known bugs:
     
+    roll always starts facing right (I forgot how state to direction works)
+    
+    can't puff again after triggering roll
+    
     respawning from a checkpoint in another zone looks ugly and can leave the player stuck.
     
     y value oscillates at the subpixel level if gravity is not high enough to move 1 pixel per frame - happens to pafu at 30hz and both characters at higher hz
