@@ -1,5 +1,6 @@
 %include includes/solid.gs
 %include includes/defines.gs
+%include includes/accel.gs
 costumes "blank.png", "gfx/bg/step3/smoosher_*.png";
 
 var Timer smoosh_timer;
@@ -47,7 +48,7 @@ proc go {
     
 
 }
-
+var overlapping;
 proc tick {
     if not active {
         if "player"."y_position" < -500 and "player"."y_position" >= -664 and "player"."x_position" >= 1236 {
@@ -63,13 +64,31 @@ proc tick {
         camera_mode = CameraMode.Player;
     }
 
-    y_position -= (1/10) * delta_time;
+    # smoosher "physics"
+    local up = 0;
+    # puffs can buy the player time (todo: make more efficient)
+    if touching ("puff") {
+        if overlapping == false {
+            yvel.v1 += 1.2;
+        }
+        overlapping = true;
+    }
+    else {
+        overlapping = false;
+    }
+
+    yvel = accelerate_saturation(yvel.a, yvel.v1, 0.1, 0.2, 0, 0, -0.1, 0);
+
+    y_position += yvel.dx;
 
     # chase the player if they scroll too fast
     if smoosh_timer.current <= 0 {
         y_position = clamp (y_position, max: camera_y + 144 + visible_height * 0.5);
 
     }
+
+
+
 
     if "player"."x_position" >= 1328 and "player"."y_position" <= -1044 {
         active = false;
@@ -97,6 +116,6 @@ on "level_fadeout" {
     boot;
 }
 
-onkey "1" {
-    go;
-}
+# onkey "1" {
+#     go;
+# }
