@@ -94,7 +94,7 @@ proc hal_anim_walk_fromskid {
 
 }
 
-proc hal_anim_walk refresh = true, duration = 10{
+proc hal_anim_walk refresh = true, duration = 9{
     if $refresh {
         clear_animation;
     }
