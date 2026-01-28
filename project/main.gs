@@ -197,9 +197,7 @@ nowarp proc area_transition_tick {
 
     if timer_boundary_crossed(tt) {
       # TODO: generalise
-      if map_info.map_name == "step3" {
-        map_info = step3_atlas(chunk_query_x, chunk_query_y);
-      }
+      broadcast "reload_map";
       broadcast "solve_segments";
       ts++;
     }

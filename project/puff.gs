@@ -5,6 +5,8 @@ costumes "gfx/ply/smoke-puff*.png/",
 "gfx/2x16.png",
 "blank.png";
 
+sounds "snd/burst.wav";
+
 var SPRITE_NAME = "Puff Projectile";
 
 
@@ -126,6 +128,8 @@ proc anim_burst {
     add AnimationFrame {costume_name: "smoke-puff-burst_3",      duration: 2,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "smoke-puff-burst_4",      duration: 2,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "blank",      duration: 1,    flip: false } to animations_queue_frames;
+
+    start_sound "burst";
 
 }
 

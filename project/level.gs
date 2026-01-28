@@ -342,6 +342,12 @@ on "tick_cosmetics"{
     }
 }
 
+on "tick_display" {
+    if clone_layer_id != BgLayerType.Picture {
+        hide;
+    }
+}
+
 
 
 on "tick_302"{
