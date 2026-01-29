@@ -700,7 +700,11 @@ func _check_grab() {
 
 proc _snap_to_corner{
     repeat 15 {
-        bounding_box = player_bounding_box;
+        bounding_box = BoundingBox {
+        centre_x: player_bounding_box.centre_x,
+        diameter_x: player_bounding_box.diameter_x,
+        centre_y: player_bounding_box.centre_y - player_bounding_box.diameter_y/2,
+        diameter_y: 0};
         move_y (-1);
 
         bounding_box = bb_paf_grab_2;
