@@ -1,5 +1,8 @@
 costumes "gfx/ui/*.png", "gfx/bg/black.png";
 %define next key_pressed ("a") or key_pressed ("left arrow") or key_pressed ("d") or key_pressed ("right arrow")
+onflag {
+    hide;
+}
 on "configure" {
     switch_costume "black";
     show;

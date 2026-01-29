@@ -17,25 +17,41 @@ proc state_machine new_state = "boot"{
         animation_counter = 0;
         stop_this_script;
     }
+    if "ledgegrab" in state {
+        # "__none__" is probably the best solution cause it means we can overrule it with other states later
+        # without worrying so much about order of operations
+        if ledgegrab_timer.current > 0 {
+        if "play.air" in new_state {
+            new_state = "__none__";
+        }
+        if "play.ground" in new_state {
+            new_state = "play.ground.ledgegrab";
+        }
+        }
+    }
 
     if "play.air" in new_state {
         if "play.ground.puff" in state {
             new_state = "play.air.puff";
         }
+
     }
 
+    # non-cancellable phase of puff.
     if "play" in new_state and "puff" in state and not ("puff" in new_state or "roll" in new_state) {
         if player == 1 and puff_timer.current > (hal_puff_cooldown * 0.5){
             stop_this_script;
         } 
-        if puff_timer.current > (paf_puff_cooldown * 0.5) and ctrl_left < 0 and ctrl_right < 0 and ctrl_a < 0  {
-            stop_this_script;
-        }
         if player == 2 and puff_timer.current > (paf_puff_cooldown * 0.75) {
             stop_this_script;
         }
-    }
 
+        # cancellable phase of puff.
+        if puff_timer.current > (paf_puff_cooldown * 0.5) and ctrl_left < 0 and ctrl_right < 0 and ctrl_a < 0  {
+            stop_this_script;
+        }
+    }
+    # allow puff to transition to roll.
     if "puff" in state and "roll" in new_state {
         puff_timer.current -= paf_puff_cooldown * 0.5;
 
@@ -44,15 +60,6 @@ proc state_machine new_state = "boot"{
         # direction_lock.previous = -1;
     } 
 
-    if new_state == "play" {
-        if grounded {
-            new_state = "play.ground";
-        }
-        else {
-            new_state = "play.air";
-        }
-
-    }
     if new_state == "play.puff"{
 
         if "ground" in state{
@@ -64,6 +71,18 @@ proc state_machine new_state = "boot"{
 
     }
 
+    if new_state == "play" {
+        add "state_machine" to debug_log;
+        
+        if grounded {
+            new_state = "play.ground";
+        }
+        else {
+            new_state = "play.air";
+        }
+
+
+    }
 
     # Don't remove walk direction
     if new_state == "play.ground.walk" {
@@ -123,7 +142,15 @@ proc state_machine new_state = "boot"{
 
     }
 
+    if new_state == "play.air.jump" {
+        if state == "play.ground.getup_jump" {
+            new_state = "play.air.getup_jump";
+        }
+    }
 
+    if new_state == "__none__" {
+        stop_this_script;
+    }
 
 
     # animation_counter = 0;

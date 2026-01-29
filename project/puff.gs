@@ -1,5 +1,5 @@
 %include includes/actor.gs
-%include gfx/ply/attributes.gs
+%include includes/ply/attributes.gs
 
 costumes "gfx/ply/smoke-puff*.png/",
 "gfx/2x16.png",

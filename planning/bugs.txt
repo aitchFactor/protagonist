@@ -1,6 +1,13 @@
 known bugs:
     
-    roll always starts facing right (I forgot how state to direction works)
+    grabbing a 16px high ledge can leave pafu stuck in the ground below it
+    
+    ledge grab while rising looks bad
+    
+    ledge grab lets you turn around during the animation
+        - jumping away during a getup leaves pafu in limbo
+    
+    halli's animation after a puff is broken 
     
     can't puff again after triggering roll
     

@@ -38,6 +38,7 @@ var Timer ledgegrab_timer;
 var last_grounded_y;
 var last_grounded_x;
 var last_this_direction;
+var BoundingBox player_bounding_box;
 
 var hp;
 
@@ -68,6 +69,7 @@ proc boot{
     state_machine("play");
 
     set_player player;
+    ab_normal;
 
     fast_collisions = true;
 
@@ -79,6 +81,21 @@ proc boot{
 var puff_type;
 
 proc puff_control {
+    if timer_boundary_crossed(puff_timer) {
+        if not ("puff" in abilities) {
+            add "puff" to abilities;
+        }
+    }
+
+    # restore normal movement and allow the animation to be cancelled.
+    if timer_boundary_crossed(puff_timer, hal_puff_cooldown * 0.5){
+        state_machine("play");
+    }
+
+    if not ("puff" in abilities){
+        stop_this_script;
+    }
+
     if ctrl_b > 0 and ctrl_b <= (4/delta_time) and puff_timer.current <= 0 { # 4 frame buffer.
         
         state_machine("play.puff");
@@ -111,20 +128,22 @@ proc puff_control {
                 }
             }
 
-            # push the direction of the puff to the state.
+            # push the direction of the puff to the state. (probably needs a refactor at some point)
             state_machine(state & "." & puff_type);
+            delete abilities["puff" in abilities];
 
         }
 
     }
 
-    if puff_timer.current <= (hal_puff_cooldown * 0.5) and puff_timer.previous > (hal_puff_cooldown * 0.5) {
-        state_machine("play");
-    }
 
 }
 
 proc x_control move = true{
+    if not ("x" in abilities) {
+        stop_this_script;
+    }
+
     if player == 1 {
         hal_x_control $move;
     }
@@ -304,6 +323,11 @@ proc paf_x_control {
         }
     }
 
+    # don't include a state transition if we are about to jump.
+    if jump_buffered {
+        new_state = "";
+    }
+
     if new_state != "" and "ground" in state {
         state_machine (new_state);
     }
@@ -348,6 +372,10 @@ proc y_control move = true{
             coyote_timer.current = 2;
         }
         
+    }
+
+    if not ("y" in abilities) {
+        stop_this_script;
     }
 
     if player == 1 {
@@ -515,9 +543,15 @@ proc air_animation{
         }
 
     }
-    if ".roll" in state {
+    if ".roll" in state or "getup_jump" in state {
         # run at 2x speed to allow subframe timing
         animation_counter += 2 * delta_time;
+        stop_this_script;
+    }
+
+    if "ledgegrab" in state {
+        # sync animation counter to ledgegrab timer
+        animation_counter = paf_ledgegrab_length - ledgegrab_timer.current;
         stop_this_script;
     }
 
@@ -573,6 +607,7 @@ proc goto_checkpoint Checkpoint check, snap_camera = false {
 %define ev player_events[1]
 proc receive_events {
     repeat length player_events {
+        add ev.type to debug_log;
         if ev.type == "pogo" {
             if player == 1 {
                 yvel.v1 = hal_pogo_vel;
@@ -654,6 +689,10 @@ func _check_grab() {
 }
 
 proc check_grab {
+    if ledgegrab_timer.current > 0 {
+        stop_this_script;
+    }
+
     if grounded {
         stop_this_script;
     }
@@ -667,7 +706,6 @@ proc check_grab {
         stop_this_script;
     }
 
-    local BoundingBox last_bb = bounding_box;
 
     if _check_grab() {
         state_machine ("play.air.ledgegrab");
@@ -675,18 +713,71 @@ proc check_grab {
         if "ledgegrab" in state {
 
             ledgegrab_timer.current = paf_ledgegrab_length;
+            direction_lock.current = paf_ledgegrab_length;
+
+            delete abilities;
+            # snap pafu to the corner 
+            bounding_box = player_bounding_box;
+            x_remainder = 0;
+            y_remainder = 0;
+
+            move_x (2 * sign_of(this_direction));
+
+            bounding_box = bb_paf_grab_2;
+            move_y (2);
+            move_y (-15);
+
+            bounding_box = player_bounding_box;
+            move_y (5);
 
         }
     }
 
-    bounding_box = last_bb;
+    bounding_box = player_bounding_box;
 }
 
-proc paf_getup {
-    # ...
+%define getup_frame_crossed(x) timer_boundary_crossed(ledgegrab_timer, paf_ledgegrab_length - x)
+%define getup_frame(x) paf_ledgegrab_length - x 
 
+proc paf_getup {
+    if not ("ledgegrab" in state) {
+        stop_this_script;
+    }
+    
+
+    local sign = sign_of(this_direction);
+
+    if getup_frame_crossed(2) {}
+
+    if getup_frame_crossed(5)   {move_y(1);}
+    if getup_frame_crossed(8)   {move_y(6);}
+    if getup_frame_crossed(12)  {move_y(10); move_x(3 * sign); move_y(-2);}
+    if getup_frame_crossed(15)  {move_x(2 * sign);}    
+    if getup_frame_crossed(18)  {move_x(2 * sign);}
+
+    # cancel into jump
+    if ledgegrab_timer.current <= getup_frame(12) {
+        if ctrl_a > 0 {
+            ledgegrab_timer.current = 0;
+            jump_buffered = true;
+            state_machine("play.ground.getup_jump");
+        }
+
+        # can attacks be buffered from ledge?
+        if ctrl_b > 0 {
+            ledgegrab_timer.current = 0;
+        }
+    }
+
+    # cancel into walk
+    if ledgegrab_timer.current <= getup_frame(18) {
+        if ctrl_left > 0 or ctrl_right > 0 {
+            ledgegrab_timer.current = 0;
+        }
+    }
     if timer_boundary_crossed(ledgegrab_timer) {
-        state_machine ("play")
+        ab_normal;
+        direction_lock.current = 0;
     }
 }
 
@@ -695,6 +786,7 @@ on "boot"{
 }
 
 proc player_tick{
+    paf_getup;
     receive_events;
     puff_control;
     x_control;
@@ -703,14 +795,20 @@ proc player_tick{
 
 }
 
+on "tick_debug_first" {
+    # think ledgegrab_timer.current & ", " & state;
 
+    # if bb_touching(BgLayerTypeColour.Solid) {
+    #     # think "stuck!!!";
+    # }
+}
 
 on "tick_000"{
     direction_lock  = decrement_timer(direction_lock);
     puff_timer      = decrement_timer(puff_timer);
     coyote_timer    = decrement_timer(coyote_timer);
     ledgegrab_timer = decrement_timer(ledgegrab_timer);
-    delete player_events; 
+    # delete player_events; 
     delete debug_bb_list;
 
     switch_costume hurtbox;
@@ -766,9 +864,7 @@ on "tick_108" {
 
     check_grab;
 
-    if "ledgegrab" in state {
-        paf_getup;
-    }
+
 }
 
 on "level_end" {
@@ -821,11 +917,15 @@ on "player_respawn_small" {
 proc set_player p{
     if $p == 1 {
         hurtbox = "stand_14x16";
-        set_bounding_box box: bb_hal_stand;
+
+        player_bounding_box = bb_hal_stand;
+
+        set_bounding_box box: player_bounding_box;
     }
     if $p == 2 {
         hurtbox = "stand-10x16";
-        set_bounding_box(bb_paf_stand);
+        player_bounding_box = bb_paf_stand;
+        set_bounding_box(player_bounding_box);
     }
     switch_costume hurtbox;
 }

@@ -192,12 +192,12 @@ proc paf_anim_ledgegrab {
     add AnimationFrame {costume_name: "pafu-ledgegrab_7",     duration: 5,   flip: false } to animations_queue_frames;  
 }
 
-proc paf_anim_roll {
+proc paf_anim_roll loops = 3 {
     clear_animation;
     add AnimationHeader {
         num_pages: 6,
         loop_start: 0,
-        loops: 3
+        loops: $loops
     }   to animations_queue_header;
     
      
@@ -232,6 +232,11 @@ func paf_state_animation(state, last_state) {
         # force_animation_refresh;
         # delete animations_queue_header;
         # delete animations_queue_frames;
+
+        if "ledgegrab" in $state and "ledgegrab" in $last_state {
+            # don't restart the animation
+            return "paf_anim_ledgegrab";
+        }
         
         if "jumpsquat"  in $state {
             paf_anim_jumpsquat;
@@ -259,7 +264,7 @@ func paf_state_animation(state, last_state) {
             }
             if "idle"       in $state {
                 local refreshed = false;
-                if "air" in $last_state {
+                if "air" in $last_state or "ledgegrab" in $last_state {
                     paf_anim_land;
                     refreshed = true;
                 }
@@ -269,7 +274,7 @@ func paf_state_animation(state, last_state) {
             
             if "walk"  in $state {
                 local refreshed = false;
-                if "air" in $last_state{
+                if "air" in $last_state or "ledgegrab" in $last_state {
                     paf_anim_walk_land;
                     refreshed = true;
                 }
@@ -316,12 +321,17 @@ func paf_state_animation(state, last_state) {
                 }
             }
             if "jump" in $state {
+                if "getup_jump" in $last_state {
+                    paf_anim_roll 1;
+                    return "paf_anim_roll";
+                }
                 paf_anim_jump;
                 return "paf_anim_jump";
             }
+
             if "up" in $state {
                 if $last_state == "play.air.jump"{
-                    return "play.air.jump";
+                    return "paf_anim_jump";
                 }
                 paf_anim_air_up;
                 return "paf_anim_air_up";
@@ -329,7 +339,15 @@ func paf_state_animation(state, last_state) {
             }
             if "down" in $state {
                 if $last_state == "play.air.jump"{
-                    return "play.air.jump";
+                    return "paf_anim_jump";
+                }
+                if $last_state == "play.air.getup_jump" {
+                    return "paf_anim_roll";
+                }
+
+                # this one's redundant but oh well
+                if $last_state == "play.air.roll" {
+                    return "paf_anim_roll";
                 }
                 paf_anim_air_down;
                 return "paf_anim_air_down";

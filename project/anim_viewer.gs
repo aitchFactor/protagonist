@@ -1,6 +1,6 @@
 %include includes/obj.gs
-%include gfx/ply/hal/animation-data.gs
-%include gfx/ply/paf/animation-data.gs
+%include includes/ply/hal-animation-data.gs
+%include includes/ply/paf-animation-data.gs
 costumes 
 "blank.png" as "000_blank",
 "gfx/ply/hal/*.png",
@@ -24,17 +24,17 @@ on "tick_cosmetics"{
 }
 
 on "set_debug_options"{
-    G_game_state = "animviewer";
+    # G_game_state = "animviewer";
 
 
-    # ### add animations here...
+    # # ### add animations here...
 
-    paf_anim_ledgegrab;
+    # paf_anim_ledgegrab;
 
     # paf_anim_walk;
 
 }
 
-onkey "4" {
-    paf_anim_ledgegrab;
-}
+# onkey "4" {
+#     paf_anim_ledgegrab;
+# }

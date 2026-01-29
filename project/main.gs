@@ -66,7 +66,7 @@ nowarp proc boot {
 
   delete player_events;
 
-  broadcast_and_wait "configure";
+  # broadcast_and_wait "configure";
 
   broadcast_and_wait "boot";
   broadcast_and_wait "tick_zsort";
