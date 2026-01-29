@@ -89,7 +89,7 @@ proc puff_control {
 
     # restore normal movement and allow the animation to be cancelled.
     if timer_boundary_crossed(puff_timer, hal_puff_cooldown * 0.5){
-        state_machine("play");
+        state_machine("play.exit_puff");
     }
 
     if not ("puff" in abilities){
@@ -607,14 +607,15 @@ proc goto_checkpoint Checkpoint check, snap_camera = false {
 %define ev player_events[1]
 proc receive_events {
     repeat length player_events {
-        add ev.type to debug_log;
         if ev.type == "pogo" {
             if player == 1 {
                 yvel.v1 = hal_pogo_vel;
             }
             if player == 2 {
-                yvel.v1 = paf_jump_vel * 0.75;
                 state_machine ("play.air.roll");
+                if state == "play.air.roll" {
+                    yvel.v1 = paf_jump_vel * 0.75;
+                }
             }
         } 
 
@@ -665,15 +666,16 @@ func _check_grab() {
 
     # stop if the ledge is too low 
     bounding_box.centre_y -= 16;
-    if is_colliding_solid ("y", -1) {
-        bounding_box = player_bounding_box;
+
+    local bits = get_colliding_types();
+    if bitmask(bits, BgLayerTypeBit.Solid) or bitmask(bits, BgLayerTypeBit.Soft) {
         return false;
     }
-
+    
     # check grab box is in a wall
     bounding_box = bb_paf_grab_1;
     add bb_paf_grab_1 to debug_bb_list;
-    local bits = get_colliding_types();
+    bits = get_colliding_types();
     if not bitmask(bits, BgLayerTypeBit.Solid) {
         return false;
     }
@@ -689,7 +691,7 @@ func _check_grab() {
     if bitmask(bits, BgLayerTypeBit.Solid) or bitmask (bits, BgLayerTypeBit.Spike) {
         return false;
     }
-
+    log ("grabbed");
     return true;
 }
 
@@ -723,7 +725,7 @@ proc check_grab {
         stop_this_script;
     }
 
-
+    
     if _check_grab() {
         state_machine ("play.air.ledgegrab");
 
@@ -758,41 +760,42 @@ proc check_grab {
 %define getup_frame(x) paf_ledgegrab_length - x 
 
 proc paf_getup {
-    if not ("ledgegrab" in state) {
-        stop_this_script;
+    if ("ledgegrab" in state) {
+        local sign = sign_of(this_direction);
+
+        if getup_frame_crossed(2) {}
+
+        if getup_frame_crossed(5)   {move_y(1);}
+        if getup_frame_crossed(8)   {move_y(6);}
+        if getup_frame_crossed(12)  {move_y(10); move_x(3 * sign); move_y(-2);}
+        if getup_frame_crossed(13.5){move_x(sign);}
+        if getup_frame_crossed(15)  {move_x(sign);}
+        if getup_frame_crossed(16.5){move_x(sign);}
+        if getup_frame_crossed(18)  {move_x(sign);}
+
+        # cancel into jump
+        if ledgegrab_timer.current <= getup_frame(12) {
+            if ctrl_a > 0 {
+                ledgegrab_timer.current = 0;
+                jump_buffered = true;
+                state_machine("play.ground.getup_jump");
+            }
+
+            # can attacks be buffered from ledge?
+            if ctrl_b > 0 {
+                ledgegrab_timer.current = 0;
+            }
+        }
+
+        # cancel into walk
+        if ledgegrab_timer.current <= getup_frame(18) {
+            if ctrl_left > 0 or ctrl_right > 0 {
+                ledgegrab_timer.current = 0;
+            }
+        }
     }
     
 
-    local sign = sign_of(this_direction);
-
-    if getup_frame_crossed(2) {}
-
-    if getup_frame_crossed(5)   {move_y(1);}
-    if getup_frame_crossed(8)   {move_y(6);}
-    if getup_frame_crossed(12)  {move_y(10); move_x(3 * sign); move_y(-2);}
-    if getup_frame_crossed(15)  {move_x(2 * sign);}    
-    if getup_frame_crossed(18)  {move_x(2 * sign);}
-
-    # cancel into jump
-    if ledgegrab_timer.current <= getup_frame(12) {
-        if ctrl_a > 0 {
-            ledgegrab_timer.current = 0;
-            jump_buffered = true;
-            state_machine("play.ground.getup_jump");
-        }
-
-        # can attacks be buffered from ledge?
-        if ctrl_b > 0 {
-            ledgegrab_timer.current = 0;
-        }
-    }
-
-    # cancel into walk
-    if ledgegrab_timer.current <= getup_frame(18) {
-        if ctrl_left > 0 or ctrl_right > 0 {
-            ledgegrab_timer.current = 0;
-        }
-    }
     if timer_boundary_crossed(ledgegrab_timer) {
         ab_normal;
         direction_lock.current = 0;

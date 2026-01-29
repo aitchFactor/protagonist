@@ -1,6 +1,6 @@
 known bugs:
     
-    grabbing a 16px high ledge can leave pafu stuck in the ground below it
+    pogoing while grabbing a ledge leads to bad.
     
     ledge grab while rising looks bad
     

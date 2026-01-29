@@ -21,7 +21,7 @@ proc state_machine new_state = "boot"{
         # "__none__" is probably the best solution cause it means we can overrule it with other states later
         # without worrying so much about order of operations
         if ledgegrab_timer.current > 0 {
-        if "play.air" in new_state {
+        if "play.air" in new_state or "exit_puff" in new_state {
             new_state = "__none__";
         }
         if "play.ground" in new_state {
@@ -38,7 +38,7 @@ proc state_machine new_state = "boot"{
     }
 
     # non-cancellable phase of puff.
-    if "play" in new_state and "puff" in state and not ("puff" in new_state or "roll" in new_state) {
+    if "play" in new_state and ".puff" in state and not (".puff" in new_state or "roll" in new_state) {
         if player == 1 and puff_timer.current > (hal_puff_cooldown * 0.5){
             stop_this_script;
         } 
@@ -52,7 +52,7 @@ proc state_machine new_state = "boot"{
         }
     }
     # allow puff to transition to roll.
-    if "puff" in state and "roll" in new_state {
+    if ".puff" in state and "roll" in new_state {
         puff_timer.current -= paf_puff_cooldown * 0.5;
 
         direction_lock.current = -1;
@@ -71,8 +71,7 @@ proc state_machine new_state = "boot"{
 
     }
 
-    if new_state == "play" {
-        add "state_machine" to debug_log;
+    if new_state == "play" or new_state == "play.exit_puff"{
         
         if grounded {
             new_state = "play.ground";
@@ -107,7 +106,7 @@ proc state_machine new_state = "boot"{
             if "ground" in new_state {
                 allowed = true;
             }
-            if "puff" in new_state {
+            if ".puff" in new_state {
                 allowed = true;
             }
             if not allowed {
@@ -147,6 +146,8 @@ proc state_machine new_state = "boot"{
             new_state = "play.air.getup_jump";
         }
     }
+
+    log new_state;
 
     if new_state == "__none__" {
         stop_this_script;
