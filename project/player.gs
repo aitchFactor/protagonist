@@ -663,7 +663,12 @@ proc check_screen_transition {
 
 func _check_grab() {
 
-
+    # stop if the ledge is too low 
+    bounding_box.centre_y -= 16;
+    if is_colliding_solid ("y", -1) {
+        bounding_box = player_bounding_box;
+        return false;
+    }
 
     # check grab box is in a wall
     bounding_box = bb_paf_grab_1;
@@ -686,6 +691,18 @@ func _check_grab() {
     }
 
     return true;
+}
+
+proc _snap_to_corner{
+    repeat 15 {
+        bounding_box = player_bounding_box;
+        move_y (-1);
+
+        bounding_box = bb_paf_grab_2;
+        if is_colliding_solid("y", -1) {
+            stop_this_script;
+        }
+    }
 }
 
 proc check_grab {
@@ -725,7 +742,8 @@ proc check_grab {
 
             bounding_box = bb_paf_grab_2;
             move_y (2);
-            move_y (-15);
+
+            _snap_to_corner;
 
             bounding_box = player_bounding_box;
             move_y (5);

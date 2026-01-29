@@ -189,7 +189,8 @@ proc paf_anim_ledgegrab {
     add AnimationFrame {costume_name: "pafu-ledgegrab_4",     duration: 4,   flip: false } to animations_queue_frames;  
     add AnimationFrame {costume_name: "pafu-ledgegrab_5",     duration: 3,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-ledgegrab_6",     duration: 3,   flip: false } to animations_queue_frames;  
-    add AnimationFrame {costume_name: "pafu-ledgegrab_7",     duration: 5,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-ledgegrab_7",     duration: 5,   flip: false } to animations_queue_frames;
+    start_sound "grab_snap";  
 }
 
 proc paf_anim_roll loops = 3 {
@@ -322,6 +323,7 @@ func paf_state_animation(state, last_state) {
             }
             if "jump" in $state {
                 if "getup_jump" in $last_state {
+                    start_sound "jump-paf";
                     paf_anim_roll 1;
                     return "paf_anim_roll";
                 }
