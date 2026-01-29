@@ -15,9 +15,6 @@ on "mus_kirb" {
 }
 
 on "mus_switch" {
-    if music == "switch" {
-        stop_this_script;
-    }
     music = "switch";
     stop_other_scripts;
     forever {

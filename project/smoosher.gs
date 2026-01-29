@@ -44,7 +44,9 @@ proc go {
     camera_x_min = x_position - 128 + visible_width * 0.5;
     camera_x_max = x_position + 128 - visible_width * 0.5;
 
-    broadcast "mus_switch";
+    if "soundfx"."music" != "switch" {
+        broadcast "mus_switch";
+    }
     
 
 }
