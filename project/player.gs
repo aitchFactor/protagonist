@@ -374,16 +374,19 @@ proc y_control move = true{
         
     }
 
-    if not ("y" in abilities) {
-        stop_this_script;
+    if ("y" in abilities) {
+        if player == 1 {
+            hal_y_control $move;
+        }
+        if player == 2 {
+            paf_y_control;
+        }
     }
 
-    if player == 1 {
-        hal_y_control $move;
+    if ctrl_a == -1 {
+        jump_hold = 0;
     }
-    if player == 2 {
-        paf_y_control;
-    }
+
 
 
 }
@@ -748,7 +751,7 @@ proc check_grab {
             _snap_to_corner;
 
             bounding_box = player_bounding_box;
-            move_y (5);
+            move_y (6);
 
         }
     }
@@ -763,10 +766,11 @@ proc paf_getup {
     if ("ledgegrab" in state) {
         local sign = sign_of(this_direction);
 
-        if getup_frame_crossed(2) {}
-
-        if getup_frame_crossed(5)   {move_y(1);}
-        if getup_frame_crossed(8)   {move_y(6);}
+        if getup_frame_crossed(1) {move_y(-1);}
+        if getup_frame_crossed(5)   {}
+        if getup_frame_crossed(6)   {move_y(1);}
+        if getup_frame_crossed(7)   {move_y(1);}
+        if getup_frame_crossed(8)   {move_y(5);}
         if getup_frame_crossed(12)  {move_y(10); move_x(3 * sign); move_y(-2);}
         if getup_frame_crossed(13.5){move_x(sign);}
         if getup_frame_crossed(15)  {move_x(sign);}
@@ -775,7 +779,7 @@ proc paf_getup {
 
         # cancel into jump
         if ledgegrab_timer.current <= getup_frame(12) {
-            if ctrl_a > 0 {
+            if ctrl_a > 0 and jump_hold == 0 {
                 ledgegrab_timer.current = 0;
                 jump_buffered = true;
                 state_machine("play.ground.getup_jump");
