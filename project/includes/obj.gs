@@ -78,7 +78,7 @@ list AnimationHeader animations_queue_header;
 struct AnimationFrame {
     costume_name,
     duration = 1,
-    flip = false # note: this is very dodgy right now.
+    flip = false
 }
 list AnimationFrame animations_queue_frames; # drop the AnimationFrames here to be unpacked.
 
@@ -138,6 +138,22 @@ proc clear_animation {
     force_animation_refresh;
     delete animations_queue_header;
     delete animations_queue_frames;
+}
+
+proc swap_to_animation index = 1 {
+    # Start the next queued animation(s) from the same point as the currently playing animation.
+    # TODO: could be optimised
+    local bookmark = animation_counter;
+    force_animation_refresh;
+    repeat $index - 1 {
+        repeat animations_queue_header[1].num_pages {
+            delete animations_queue_frames[1];
+        }
+        delete animations_queue_header[1];
+    }
+    animation_player;
+    animation_counter = bookmark;
+
 }
 
 var flipped;

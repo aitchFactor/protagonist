@@ -97,7 +97,7 @@ proc state_machine new_state = "boot"{
         }
 
         # Spinjump outprioritises normal animations
-        if ("spin" in state or "roll" in state){
+        if ("spin" in state or "roll" in state or "getup_jump" in state){
             local allowed = false;
             if "ledgegrab" in new_state {
                 allowed = true;

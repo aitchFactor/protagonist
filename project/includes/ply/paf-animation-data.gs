@@ -42,6 +42,33 @@ proc paf_anim_jump {
     add AnimationFrame {costume_name: "pafu-jump_2",      duration: 6,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-jump_3",      duration: 1,   flip: false } to animations_queue_frames;
 }
+
+proc paf_anim_jump_short {
+    # should only be called if the current animation is "jump"
+    local index = (length animations_queue_header) + 1;
+    add AnimationHeader {
+        num_pages: 3,
+        loop_start: 1,
+        loops: 2
+    } to animations_queue_header;
+
+    add AnimationFrame {costume_name: "pafu-jump-short_1",      duration: 4,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-jump-short_2",      duration: 3,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-jump-short_1",      duration: 3,   flip: false } to animations_queue_frames;
+
+    add AnimationHeader {
+        num_pages: 2,
+        loop_start: 1,
+        loops: -1
+    } to animations_queue_header;
+
+    add AnimationFrame {costume_name: "pafu-jump-short_3",      duration: 6,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-jump_3",      duration: 1,   flip: false } to animations_queue_frames;
+
+
+    swap_to_animation index;
+}
+
 proc paf_anim_air_down refresh = true {
     if $refresh {
         clear_animation;
@@ -52,7 +79,7 @@ proc paf_anim_air_down refresh = true {
         loops: -1
     }   to animations_queue_header;
     # Frames
-    add AnimationFrame {costume_name: "pafu-jump_2",      duration: 6,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-jump-short_3",      duration: 6,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-jump_3",      duration: 1,   flip: false } to animations_queue_frames;
 
 }
@@ -183,7 +210,14 @@ proc paf_anim_ledgegrab {
         loop_start: 0,
         loops: 0
     }   to animations_queue_header;
-    add AnimationFrame {costume_name: "pafu-ledgegrab_1",     duration: 2,   flip: false } to animations_queue_frames;
+
+    if yvel.v1 < paf_gravity {
+        add AnimationFrame {costume_name: "pafu-ledgegrab_1",     duration: 2,   flip: false } to animations_queue_frames;
+    }
+    else {
+        add AnimationFrame {costume_name: "pafu-ledgegrab-up_1",     duration: 2,   flip: false } to animations_queue_frames;
+    }
+    
     add AnimationFrame {costume_name: "pafu-ledgegrab_2",     duration: 3,   flip: false } to animations_queue_frames;  
     add AnimationFrame {costume_name: "pafu-ledgegrab_3",     duration: 3,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-ledgegrab_4",     duration: 4,   flip: false } to animations_queue_frames;  
@@ -341,7 +375,8 @@ func paf_state_animation(state, last_state) {
             }
             if "down" in $state {
                 if $last_state == "play.air.jump"{
-                    return "paf_anim_jump";
+                    paf_anim_jump_short;
+                    return "paf_anim_jump_short";
                 }
                 if $last_state == "play.air.getup_jump" {
                     return "paf_anim_roll";

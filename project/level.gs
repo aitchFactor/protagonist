@@ -343,6 +343,11 @@ on "tick_cosmetics"{
 }
 
 on "tick_display" {
+    if hitbox_view {
+        
+        stop_this_script;
+    }
+
     if clone_layer_id != BgLayerType.Picture {
         hide;
     }

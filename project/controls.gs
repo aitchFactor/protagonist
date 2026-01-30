@@ -39,12 +39,12 @@ nowarp proc poll_input_for_using button, input1, input2, input3, input4 {
 }
 proc get_input_data {
     g_temp = 0;
-    poll_input_for_using "U", "w", "up arrow", "", false;
-    poll_input_for_using "D", "s", "down arrow", "", false;
-    poll_input_for_using "L", "a", "left arrow", "", mouse_down() and mouse_x() < 0;
-    poll_input_for_using "R", "d", "right arrow", "", mouse_down() and mouse_x() > 0;
+    poll_input_for_using "U", "w", "up arrow", "", mouse_down() and mouse_y() > 135;
+    poll_input_for_using "D", "s", "down arrow", "", mouse_down() and mouse_y() < -135;
+    poll_input_for_using "L", "a", "left arrow", "", mouse_down() and mouse_x() < -120;
+    poll_input_for_using "R", "d", "right arrow", "", mouse_down() and mouse_x() > 120;
     poll_input_for_using "A", "m", "z", "space", mouse_down() and mouse_y() > 90;
-    poll_input_for_using "B", "n", "x", "shift", false;
+    poll_input_for_using "B", "n", "x", "shift", mouse_down() and mouse_y() < -90;
     poll_input_for_using "X", "j", "v", "", false;
     poll_input_for_using "Y", "h", "v", "", false;
     poll_input_for_using "SL", "q", "", "", false;

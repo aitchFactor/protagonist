@@ -1,7 +1,7 @@
 
-- DONE fix camera scroll bounds that are not (0,0)
-- DONE add a behaviour when player touches the scroll bounds. 
-- DONE add section reload on respawn.
+- 
+
+- change cancellable phase of puff to an idle animation.
 
 - fence player in at smoosher section.
 
@@ -90,6 +90,7 @@ todo: hygiene
     - clean up state machine hacks
     - document architecture
     - make cancel window data-based instead of hardcode-based (group timers into one struct, if possible)
+    - optimise animation swap routine
 
 - todo: make halli idle in time with the bpm of stage music
 

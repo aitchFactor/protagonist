@@ -516,14 +516,15 @@ proc air_animation{
     # something like a ceiling bonk animation might need some more thinking.
     if not jump_buffered {
         local fall_threshold = 0;
-        if player == 2 {
-            fall_threshold = paf_jump_vel_smal;
-        }
         if "jump" in state {
             fall_threshold = 0;
         }
         else {
+            # Halli should assume his falling pose even while rising after a stomp/bounce
             fall_threshold = "Infinity";
+        }
+        if player == 2 {
+            fall_threshold = paf_gravity * 3;
         }
         if yvel.v1 < fall_threshold {
             state_machine ("play.air.down");
@@ -720,6 +721,10 @@ proc check_grab {
     }
 
     if grounded {
+        stop_this_script;
+    }
+
+    if yvel.v1 > 1 {
         stop_this_script;
     }
 
