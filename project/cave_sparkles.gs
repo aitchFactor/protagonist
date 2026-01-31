@@ -25,7 +25,8 @@ on "boot" {
     boot;
     # spawn;
 }
-%define cycle_length 22
+var CYCLE_LENGTH = 22;
+
 proc boot {
     z_position = 256;
     anim_sparkle;
@@ -35,7 +36,7 @@ proc boot {
     x_position = x_position() * 0.5;
     y_position = y_position() * 0.5;
     animation_player;
-    animation_counter = random(0, floor(cycle_length / 2)) * 2;
+    animation_counter = random(0, floor(CYCLE_LENGTH / 2)) * 2;
     depth = random (0.25, 0.85);
 }
 
@@ -51,8 +52,8 @@ on "tick_cosmetics" {
 }
 
 on "tick_303" {
-    if animation_counter >= cycle_length * 2 {
-        animation_counter -= cycle_length;
+    if animation_counter >= CYCLE_LENGTH * 2 {
+        animation_counter -= CYCLE_LENGTH;
         x_position = random (-visible_width * 0.5, visible_width * 0.5);
         y_position = random (-visible_height * 0.5, visible_height * 0.5);
         depth = random (0.25, 0.8);

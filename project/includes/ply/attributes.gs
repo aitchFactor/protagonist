@@ -1,4 +1,5 @@
 # note: don't include comments in the same line as a macro
+# code convention: constants should be defined with var, not macros.
 #20/16
 %define max_walk    317/256
 

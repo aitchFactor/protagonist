@@ -1,6 +1,20 @@
 from PIL import Image
 from pathlib import Path
 import sys, optparse
+def get_tile_type (rgba):
+    match rgba:
+        case (0, 128, 0, 255):
+            return "#"
+        case (0, 128, 128, 255):
+            return "="
+        case (128, 0, 0, 255):
+            return "^"
+        case (128, 96, 0, 255):
+            return "o"
+        case _:
+            return " "
+
+
 # Option parser copyright 2016, 2021 Damian Yerrick
 def parse_argv(argv):
     parser = optparse.OptionParser()
@@ -24,24 +38,28 @@ def parse_argv(argv):
         pass
     return options
 
-def save_sliced(image:Image, folder:Path, filename_stem:Path):
+def read_level(image:Image, folder:Path, filename_stem:Path):
     screen_dimensions = (128, 96)
     width, height = image.size
+    image = image.convert("RGBA")
+    
     if not folder.exists():
         folder.mkdir()
-    for i, x in enumerate(range(0, width, screen_dimensions[0])):
-        for j, y in enumerate(range(0, height, screen_dimensions[1])):
-            left = x
-            top = y
-            right = x + screen_dimensions[0]
-            bottom = y + screen_dimensions[1]
-            im = image.crop([left, top, right, bottom])
-            with open (folder / (filename_stem + f'_{i},{j}' + '.png'), 'wb') as outfile:
-                print (folder / (filename_stem + f'_{i},{j}' + '.png'))
-                im.save(outfile)
+    with open(folder / (filename_stem + '_tiles.txt'), 'w') as outfile:
+        for j, y in enumerate(range(0, height, 8)):
+            for i, x in enumerate(range(0, width, 8)):
+                tile = get_tile_type(image.getpixel([x, y]))
+                print ((tile), end = '')
+                print (ord(tile), file = outfile)
+            print ()
+
+    with open(folder / (filename_stem + '_dim.txt'), 'w') as outfile:
+        print (i + 1, file = outfile)
+        print (j + 1, file = outfile)
+        print ("width:", i + 1, "height:", j + 1)
 
 def main(argv=None):
-    folder = Path(__file__).parent
+    folder = Path(__file__).parent.parent
 
     opts = parse_argv(argv or sys.argv)
     infp = Path(opts.infilename)
@@ -51,7 +69,7 @@ def main(argv=None):
     parent_name = infp.parent.stem
     out_folder = folder / "project/gfx/bg" / parent_name
 
-    save_sliced(im, out_folder, parent_name + "_" + infp.stem)
+    read_level(im, out_folder, parent_name + "_" + infp.stem)
     
 
 if __name__ == ("__main__"):

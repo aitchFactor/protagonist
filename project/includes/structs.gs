@@ -47,6 +47,15 @@ enum BgLayerTypeColour {
     Pogo    = "0x806000"
 }
 
+enum BgLayerTypeNumber {
+    None = 32,
+    Solid = 35,
+    Soft = 61,
+    Spike = 94,
+    Pogo = 111,
+
+}
+
 enum BgLayerTypeBit {
     # This is for colliding entities.
     # None    = "0x000000",

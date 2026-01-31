@@ -1,4 +1,5 @@
 %include includes/defines.gs
+%include std/math
 
 func bool_to_sign (x){
     if $x {
@@ -51,13 +52,19 @@ func timer_boundary_crossed (Timer timer, boundary = 0) {
 }
 
 func clamp (value, min = "-Infinity", max = "Infinity"){
+    local res = $value;
     if $value < $min {
-        return $min;
+        res = $min;
     }
     if $value > $max {
-        return $max; 
+        res = $max; 
     }
-    return $value;
+
+    # if res != CLAMP($value, $min, $max) {
+    #     warn "warning: manual clamp (" & res &  ") != goboclamp (" & CLAMP($value, $min, $max) & ") (" & $value & ", " & $min & ", " & $max & ")";
+    # }
+
+    return res;
 
 }
 
@@ -103,5 +110,10 @@ func y_to_chunk (y) {
 func bitmask (bits, select) {
     # mask the value by the select parameter.
     # only works if select is a power of 2.
-    return floor($bits / $select) % 2;
+    local res = floor($bits / $select) % 2;
+    if res != BIT($select, $bits) {
+        warn "manual bits (" & res & ") != gobobits (" & BIT($select, $bits) & ") (" & $bits & ", " & $select & ")";
+    }
+    return res;
+
 }
