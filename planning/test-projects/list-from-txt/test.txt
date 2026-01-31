@@ -1,0 +1,9 @@
+this
+is
+a
+text
+file
+with a few
+items
+in
+it.
