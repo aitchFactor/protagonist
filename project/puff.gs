@@ -15,7 +15,7 @@ var Projectile self;
 on "boot" {
     lifetime = 0;
     self = Projectile {};
-    z_position = 254;
+    z_position = 31;
     fast_collisions = true;
     hidden = true;
     hide;

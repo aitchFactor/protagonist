@@ -126,6 +126,7 @@ nowarp proc loop {
     broadcast "tick_display";       # set positional offsets, scrolling. and scale
     broadcast "tick_hitbox_view";
 
+    delete z_positions;
     broadcast "tick_zsort";         # execution order of sprites/clones for other broadcasts is undefined, so be careful.
 
     broadcast "tick_sound_logic";   # parse audio queues
@@ -152,10 +153,6 @@ on "tick_000"{
   }
 }
 
-on "tick_zsort"{
-  delete z_positions;
-  sort_depth "-Infinity", false;
-}
 
 var _transition_status;
 %define ts _transition_status

@@ -2,7 +2,6 @@
 %include includes/defines.gs
 %include includes/accel.gs
 costumes "blank.png", "gfx/bg/step3/smoosher_*.png";
-
 var Timer smoosh_timer;
 
 on "boot" {
@@ -25,7 +24,7 @@ proc boot {
     hurtbox = "smoosher_solid";
     y_position = smoosh_start_y;
     active = false;
-    z_position = 130;
+    z_position = 127;
     x_position = 1344 - 64;
     y_position = smoosh_start_y;
     camera_x_min = "";

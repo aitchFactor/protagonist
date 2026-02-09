@@ -49,7 +49,7 @@ proc boot{
     switch_costume FR_STAND;
     x_position = -32;
     y_position = -32;
-    z_position = 255;
+    z_position = 32;
     last_grounded_y = 0;
     last_grounded_x = 0;
     this_direction = 90;
