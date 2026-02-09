@@ -126,7 +126,7 @@ proc paf_anim_walk_turn_around {
 
     # unused; I was wrong.
     # direction_lock.current = paf_turn_direction_lock / paf_walk;
-    add AnimationFrame {costume_name: "pafu-stand_4",     duration: 2,    flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-stand_4",     duration: 2,    flip: true } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-turn_1",      duration: paf_turn_direction_lock - 2,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-turn_2",      duration: 6,    flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-walk_1",      duration: 11,    flip: false } to animations_queue_frames;
