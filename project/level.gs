@@ -141,7 +141,7 @@ proc set_camera_target {
         local lerp = 1 - ("player"."y_position" - "player"."last_grounded_y") / target_camera_height;
         lerp = clamp(lerp, min: 0, max: 2);
         # Have to round or else pafu's oscillating y velocity will trigger this.
-        camera_target_y_max += round("player"."yvel.dx" / delta_time) * delta_time * lerp;
+        camera_target_y_max += floor("player"."yvel.dx" / delta_time) * delta_time * lerp;
 
     }
     

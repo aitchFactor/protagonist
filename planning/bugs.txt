@@ -1,13 +1,7 @@
 known bugs:
+    puffing very low to the ground can make halli air walk
    
-    ledge grab while rising looks bad
-    
-    ledge grab lets you turn around during the animation
-        - jumping away during a getup leaves pafu in limbo
-    
-    halli's animation after a puff is broken 
-    
-    can't puff again after triggering roll
+    dying on the same frame as a ledge grab makes pafu ledge getup on thin air
     
     respawning from a checkpoint in another zone looks ugly and can leave the player stuck.
     
@@ -32,11 +26,7 @@ known bugs:
     
     respawning can inconsistently leave player stuck in ground
     
-    mini checkpoint can sometimes be placed in areas that softlock the game
-
     v_max values might be a pain in the butt when dashing becomes a thing (decel_still is used for run > walk as well as unpredictably during almost all times)
-    
-    coyote time jump fails to trigger jump sound (maybe)
     
     camera often jitters when moving right on pafu at high hz.
     

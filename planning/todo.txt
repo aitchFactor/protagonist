@@ -85,16 +85,18 @@ todo: sound
 
 
 todo: hygiene
-    - update goboscript
+    - DONE update goboscript
+    - spend a week making a level editor / free float
     - move puff definitions somewhere outside of the code
     - clean up state machine hacks
     - document architecture
     - make cancel window data-based instead of hardcode-based (group timers into one struct, if possible)
     - optimise animation swap routine
-    - make the game run better than 15fps on base scratch running on my phone
+    - DONE make the game run better than 15fps on base scratch running on my phone
     - halli and pafu's animations are at least 800 blocks atm, can this be optimised?
     - move side-effect-only states to metadata of some kind
-    
+    - find code conventions
+    - remove wasteful collision checks and/or refactor to software collisions
     - log where goboscript's std clamp implementation differs from my manual version
         bits: my "bits" are precomputed powers of 2 so goboscript's version doesn't work on it.
 

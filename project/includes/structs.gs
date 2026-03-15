@@ -48,11 +48,11 @@ enum BgLayerTypeColour {
 }
 
 enum BgLayerTypeNumber {
-    None = 32,
-    Solid = 35,
-    Soft = 61,
-    Spike = 94,
-    Pogo = 111,
+    None    = 32,
+    Solid   = 35,
+    Soft    = 61,
+    Spike   = 94,
+    Pogo    = 111,
 
 }
 

@@ -8,6 +8,9 @@ no dialogue >:(
 
 overall theme: revisit (what a bad theme, right?)
 
+- thoughts on action design
+	- player moveset: control, risk, variety
+	- environment: feedback, combinations, management
 
 halli and pafu get different music?
 
@@ -24,7 +27,8 @@ act 1:
     (steps are shown in-game as paw prints, ie "step 1" = 🐾-1
     step 1: forest floor
     
-story development: grappling hook
+story development: grappling hook (fires diagonally only? either a+b or just inputs with diagonal + b)
+
 
 act 2: 
 
@@ -35,6 +39,8 @@ act 2:
     step 4: organic beat (airship infiltration)
         gimmick: grapple hook flips platforms (like in super mario galaxy 2)
         note: music sync gimmicks aren't practical for scratch
+       
+       music idea: sample mgs2 breakbeat
     
 story development:
     - xaraxos has been steam/diesel powered this whole time 

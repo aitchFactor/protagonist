@@ -118,5 +118,4 @@ on "level_fadeout" {
 }
 
 # onkey "1" {
-#     go;
-# }
+#     go; }
