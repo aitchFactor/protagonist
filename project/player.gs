@@ -775,9 +775,9 @@ proc paf_getup {
     if ("ledgegrab" in state) {
         local sign = sign_of(this_direction);
 
-        if getup_frame_crossed(1) {move_y(-1);}
-        if getup_frame_crossed(5)   {}
-        if getup_frame_crossed(6)   {move_y(1);}
+        if getup_frame_crossed(3) {move_y(-1);}
+        if getup_frame_crossed(5)   {move_y(1);}
+        # if getup_frame_crossed(5)   {}
         if getup_frame_crossed(7)   {move_y(1);}
         if getup_frame_crossed(8)   {move_y(5);}
         if getup_frame_crossed(12)  {move_y(10); move_x(3 * sign); move_y(-2);}
