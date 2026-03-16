@@ -65,7 +65,7 @@ proc hal_down_air {
         x_position: x_position + 8 * sign_of (this_direction),
         y_position: y_position - 12,
         xvel: xvel.v1,
-        yvel: yvel.v1 - max_fall * 0.5,
+        yvel: yvel.v1 - max_fall,
     } to projectile_queue;
 
     puff_type = PuffType.Down;
@@ -95,14 +95,14 @@ proc paf_down_air {
     add Projectile{
         type: "puff",
         name: "puff_pafu_down_air",
-        lifetime: round(paf_puff_cooldown * 0.5),
+        lifetime: round(paf_puff_cooldown * 0.25),
         direction: this_direction,
         x_position: x_position + 5 * sign_of(this_direction),
         y_position: y_position - 12,
-        xvel: paf_walk * sign_of(this_direction),
-        yvel: -paf_max_fall,
+        xvel: paf_walk * 1.25 * sign_of(this_direction),
+        yvel: -paf_max_fall*1.5,
     } to projectile_queue;
-    yvel.v1 = paf_jump_vel * 0.25;
+    yvel.v1 = paf_jump_vel * 0.375;
     jump_hold = 0;
 
     puff_type = PuffType.Down;

@@ -194,7 +194,7 @@ onclone {
     }
     if clone_id == "puff_pafu_down_air"{
         SPRITE_NAME = "Pafu Puff DAir";
-        paf_down_air self.lifetime;
+        paf_down_air self.lifetime * 1.25;
 
     }
     if clone_id == "puff_pafu_up_light"{
@@ -240,8 +240,8 @@ on "tick_101"{
 
         }
         if clone_id == "puff_pafu_down_air"{
-            xvel = accelerate_advanced(xvel.v1, -6/32 * sign_of(this_direction), xvel.a);
-            yvel = accelerate_advanced(yvel.v1, 7/16, yvel.a, paf_jump_vel_smal);
+            xvel = accelerate_advanced(xvel.v1, -11/32 * sign_of(this_direction), xvel.a);
+            yvel = accelerate_advanced(yvel.v1, 1, yvel.a, paf_jump_vel_smal);
 
         }
         if clone_id == "puff_pafu_up_light"{
