@@ -230,18 +230,21 @@ proc paf_anim_ledgegrab {
 proc paf_anim_roll loops = 3 {
     clear_animation;
     add AnimationHeader {
-        num_pages: 6,
+        num_pages: 9,
         loop_start: 0,
         loops: $loops
     }   to animations_queue_header;
     
      
-    add AnimationFrame {costume_name: "pafu-roll_3",     duration: 3,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-roll_4",     duration: 3,   flip: false } to animations_queue_frames;  
-    add AnimationFrame {costume_name: "pafu-roll_5",     duration: 3,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-roll_6",     duration: 3,   flip: false } to animations_queue_frames;  
-    add AnimationFrame {costume_name: "pafu-roll_1",     duration: 3,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-roll_2",     duration: 3,   flip: false } to animations_queue_frames; 
+    add AnimationFrame {costume_name: "pafu-roll_5",    duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_6",    duration: 2,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-roll_8",    duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_9",    duration: 2,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-roll_10",   duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_12",   duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_1",    duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_2",    duration: 2,   flip: false } to animations_queue_frames;  
+    add AnimationFrame {costume_name: "pafu-roll_4",    duration: 2,   flip: false } to animations_queue_frames;
 
     paf_anim_air_down refresh: false;
 }
@@ -317,18 +320,19 @@ func paf_state_animation(state, last_state) {
                     paf_anim_walk_turn_around;
                     refreshed = true;
                 }
+                refreshed = true;
                 if ("._L" in $state and last_this_direction == 90) or
                     ("._R" in $state and last_this_direction == -90) {
+                        # log (last_this_direction);
                         paf_anim_walk_turn_around;
                 }
                 else {
                     if "idle" in $last_state{
                         paf_anim_walk_step;
                     }
-                }
-                refreshed = true;
-                if "puff" in $last_state {
-                    refreshed = false;
+                    if "puff" in $last_state {
+                        refreshed = false;
+                    }
                 }
                 paf_anim_walk (not refreshed);
                 return "paf_anim_walk";
