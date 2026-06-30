@@ -112,23 +112,27 @@ proc segment_zoomed_out_display {
 }
 
 %define target_camera_height 64
-%define target_camera_pan 24
-
+%define target_camera_pan 28
+%define stand_pan_distance 0
+%define x_pan_speed 4/3
+%define centre_when_still false
 proc set_camera_target {
     # if "player"."xvel.v1" == 0 or abs("player"."xvel.v1") >= 1.5 or abs("player"."x position") > 16 {
     #     camera_target_x = "player"."x_position" + 12 * sign_of("player"."direction");
     # }
     if not ("player"."xvel.dx" == 0) or ctrl_left > 0 or ctrl_right > 0 {
-        camera_target_x += 2*"player"."xvel.dx";
+        camera_target_x += x_pan_speed*"player"."xvel.dx";
 
         if abs("player"."x_position" - camera_target_x) > target_camera_pan {
             camera_target_x = "player"."x_position" + (target_camera_pan * sign_of(-"player"."x_position" + camera_target_x)); 
         }
     } 
     else {
-        if not (sign_of(camera_target_x - "player"."x_position") == sign_of("player"."direction")){
-            camera_target_x = "player"."x_position" + target_camera_pan * 0.5 * sign_of ("player"."direction"); 
-        }  
+        if centre_when_still {
+            if not (sign_of(camera_target_x - "player"."x_position") == sign_of("player"."direction")){
+                camera_target_x = "player"."x_position" + target_camera_pan * stand_pan_distance * sign_of ("player"."direction"); 
+            }  
+        }
 
     }
 
