@@ -1,7 +1,7 @@
 %define bb_hal_stand BoundingBox {centre_x: 0, centre_y: -4, diameter_x: 14, diameter_y: 16}
-%define bb_paf_stand BoundingBox {centre_x: 0, centre_y: -4, diameter_x: 10, diameter_y: 16}
-%define bb_paf_grab_1  BoundingBox {centre_x: 6 * sign_of(this_direction), centre_y:  2, diameter_x: 2,  diameter_y: 12}
-%define bb_paf_grab_2  BoundingBox {centre_x: 6 * sign_of(this_direction), centre_y:  9, diameter_x: 2,  diameter_y: 1}
+%define bb_paf_stand BoundingBox {centre_x: 0, centre_y: -4, diameter_x: 8, diameter_y: 16}
+%define bb_paf_grab_1  BoundingBox {centre_x: 5 * sign_of(this_direction), centre_y:  2, diameter_x: 2,  diameter_y: 12}
+%define bb_paf_grab_2  BoundingBox {centre_x: 5 * sign_of(this_direction), centre_y:  9, diameter_x: 2,  diameter_y: 1}
 
 enum PuffType {
     Side = "side",

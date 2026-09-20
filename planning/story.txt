@@ -1,0 +1,75 @@
+The only possible explanation for Halli and Pafu ascending to the heavens after a Game Over is that they are guardian beings supposedly sent to keep nature in balance. Xaraxos gets to be one as well - that's why he can use magic. Just like Tolkien's Istari, none of them actually bother to follow through with the mission and were probably never even told what it was in the first place. So that's where the setting begins.
+
+In truth, the heavens really don't pay attention to what's happening to all the lowlifes down there, because society is being built at a steady pace by the Beavercrat League. So the heavens' guardian beings can really just stuff around with very few consequences if they want. And that's basically what they do.
+
+Beavercrats are internally polarised between the fiberite and candevan factions. Any beaver will insist they couldn't be more different to each other, but they're pretty indistinguishable to the outside observer. They all hate the pelican repellers, but candevans are a bit more pragmatic about it.  
+
+Narration drives the story, but "Xaraxos" hijacks the narration at some point to mess with the player.
+
+Xaraxos's Xany Xealots
+Obviously, Xaraxos needs money. Rebelling against the evil (fat, lazy, overpaid) beavercrats isn't cheap. Plus, he needs it to pay back the loan he took from Magic & Partners to accelerate the development of his flunkey factory. But enough of that. 
+
+Halli's been working on his humble chicken farm for a while. It's not a large operation, but it isn't a tidy one either. Most of the week is spent loafing around, but then the hens lay a dozen all in a couple days and he's gotta scramble to get them to market in time while they're still fresh (these are certainly not modern, 1-a-day layer hens). Technically, Pafu is supposed to be helping, but she doesn't seem to actually be very interested in it.
+
+Act 1: Halli must make the trek to deliver his eggs to the marketplace. Pafu gets sidetracked on some kind of bug-hunting crusade but somehow outruns Halli both ways. 
+
+On the weekends, Halli dreams of upgrading the farm. Running water and a mill of some kind to process the hen feed. Then he could probably diversify into bread as well. He could apply a bit of magic, but it's pretty expensive stuff. The upgrade has to be mechanical in some form. Enter Xaraxos Xolutions, the only magic-free industrial engineering vendor in the region who takes eggs as payment. It turns out Mr. Xaraxos himself has a surprising offer: You've got potential. Come with us. We'll personally train you up, and you can build it yourself. And then I'll only charge one dozen instead of the two hundred I honestly need to make it myself.
+
+But someone has to stay back to take care of the farm. Should Halli go? Or should he refer his eminently qualified friend, Pafu?
+
+The internship isn't easy. It takes a gruelling hike to the coast just to get to the workplace.
+
+Act 2: 
+	1. Halli is late for his first day on the new job, but the cool new tech he gets (grapple hook) quickly outcompetes his anxiety. With his newfound skill, something actually get done in this world.
+	2. Pafu isn't sure what to expect, but the grapple hook is pretty cool. Why not keep going?
+
+Act 3: After departing for the skies, Halli secretly discovers that Xaraxos doesn't have any engineering expertise, and the whole show is literally running on magic. This is bad news for Halli, because magic charges mean rates with interest. And this isn't even the real Xaraxos, just a skinwalking impostor who thinks that kidnapping guardian beings like Halli will finally let him commune with the real Xaraxos. (Pafu literally doesn't care about this part.)
+
+Note: "Xaraxos" is an unsubtle allegory for hfactor puppeteering someone else's characters as if they were his own.
+
+Consciously playing the arch-villain, "Xaraxos" reveals he's kidnapped the non-player character and the chickens (even though they were hidden in previous levels as well), says he's gonna hold the magic island (yes, previously unmentioned) hostage to inflate the price of magic, departs on a much bigger fleet, and sabotages the craft that Halli's locked up in. Halli escapes. 
+
+Using the power of magic, Xaraxos wrests control of the floating island away from its native sky penguin population. But when he realises he can't use the magic, he resolves to blow it up.
+1. Halli is annoyed that fixing this can't be done all at once, but has to take things one level at a time.
+2. Pafu tracks down all the objectives because "Xaraxos" has put eggs in each spot she's supposed to visit.
+Halli succeeds in stopping the island from blowing up but fails to retrieve Pafu. Using the power of magic, Xaraxos is outta there. After we heist this tower built around the cavity of a snowcapped volcano, we're off to the Golden Coasts to grow old and die.
+
+Using the power of magic, Xaraxos activates the tower's volcano-powered laser (erm, "Xaraxos's X-ceptional Destruxtion Ray") and prepares to obliterate the magic island. Strangely, the beavercrats aren't happy about this. But who cares what they think? 
+
+1. 
+2. Realising the eggs are leading her astray, Pafu is forced to plan her own route to save Halli. 
+
+"Xaraxos" recites some corny line and falls into the volcano, never to be seen again.
+
+1. Halli has foiled "Xaraxos" but didn't get any answers about anything. He's recognised as a hero, but it something doesn't feel right. 
+2. Pafu is given a Chun-Li style choice between pursuing the real Xaraxos or going back to the old life.
+
+Xaraxos's Xquisite Airxhip
+
+Xaraxos's impexxable lunxheon
+
+
+Halli's tragic overambitions
+	- halli has to accept he can't do everything.
+		- for example: halli wins a bossfight, but the background dramatically explodes and he loses anyway
+	- alternatively, halli is dismayed to find his hero's journey was all predetermined.
+Pafu's equally tragic complacency
+	- pafu tags along because she wants to see what's going to happen. But intervening, taking a side, it's all very uncomfortable. Much simpler to abide by the rule of nature: try bite me then you get bit.
+	- pafu has to find a reason to care about things that she normally wouldn't.
+
+
+
+Narrative-driven video games often use the protagonist to represent the player's inability to control the story, but I want my game to say something different about the player.
+- RDR2: Morgan is suspiciously skilled but unambitious; a useful tool for Dutch to throw missions at. Lacks purpose in life despite pressing buttons on a controller to get dopamine.
+- RDR1: Marston Jr is suspiciously skilled but depressed existing in a world where he doesn't belong. Lacks purpose in life despite pressing buttons on a controller to get dopamine.
+- Uncharted 4: Drake is suspiciously skilled but bored living in a world without awesome stuff to do. Lacks purpose in life until he gets to press buttons on a controller to get dopamine.
+- Spec Ops: The Line: Walker's desperate need for validation seals his fate, and he and the player are unable to accept one thing causes the other.
+- TLOU2: No matter how powerful Ellie gets, it doesn't seem to help the fact that Joel's dead.
+- Metal Gear V: Snake wants to be Snake, but it turns out that he isn't Snake, and he never was Snake.
+- Rockman 4 Minus Infinity: Rock is tired of the tedious repetition of Wily's schemes, but is still genuinely surprised by the additional lengths and slight variations that Wily has gone out of his way to provide this time.
+
+- being forced to do hero shit cause the villain personally wants them to is similar to The Dark Knight, MI: Fallout
+- being forced to stop being a bystander is similar to Avatar, Catwoman in Dark Knight Rises, Ilsa in Rogue Nation, Grace in Dead Reckoning, Merida in Brave, Sully in Monsters Inc, 
+	- This seems a bit too cliche.
+
+- Remy in Ratatoullie is an interesting example because he is compelled to do something that is *good* but has to figure out how to support/keep it afloat

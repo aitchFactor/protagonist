@@ -230,7 +230,7 @@ proc paf_anim_ledgegrab {
 proc paf_anim_roll loops = 3 {
     clear_animation;
     add AnimationHeader {
-        num_pages: 9,
+        num_pages: 12,
         loop_start: 0,
         loops: $loops
     }   to animations_queue_header;
@@ -238,13 +238,16 @@ proc paf_anim_roll loops = 3 {
      
     add AnimationFrame {costume_name: "pafu-roll_5",    duration: 2,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-roll_6",    duration: 2,   flip: false } to animations_queue_frames;  
-    add AnimationFrame {costume_name: "pafu-roll_8",    duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_7",    duration: 1,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_8",    duration: 1,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-roll_9",    duration: 2,   flip: false } to animations_queue_frames;  
     add AnimationFrame {costume_name: "pafu-roll_10",   duration: 2,   flip: false } to animations_queue_frames;
-    add AnimationFrame {costume_name: "pafu-roll_12",   duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_11",   duration: 1,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_12",   duration: 1,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-roll_1",    duration: 2,   flip: false } to animations_queue_frames;
     add AnimationFrame {costume_name: "pafu-roll_2",    duration: 2,   flip: false } to animations_queue_frames;  
-    add AnimationFrame {costume_name: "pafu-roll_4",    duration: 2,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_3",    duration: 1,   flip: false } to animations_queue_frames;
+    add AnimationFrame {costume_name: "pafu-roll_4",    duration: 1,   flip: false } to animations_queue_frames;
 
     paf_anim_air_down refresh: false;
 }

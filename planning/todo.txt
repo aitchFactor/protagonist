@@ -61,7 +61,7 @@ todo: sound
         - charge attack
         
     - pafu
-
+        - check gravity behaviour for max jump vs. falling from a ledge (reverse engineer from footage)
         - DONE ledge hang/getup/jump
         - charge attack/sprint
         - make dair slower and worse

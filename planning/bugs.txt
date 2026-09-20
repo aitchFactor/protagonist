@@ -1,5 +1,7 @@
 known bugs:
     puffing very low to the ground can make halli air walk
+
+    pafu: puffing too low to a spike doesn't trigger a pogo
    
     dying on the same frame as a ledge grab makes pafu ledge getup on thin air
     

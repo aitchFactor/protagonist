@@ -41,7 +41,9 @@
 # estimate
 %define paf_jump_vel_smal paf_gravity
 
-# halfway between mario's walk and run speeds (not based on hollow knight)
+# hornet's default walk speed is about 1.4
+%define paf_walk_stalled 1
+%define paf_walk_slow 1.4
 %define paf_walk 1.6
 
 # mario's p-speed 

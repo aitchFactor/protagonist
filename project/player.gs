@@ -322,7 +322,17 @@ proc paf_x_control {
             new_state = "play.ground.idle";
         }
     }
+    if "puff.down" in state {
+        speed_max = paf_walk_stalled * sign_of(speed_max);
+    }
+    else
+    {
+        if puff_timer.current > 0 {
+            local diff = abs(paf_walk - paf_walk_slow);
 
+            speed_max = round_256(paf_walk_slow + diff*(1-(puff_timer.current/paf_puff_cooldown)))  * sign_of(speed_max);
+        }
+    }
     # don't include a state transition if we are about to jump.
     if jump_buffered {
         new_state = "";

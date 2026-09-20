@@ -33,8 +33,10 @@ story development: grappling hook (fires diagonally only? either a+b or just inp
 act 2: 
 
     step 2: canopy (forest/sky) (see: fluffy bluff galaxy)
-    
-    step 3: switch palace (cliffside)
+        - chainlink charge
+        - gourmet race
+    step 3: kirby underground / switch palace (cliffside)
+        - switch palace only comes in for bossfight
 
     step 4: organic beat (airship infiltration)
         gimmick: grapple hook flips platforms (like in super mario galaxy 2)
@@ -43,7 +45,11 @@ act 2:
        music idea: sample mgs2 breakbeat
     
 story development:
-    - xaraxos has been steam/diesel powered this whole time 
+    - xaraxos uses magic to make it look like he is diesel powered, since the world's oil has either run dry or been held hostage by geopolitical turmoil
+    - (magic-powered tech is similar to final fantasy and adventure time)
+
+    - alternatively, the xaraxos we see is actually just a devoted fan of him and not the real guy
+        - similar to mad eye moody, mgsv
 
 act 3:
     step 5: sand hell (airship crossing)
@@ -60,7 +66,13 @@ act 4:
 
 
 ## log
-
+	- horizontal movement is really cpu-intensive especially with compiler disabled (inefficient ground check among other things)
+	- pafu pushback when an attack hits at close range
+	- down + side for pafu dash
+	- halli gets a mario 64 long jump?
+	- halli gets a bat heavens - style effect when puffing a wall?
+    - vines/chains in the environment instead of grapple hook (rayman origins)
+    - level design: interleave different hazards/mechanics at spaced intervals
 - abstract object backend has some hazy stuff, like local x/y scroll values
 
 
@@ -88,6 +100,23 @@ pafu charge attack recoil = dash???
 
 
 
+slow pafu to 1.4 walk speed during puff cooldown to penalise spamming
 
 
+nsmb wii
+- putting timers on jumping (moving spike wall)
+- sinking platforms, rolling logs
+- risky incentives (bounce pad in between moving spikes)
+- cat and mouse boss (circular chase, vulnerable only from behind)
+- restricting mobility can be... fun??
+- red rings are very mario bros bonus-esque
+- are instant kill obstacles important?
+- controlling different variables can be fun
+    - stuff moving circularly
+    - hurtbox size
+    - abilities being taken away (toad missions)
+    - kaizo blocks
+    - stuff moving with rhythm
+    - climb to the top vs. climb down from a peak 
 
+DDR/friday night funkin like boss? (puff in correct direction to win)

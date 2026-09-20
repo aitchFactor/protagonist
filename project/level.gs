@@ -112,7 +112,7 @@ proc segment_zoomed_out_display {
 }
 
 %define target_camera_height 64
-%define target_camera_pan 28
+%define target_camera_pan 36
 %define stand_pan_distance 0
 %define x_pan_speed 4/3
 %define centre_when_still false

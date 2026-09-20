@@ -194,7 +194,7 @@ onclone {
     }
     if clone_id == "puff_pafu_down_air"{
         SPRITE_NAME = "Pafu Puff DAir";
-        paf_down_air self.lifetime * 1.25;
+        paf_down_air self.lifetime * 1.5;
 
     }
     if clone_id == "puff_pafu_up_light"{
